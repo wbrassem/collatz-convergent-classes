@@ -1,86 +1,148 @@
 # Collatz Conjecture Project
 
-This repository contains the LaTeX source, figures, and python code for the *Collatz Conjecture Anti-Cyclicity* paper.  It also includes the source code for an compiled executable (written in C++) for exploring the mathematical principles optionally using GNU multiple precision libraries for large integers.
+This repository contains the LaTeX source, figures, Python analysis scripts, and C++ code used in the research paper:
 
----
+“Collatz Conjecture Anti-Cyclicity and Convergent Class Coverage”
 
-## 🛠️ Canonical Build
+The project includes:
 
-You may use any TeX editor (TeXShop, TeXworks, Overleaf, etc.) for local development, but the **official build** of the paper is always generated with `latexmk` to ensure consistency.  
+- High-precision C++ orbit exploration code (optional GMP support)
+- Python scripts for coverage analysis, ratio studies, and figure generation
+- A reproducible pipeline that produces all figures in PDF format
+- LaTeX source for the formal paper
 
+------------------------------------------------------------
+
+## 🛠️ Canonical Build (LaTeX)
+
+The official build uses `latexmk` for consistency.  
 From the repository root, run:
 
 ```bash
-latexmk -pdf -interaction=nonstopmode -output-directory=build src/standing_wave.tex
+latexmk -pdf -interaction=nonstopmode -output-directory=build src/collatz_paper.tex
 ```
 
 ### VS Code Build Task (Alternative)
 
-For convenience, you can also build the paper directly from VS Code using the preconfigured build task.  
-This task runs the same `latexmk` process as the command line and has been set as the default build target.  
+A VS Code task is provided so you can build the paper by pressing:
 
-To use it, press **Ctrl+Shift+B** (Windows/Linux) or **⌘+Shift+B** (Mac) and select the **"Build LaTeX PDF"** task.  
+Ctrl+Shift+B (Windows/Linux)  
+Cmd+Shift+B (Mac)
 
-This produces `build/standing_wave.pdf` just like the command line method.
+This produces:
 
----
+```bash
+build/collatz_paper.pdf
+```
+
+
+------------------------------------------------------------
 
 ## 📄 Outputs
 
-- [Final paper (PDF)](build/standing_wave.pdf)  
-- [Formation animation (MP4)](build/black_surface_formation.mp4)
+- Final paper (PDF): build/collatz_paper.pdf
+- Generated plots: figures/
+- Raw data files: data/
 
----
+------------------------------------------------------------
 
 ## 📂 Directory Structure
 
-- `paper/`  
-  LaTeX source, Tikz and references (bib) files used in creation of final PDF output.
+| Directory | Contents |
+|----------|----------|
+| `/src` | `collatz_paper.tex`, `references.bib` |
+| `/python` | `*.py` analysis + figure scripts |
+| `/.venv` | Python virtual environment |
+| `/figures` | `*.pdf` generated plots |
+| `/data` | `*.txt`, `*.csv` raw data |
+| `/cpp` | `collatz.cpp`, `Makefile` |
+| `/build` | `collatz_paper.pdf`, intermediates |
 
-- `figures/`  
-  Generated plots (PDF format) for inclusion in the LaTeX document.  
+If preferred, `.venv` may be moved into `/python` and `.gitignore` updated.
 
-- `python/`  
-  Python source code, virtual environment, and LaTeX source (`standing_wave.tex`, `references.bib`).
-  
-  The python file is used for generating the complete video showing the formation of the Black Surface from flat space and for exporting a set of individual frames used in the PDF output.
+------------------------------------------------------------
 
-- `build/`  
-  Build artifacts such as the compiled PDF of the paper and the MP4 animation.  
+## ⚙️ Python Setup
 
----
+Create and activate the virtual environment.
 
-## ⚙️ Setup
+Mac/Linux:
 
-Create and activate a local Python virtual environment:
-
-On Mac:
 ```bash
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-On Windows:
-```bash
+Windows (PowerShell):
+
+```powershell
 python -m venv .venv
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
 .\.venv\Scripts\Activate.ps1
 ```
 
-- Verify the Python path:
+Verify Python and pip:
 
-```powershell
-Get-Command python
-Get-Command pip
-```
 
-- Confirm packages:
-
-```powershell
+```bash
+which python
 pip list
 ```
 
-Install the project python modules
-```powershell
+Install dependencies:
+
+```bash
 pip install -r requirements.txt
 ```
+
+------------------------------------------------------------
+
+## 🚀 C++ Collatz Executable
+
+The `/cpp` directory contains a high-precision C++ implementation with optional GMP support.
+
+Build the GMP version:
+
+```bash
+make gmp
+```
+
+Build the standard version:
+
+```bash
+make
+```
+
+Output binaries appear under `/cpp/build` unless the Makefile specifies otherwise.
+
+------------------------------------------------------------
+
+## 📊 Reproducible Figure Generation
+
+Most figures are generated using:
+
+```bash
+python python/generate_all_figures.py
+```
+
+
+This script:
+
+- Loads data from `/data`
+- Generates all plots using Matplotlib with LaTeX text rendering
+- Writes the output PDFs to `/figures`
+- Uses consistent naming conventions such as `11_Term_Coverage.pdf`
+
+------------------------------------------------------------
+
+## 📄 License
+
+To be determined.  
+(MIT is recommended for open mathematical/scientific work.)
+
+------------------------------------------------------------
+
+## 🔍 Status
+
+The repository is ready for its initial commit.  
+Further development will focus on the paper contents, citations, and new figures.
