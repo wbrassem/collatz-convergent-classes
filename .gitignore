@@ -1,0 +1,27 @@
+# Tell git to ignore the python virtual environment
+.venv/*
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+.env
+.vscode/
+
+# Data (keep raw data out until finalized)
+data/*.txt
+data/*.csv
+
+# Generated figures
+figures/*.pdf
+figures/*.png
+
+# Build output
+build/
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
