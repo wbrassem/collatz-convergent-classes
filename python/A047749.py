@@ -60,7 +60,7 @@ ax.legend(fontsize=20, loc='upper left')
 # ----------------------------
 # 4. Save figure
 # ----------------------------
-pdf_file = os.path.join(figures_dir, "A047729.pdf")
+pdf_file = os.path.join(figures_dir, "A047749.pdf")
 plt.savefig(pdf_file, bbox_inches="tight")
 
 # ----------------------------
