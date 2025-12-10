@@ -19,7 +19,7 @@ The official build uses `latexmk` for consistency.
 From the repository root, run:
 
 ```bash
-latexmk -pdf -interaction=nonstopmode -output-directory=build src/Collatz_Anti_Cyclicity.tex
+latexmk -pdf -interaction=nonstopmode -output-directory=build src/latex/Collatz_Anti_Cyclicity.tex
 ```
 
 ### VS Code Build Task (Alternative)
