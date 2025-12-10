@@ -15,7 +15,6 @@ import matplotlib.pyplot as plt
 
 from figure_utils import ensure_figdir, save_pdf
 
-
 # ======================================================================
 # 2. LaTeX-style formatting
 # ======================================================================
@@ -25,7 +24,6 @@ mpl.rcParams.update({
     "font.family": "serif",
     "font.serif": ["Computer Modern Roman"],
 })
-
 
 # ======================================================================
 # 3. Main generator
@@ -88,7 +86,6 @@ def generate_term_group_ratios(figures_dir: str, data_dir: str) -> list[str]:
         output_files.append(outfile)
 
     return output_files
-
 
 # ======================================================================
 # 4. Standalone execution

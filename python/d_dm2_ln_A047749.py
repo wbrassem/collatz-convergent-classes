@@ -19,7 +19,6 @@ from scipy.special import polygamma
 
 from figure_utils import ensure_figdir, save_pdf
 
-
 # ======================================================================
 # 2. Configure LaTeX-style plots
 # ======================================================================
@@ -30,12 +29,11 @@ mpl.rcParams.update({
     "font.serif": ["Computer Modern Roman"],
 })
 
-
 # ======================================================================
 # 3. Main figure-generation function
 # ======================================================================
 
-def generate_d_dm2_ln_A047749(figures_dir: str):
+def generate_d_dm2_ln_A047749(figures_dir: str, data_dir: str) -> str:
     """
     Generate the PDF plot of the second derivative of ln(A047749)
     using first-order polygamma ψ¹ for both even and odd subsequences.
@@ -110,7 +108,6 @@ def generate_d_dm2_ln_A047749(figures_dir: str):
     # Save PDF
     # ----------------------------
     return save_pdf(fig, "d_dm2_ln_A047749")
-
 
 # ======================================================================
 # 4. Allow manual standalone execution

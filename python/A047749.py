@@ -33,7 +33,7 @@ mpl.rcParams.update({
 # 3. Main figure-generation function
 # ======================================================================
 
-def generate_A047749(figures_dir: str):
+def generate_A047749(figures_dir: str, data_dir: str) -> str:
     """
     Generate the continuous-function plot for OEIS A047729 (even/odd forms)
     and save it as A047749.pdf in the provided figures directory.

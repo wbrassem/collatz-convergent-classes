@@ -29,12 +29,11 @@ mpl.rcParams.update({
     "font.serif": ["Computer Modern Roman"],
 })
 
-
 # ======================================================================
 # 3. Main figure-generation function
 # ======================================================================
 
-def generate_d_dm_ln_A047749(figures_dir):
+def generate_d_dm_ln_A047749(figures_dir: str, data_dir: str) -> str:
     """
     Generate the PDF plot of d/dm ln(A047749) for even and odd indices.
 
@@ -108,7 +107,6 @@ def generate_d_dm_ln_A047749(figures_dir):
     # Save PDF
     # ----------------------------
     return save_pdf(fig, "d_dm_ln_A047749")
-
 
 # ======================================================================
 # 4. Allow manual standalone execution

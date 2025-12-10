@@ -21,7 +21,6 @@ import matplotlib.pyplot as plt
 
 from figure_utils import ensure_figdir, save_pdf
 
-
 # ======================================================================
 # 2. Configure LaTeX-style plots
 # ======================================================================
@@ -33,12 +32,11 @@ mpl.rcParams.update({
     "text.latex.preamble": r"\usepackage{amsmath}",
 })
 
-
 # ======================================================================
 # 3. Main figure-generation function
 # ======================================================================
 
-def generate_Cn_vs_Bk(figures_dir: str) -> str:
+def generate_Cn_vs_Bk(figures_dir: str, data_dir: str) -> str:
     """
     Compare ln(C(n)) vs ln(B(k)), where B(k) = C(k, k-2).
 
@@ -94,7 +92,6 @@ def generate_Cn_vs_Bk(figures_dir: str) -> str:
     # Save PDF
     # ----------------------------
     return save_pdf(fig, "Cn_vs_Bk")
-
 
 # ======================================================================
 # 4. Standalone execution

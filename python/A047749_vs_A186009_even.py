@@ -19,7 +19,6 @@ from scipy.special import gamma
 
 from figure_utils import ensure_figdir, save_pdf
 
-
 # ======================================================================
 # 2. Configure LaTeX-style plots
 # ======================================================================
@@ -30,12 +29,11 @@ mpl.rcParams.update({
     "font.serif": ["Computer Modern Roman"],
 })
 
-
 # ======================================================================
 # 3. Main figure-generation function
 # ======================================================================
 
-def generate_A047749_vs_A186009_even(figures_dir: str) -> str:
+def generate_A047749_vs_A186009_even(figures_dir: str, data_dir: str) -> str:
     """
     Plot ln(A186009_even) vs ln(A047749_even_continuous).
 
@@ -108,7 +106,6 @@ def generate_A047749_vs_A186009_even(figures_dir: str) -> str:
     # Save PDF
     # ----------------------------
     return save_pdf(fig, "A047749_vs_A186009_even")
-
 
 # ======================================================================
 # 4. Allow manual standalone execution

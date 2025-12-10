@@ -24,7 +24,6 @@ import matplotlib.pyplot as plt
 
 from figure_utils import ensure_figdir, save_pdf
 
-
 # ======================================================================
 # 2. Configure LaTeX-style plots
 # ======================================================================
@@ -35,12 +34,11 @@ mpl.rcParams.update({
     "font.serif": ["Computer Modern Roman"],
 })
 
-
 # ======================================================================
 # 3. Main generator function
 # ======================================================================
 
-def generate_best_fit_31_43(figures_dir: str) -> list[str]:
+def generate_best_fit_31_43(figures_dir: str, data_dir: str) -> list[str]:
     """
     Generate the best-fit comparison plot for the 31-term and
     43-term partial-13 outlier sequences.
@@ -49,6 +47,8 @@ def generate_best_fit_31_43(figures_dir: str) -> list[str]:
     ----------
     figures_dir : str
         Absolute path to /figures.
+    data_dir : str
+        Absolute path to /data containing the CSV input file.
 
     Returns
     -------
@@ -57,10 +57,8 @@ def generate_best_fit_31_43(figures_dir: str) -> list[str]:
     """
 
     # ----------------------------
-    # Paths
+    # CSV file path
     # ----------------------------
-    base_dir = os.path.dirname(__file__)
-    data_dir = os.path.join(base_dir, "../data")
     csv_file = os.path.join(data_dir, "partial-13-csv-less-0.993.csv")
 
     # ----------------------------
@@ -102,21 +100,8 @@ def generate_best_fit_31_43(figures_dir: str) -> list[str]:
     ax.plot(n_43, v_43, "s", alpha=0.7, label="Series 43")
 
     # Best-fit lines
-    ax.plot(
-        n_31, fit_31,
-        linestyle="-",
-        color="blue",
-        alpha=0.8,
-        label=rf"Best fit 31 ($m={m_31:.2e}$)"
-    )
-
-    ax.plot(
-        n_43, fit_43,
-        linestyle="-",
-        color="red",
-        alpha=0.8,
-        label=rf"Best fit 43 ($m={m_43:.2e}$)"
-    )
+    ax.plot(n_31, fit_31, linestyle="-", color="blue", alpha=0.8, label=rf"Best fit 31 ($m={m_31:.2e}$)")
+    ax.plot(n_43, fit_43, linestyle="-", color="red", alpha=0.8, label=rf"Best fit 43 ($m={m_43:.2e}$)")
 
     # Labels and titles
     ax.set_xlabel("n", fontsize=18)
@@ -129,9 +114,7 @@ def generate_best_fit_31_43(figures_dir: str) -> list[str]:
     # Save PDF
     # ----------------------------
     pdf_path = save_pdf(fig, "best_fit_31_43", figures_dir)
-
     return [pdf_path]
-
 
 # ======================================================================
 # 4. Manual standalone entry point
@@ -139,7 +122,8 @@ def generate_best_fit_31_43(figures_dir: str) -> list[str]:
 
 if __name__ == "__main__":
     figures_dir = ensure_figdir()
-    out = generate_best_fit_31_43(figures_dir)
+    data_dir = os.path.join(os.path.dirname(__file__), "../data")
+    out = generate_best_fit_31_43(figures_dir, data_dir)
 
     print("\nGenerated files:")
     for f in out:
