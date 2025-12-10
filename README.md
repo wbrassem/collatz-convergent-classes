@@ -2,7 +2,7 @@
 
 This repository contains the LaTeX source, figures, Python analysis scripts, and C++ code used in the research paper:
 
-“Collatz Conjecture Anti-Cyclicity and Convergent Class Coverage”
+“Collatz Conjecture Anti-Cyclicity”
 
 The project includes:
 
@@ -64,13 +64,14 @@ If preferred, `.venv` may be moved into `/python` and `.gitignore` updated.
 
 ## ⚙️ Python Setup
 
-Create and activate the virtual environment.
+Create, activate and verify the python virtual environment.
 
 Mac/Linux:
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
+which python
 ```
 
 Windows (PowerShell):
@@ -79,13 +80,12 @@ Windows (PowerShell):
 python -m venv .venv
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
 .\.venv\Scripts\Activate.ps1
+Get-Command python
 ```
 
-Verify Python and pip:
-
+Verify pip (should be basically empty of modules other than pip itself):
 
 ```bash
-which python
 pip list
 ```
 

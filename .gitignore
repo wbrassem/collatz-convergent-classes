@@ -8,7 +8,6 @@ __pycache__/
 *.pyd
 .venv/
 .env
-.vscode/
 
 # Data (keep raw data out until finalized)
 data/*.txt

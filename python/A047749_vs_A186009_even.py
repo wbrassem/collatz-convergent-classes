@@ -1,77 +1,119 @@
-# Plot of natural logarithm of even terms of discrete OEIS A186009 versus continuous
-# representation of natural logarithm of OIES A047729 for even terms with n=2m
-# These series have no positive roots and are convex
+"""
+A047749_vs_A186009_even.py
 
-import os
+Compare the discrete even-index terms of OEIS A186009 with the
+continuous even-index representation of OEIS A047749.
+
+We plot ln(A186009[2m]) (discrete) vs ln(A047749(2m)) (continuous).
+Both sequences are convex and have no positive real roots.
+"""
+
+# ======================================================================
+# 1. Imports
+# ======================================================================
+
 import numpy as np
-from scipy.special import gamma
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+from scipy.special import gamma
 
-# ----------------------------
-# 1. Configure LaTeX-style fonts
-# ----------------------------
+from figure_utils import ensure_figdir, save_pdf
+
+
+# ======================================================================
+# 2. Configure LaTeX-style plots
+# ======================================================================
+
 mpl.rcParams.update({
     "text.usetex": True,
     "font.family": "serif",
     "font.serif": ["Computer Modern Roman"],
 })
 
-# ----------------------------
-# 2. Set up figures directory
-# ----------------------------
-figures_dir = os.path.join(os.path.dirname(__file__), "../figures")
-os.makedirs(figures_dir, exist_ok=True)
 
-# ----------------------------
-# 3. Generate figure
-# ----------------------------
+# ======================================================================
+# 3. Main figure-generation function
+# ======================================================================
 
-# Discrete even terms from A186009
-a186009 = np.array([1,1,3,12,85,476,2652,17637,108950,663535,5936673,39993895,
-                    257978502,1899474678,12809477536,84141805077])
+def generate_A047749_vs_A186009_even(figures_dir: str) -> str:
+    """
+    Plot ln(A186009_even) vs ln(A047749_even_continuous).
 
-x_start = 0
-x_end   = a186009.size
-x = np.arange(x_start, x_end)
-ln_a186009 = np.log(a186009)
+    Parameters
+    ----------
+    figures_dir : str
+        Absolute path to the /figures output directory.
 
-fig, ax = plt.subplots(figsize=(16, 9))
+    Returns
+    -------
+    str
+        Absolute path to the generated PDF file.
+    """
 
-# Scatter plot for discrete A186009
-ax.scatter(x, ln_a186009, marker="o", s=20, label='A186009(n=2m)')
+    # ----------------------------
+    # Discrete even terms from A186009
+    # ----------------------------
+    a186009_even = np.array([
+        1, 1, 3, 12, 85, 476, 2652, 17637,
+        108950, 663535, 5936673, 39993895,
+        257978502, 1899474678, 12809477536, 84141805077
+    ])
 
-# Continuous representation using A047749
-m = np.linspace(x_start, x_end, 4001)
-numer  = 3*m + 1
-denom1 = 2*m + 2
-denom2 = m + 1
+    m_discrete = np.arange(len(a186009_even))
+    ln_discrete = np.log(a186009_even)
 
-a047749 = gamma(numer) / (gamma(denom1) * gamma(denom2))
-ln_a047749 = np.log(a047749)
+    # ----------------------------
+    # Continuous representation A047749 for even n = 2m
+    # ----------------------------
+    m = np.linspace(0, len(a186009_even), 4001)
 
-# Plot continuous representation
-ax.plot(m, ln_a047749, c='red', label='A047749(n=2m)')
+    numer  = 3*m + 1
+    denom1 = 2*m + 2
+    denom2 = m + 1
 
-# Grid, axis limits, labels
-ax.grid()
-ax.set_xlim(x_start, x_end)
-ax.set_ylim(-5, 30)
-ax.set_xlabel('m', fontsize=20)
-ax.set_ylabel('f(m)', fontsize=20)
+    a047749 = gamma(numer) / (gamma(denom1) * gamma(denom2))
+    ln_continuous = np.log(a047749)
 
-# Legend in lower right
-ax.legend(fontsize=20, loc='upper left')
+    # ----------------------------
+    # Plotting
+    # ----------------------------
+    fig, ax = plt.subplots(figsize=(16, 9))
 
-# ----------------------------
-# 4. Save figure
-# ----------------------------
-pdf_file = os.path.join(figures_dir, "A047749_vs_A186009_2m.pdf")
-plt.savefig(pdf_file, bbox_inches="tight")
+    # Discrete scatter
+    ax.scatter(
+        m_discrete,
+        ln_discrete,
+        s=25,
+        label=r"Discrete A186009 (even $n=2m$)"
+    )
 
-# ----------------------------
-# 5. Display interactively
-# ----------------------------
-plt.show()
+    # Continuous smooth curve
+    ax.plot(
+        m,
+        ln_continuous,
+        c='red',
+        label=r"Continuous A047749 (even $n=2m$)",
+        linewidth=2
+    )
 
-print(f"Figure saved to: {pdf_file}")
+    # Formatting
+    ax.grid()
+    ax.set_xlim(0, len(a186009_even))
+    ax.set_ylim(-5, 30)
+    ax.set_xlabel("m", fontsize=20)
+    ax.set_ylabel("ln value", fontsize=20)
+    ax.legend(fontsize=18, loc="upper left")
+
+    # ----------------------------
+    # Save PDF
+    # ----------------------------
+    return save_pdf(fig, "A047749_vs_A186009_even")
+
+
+# ======================================================================
+# 4. Allow manual standalone execution
+# ======================================================================
+
+if __name__ == "__main__":
+    figures_dir = ensure_figdir()
+    generate_A047749_vs_A186009_even(figures_dir)

@@ -1,76 +1,119 @@
-# Plot of natural logarithm of odd terms of discrete OEIS A186009 versus continuous
-# representation of natural logarithm of OIES A047729 for odd terms with n=2m+1
-# These series have no positive roots and are convex
+"""
+A047749_vs_A186009_odd.py
 
-import os
+Compare the discrete odd-index terms of OEIS A186009 with the
+continuous odd-index representation of OEIS A047749.
+
+We plot ln(A186009[2m+1]) (discrete) vs ln(A047749(2m+1)) (continuous).
+Both sequences are convex and have no positive real roots.
+"""
+
+# ======================================================================
+# 1. Imports
+# ======================================================================
+
 import numpy as np
-from scipy.special import gamma
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+from scipy.special import gamma
 
-# ----------------------------
-# 1. Configure LaTeX-style fonts
-# ----------------------------
+from figure_utils import ensure_figdir, save_pdf
+
+
+# ======================================================================
+# 2. Configure LaTeX-style plots
+# ======================================================================
+
 mpl.rcParams.update({
     "text.usetex": True,
     "font.family": "serif",
     "font.serif": ["Computer Modern Roman"],
 })
 
-# ----------------------------
-# 2. Set up figures directory
-# ----------------------------
-figures_dir = os.path.join(os.path.dirname(__file__), "../figures")
-os.makedirs(figures_dir, exist_ok=True)
 
-# ----------------------------
-# 3. Generate figure
-# ----------------------------
-# Discrete odd terms from A186009
-a186009 = np.array([1,2,7,30,173,961,8045,51033,312455,1900470,13472296,
-                    87986917,820236724,5723030586,38036848410,248369601964])
+# ======================================================================
+# 3. Main figure-generation function
+# ======================================================================
 
-x_start = 0
-x_end   = a186009.size
-x = np.arange(x_start, x_end)
-ln_a186009 = np.log(a186009)
+def generate_A047749_vs_A186009_odd(figures_dir: str) -> str:
+    """
+    Plot ln(A186009_odd) vs ln(A047749_odd_continuous).
 
-fig, ax = plt.subplots(figsize=(16, 9))
+    Parameters
+    ----------
+    figures_dir : str
+        Absolute path to the /figures output directory.
 
-# Scatter plot for discrete A186009
-ax.scatter(x, ln_a186009, marker="o", s=20, label='A186009(n=2m+1)')
+    Returns
+    -------
+    str
+        Absolute path to the generated PDF file.
+    """
 
-# Continuous representation using A047749
-m = np.linspace(x_start, x_end, 4001)
-numer  = 3*m + 2
-denom1 = 2*m + 2
-denom2 = m + 2
+    # ----------------------------
+    # Discrete odd terms from A186009
+    # ----------------------------
+    a186009_odd = np.array([
+        1, 2, 7, 30, 173, 961, 8045, 51033,
+        312455, 1900470, 13472296, 87986917,
+        820236724, 5723030586, 38036848410, 248369601964
+    ])
 
-a047749 = gamma(numer) / (gamma(denom1) * gamma(denom2))
-ln_a047749 = np.log(a047749)
+    m_discrete = np.arange(len(a186009_odd))
+    ln_discrete = np.log(a186009_odd)
 
-# Plot continuous representation
-ax.plot(m, ln_a047749, c='red', label='A047749(n=2m+1)')
+    # ----------------------------
+    # Continuous representation A047749 for odd n = 2m+1
+    # ----------------------------
+    m = np.linspace(0, len(a186009_odd), 4001)
 
-# Grid, axis limits, labels
-ax.grid()
-ax.set_xlim(x_start, x_end)
-ax.set_ylim(-5, 30)
-ax.set_xlabel('m', fontsize=20)
-ax.set_ylabel('f(m)', fontsize=20)
+    numer  = 3*m + 2
+    denom1 = 2*m + 2
+    denom2 = m + 2
 
-# Legend in lower right
-ax.legend(fontsize=20, loc='upper left')
+    a047749 = gamma(numer) / (gamma(denom1) * gamma(denom2))
+    ln_continuous = np.log(a047749)
 
-# ----------------------------
-# 4. Save figure
-# ----------------------------
-pdf_file = os.path.join(figures_dir, "A047749_vs_A186009_2m+1.pdf")
-plt.savefig(pdf_file, bbox_inches="tight")
+    # ----------------------------
+    # Plotting
+    # ----------------------------
+    fig, ax = plt.subplots(figsize=(16, 9))
 
-# ----------------------------
-# 5. Display interactively
-# ----------------------------
-plt.show()
+    # Discrete scatter
+    ax.scatter(
+        m_discrete,
+        ln_discrete,
+        s=25,
+        label=r"Discrete A186009 (odd $n=2m+1$)"
+    )
 
-print(f"Figure saved to: {pdf_file}")
+    # Continuous smooth curve
+    ax.plot(
+        m,
+        ln_continuous,
+        c='red',
+        label=r"Continuous A047749 (odd $n=2m+1$)",
+        linewidth=2
+    )
+
+    # Formatting
+    ax.grid()
+    ax.set_xlim(0, len(a186009_odd))
+    ax.set_ylim(-5, 30)
+    ax.set_xlabel("m", fontsize=20)
+    ax.set_ylabel("ln value", fontsize=20)
+    ax.legend(fontsize=18, loc="upper left")
+
+    # ----------------------------
+    # Save PDF
+    # ----------------------------
+    return save_pdf(fig, "A047749_vs_A186009_odd")
+
+
+# ======================================================================
+# 4. Allow manual standalone execution
+# ======================================================================
+
+if __name__ == "__main__":
+    figures_dir = ensure_figdir()
+    generate_A047749_vs_A186009_odd(figures_dir)

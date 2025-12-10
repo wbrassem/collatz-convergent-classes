@@ -1,71 +1,99 @@
-# Plot of the continuous function representation of OIES A047729
-# for even and odd terms with n=2m and n=2m+1
-# This function has no positive roots
+"""
+A047749.py
 
-import os
+Plot the continuous represent of A047749) for
+even and odd terms using the gamma function.
+
+This version is refactored into a callable function suitable for
+integration with generate_all_figures.py and utils paths.
+"""
+
+# ======================================================================
+# 1. Imports
+# ======================================================================
+
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.special import gamma
 
-# ----------------------------
-# 1. Configure LaTeX-style fonts
-# ----------------------------
+from figure_utils import ensure_figdir, save_pdf
+
+# ======================================================================
+# 2. Configure LaTeX-style plots
+# ======================================================================
+
 mpl.rcParams.update({
     "text.usetex": True,
     "font.family": "serif",
     "font.serif": ["Computer Modern Roman"],
 })
 
-# ----------------------------
-# 2. Set up figures directory
-# ----------------------------
-# Assumes this script lives in python/ and figures/ is at repo root
-figures_dir = os.path.join(os.path.dirname(__file__), "../figures")
-os.makedirs(figures_dir, exist_ok=True)
+# ======================================================================
+# 3. Main figure-generation function
+# ======================================================================
 
-# ----------------------------
-# 3. Generate figure (example)
-# ----------------------------
-fig, ax = plt.subplots(figsize=(16, 9))
+def generate_A047749(figures_dir: str):
+    """
+    Generate the continuous-function plot for OEIS A047729 (even/odd forms)
+    and save it as A047749.pdf in the provided figures directory.
 
-# Generate 4001 datapoints between limits of m
-m = np.linspace(0, 10, 4001)
+    Parameters
+    ----------
+    figures_dir : str
+        Absolute path to the /figures directory.
 
-# Define arguments for even gamma function based on range for m
-enumer  = 3*m + 1
-edenom1 = 2*m + 2
-edenom2 =   m + 1
+    Returns
+    -------
+    str
+        Full path to the resulting PDF file.
+    """
 
-# Define arguments for odd gamma function based on range for m
-onumer  = 3*m + 2
-odenom1 = 2*m + 2
-odenom2 =   m + 2
+    fig, ax = plt.subplots(figsize=(16, 9))
 
-# Even sequence
-ax.plot(m, gamma(enumer)/(gamma(edenom1)*gamma(edenom2)),
-        c='blue', label=r'Even: f(m)=$\Gamma$(3m+1)/($\Gamma$(2m+2)*$\Gamma$(m+1))')
+    # Generate 4001 datapoints between limits of m
+    m = np.linspace(0, 10, 4001)
 
-# Odd sequence
-ax.plot(m, gamma(onumer)/(gamma(odenom1)*gamma(odenom2)),
-        c='red', label=r'Odd: f(m)=$\Gamma$(3m+2)/($\Gamma$(2m+2)*$\Gamma$(m+2))')
+    # Define arguments for even gamma function
+    enumer  = 3*m + 1
+    edenom1 = 2*m + 2
+    edenom2 = m + 1
 
-ax.grid()
-ax.set_xlim(0, 6)
-ax.set_ylim(0, 1000)
-ax.set_xlabel('m', fontsize=20)
-ax.set_ylabel('f(m)', fontsize=20)
-ax.legend(fontsize=20, loc='upper left')
+    # Define arguments for odd gamma function
+    onumer  = 3*m + 2
+    odenom1 = 2*m + 2
+    odenom2 = m + 2
 
-# ----------------------------
-# 4. Save figure
-# ----------------------------
-pdf_file = os.path.join(figures_dir, "A047749.pdf")
-plt.savefig(pdf_file, bbox_inches="tight")
+    # Even
+    ax.plot(
+        m,
+        gamma(enumer)/(gamma(edenom1)*gamma(edenom2)),
+        label=r'Even: $\Gamma(3m+1)\,/\,(\Gamma(2m+2)\,\Gamma(m+1))$'
+    )
 
-# ----------------------------
-# 5. Display figure interactively
-# ----------------------------
-plt.show()
+    # Odd
+    ax.plot(
+        m,
+        gamma(onumer)/(gamma(odenom1)*gamma(odenom2)),
+        label=r'Odd: $\Gamma(3m+2)\,/\,(\Gamma(2m+2)\,\Gamma(m+2))$'
+    )
 
-print(f"Figure saved to: {pdf_file}")
+    ax.grid()
+    ax.set_xlim(0, 6)
+    ax.set_ylim(0, 1000)
+    ax.set_xlabel('m', fontsize=20)
+    ax.set_ylabel('f(m)', fontsize=20)
+    ax.legend(fontsize=18, loc='upper left')
+
+    # ----------------------------
+    # Save PDF
+    # ----------------------------
+    return save_pdf(fig, "A047749")
+
+# ======================================================================
+# 4. Allow manual standalone execution
+# ======================================================================
+
+if __name__ == "__main__":
+    figures_dir = ensure_figdir()
+    generate_A047749(figures_dir)
