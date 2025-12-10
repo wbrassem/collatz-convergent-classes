@@ -7,10 +7,9 @@ from d_dm_ln_A047749 import generate_d_dm_ln_A047749
 from d_dm2_ln_A047749 import generate_d_dm2_ln_A047749
 from A047749_vs_A186009_even import generate_A047749_vs_A186009_even
 from A047749_vs_A186009_odd import generate_A047749_vs_A186009_odd
-from partial_term_sums import generate_term_brackets
-from partial_term_sums import generate_term_brackets
+from term_brackets import generate_term_brackets
 from Cn_vs_Bk import generate_Cn_vs_Bk
-from Term_Group_Ratios import generate_term_group_ratios
+from term_group_ratios import generate_term_group_ratios
 from best_fit_31_43 import generate_best_fit_31_43
 
 def main():

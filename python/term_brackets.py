@@ -1,5 +1,5 @@
 """
-partial_term_sums.py
+term_brackets.py
 
 Generate scatter + histogram panels for partial term sums
 spanning 1 / 2^k brackets, for term counts {11, 12, 13, 14}.
