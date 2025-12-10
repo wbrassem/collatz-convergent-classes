@@ -5,7 +5,7 @@ Generate scatter + histogram panels for partial term sums
 spanning 1 / 2^k brackets, for term counts {11, 12, 13, 14}.
 
 Each term produces its own figure:
-    {term}_Term_Coverage.pdf
+    {term}_term_brackets.pdf
 
 This script supports both:
 - Direct standalone execution
@@ -16,10 +16,10 @@ This script supports both:
 # 1. Imports
 # ======================================================================
 
-import os
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+from pathlib import Path
 
 from figure_utils import ensure_figdir, save_pdf
 
@@ -37,20 +37,20 @@ mpl.rcParams.update({
 # 3. Main generator function
 # ======================================================================
 
-def generate_term_brackets(figures_dir: str, data_dir: str) -> list[str]:
+def generate_term_brackets(figures_dir: Path, data_dir: Path) -> list[Path]:
     """
     Generate scatter + histogram figures for term counts {11,12,13,14}.
 
     Parameters
     ----------
-    figures_dir : str
-        Absolute path to /figures.
-    data_dir : str
-        Absolute path to /data containing CSV input files.
+    figures_dir : Path
+        Path to /figures.
+    data_dir : Path
+        Path to /data containing CSV input files.
 
     Returns
     -------
-    list[str]
+    list[Path]
         List of absolute paths to all generated PDFs.
     """
 
@@ -60,7 +60,7 @@ def generate_term_brackets(figures_dir: str, data_dir: str) -> list[str]:
     for term in terms:
 
         # Input CSV file
-        data_file = os.path.join(data_dir, f"{term}_term_brackets_csv.txt")
+        data_file = data_dir / f"{term}_term_brackets_csv.txt"
         x, y = np.loadtxt(data_file, delimiter=',', unpack=True)
 
         count_y  = np.count_nonzero(y)
@@ -104,7 +104,7 @@ def generate_term_brackets(figures_dir: str, data_dir: str) -> list[str]:
         # ----------------------------
         # Save PDF
         # ----------------------------
-        pdf_path = save_pdf(fig, f"{term}_term_brackets", figures_dir)
+        pdf_path = save_pdf(fig, f"{term}_term_brackets", fig_dir=figures_dir)
         outputs.append(pdf_path)
 
     return outputs
@@ -115,7 +115,7 @@ def generate_term_brackets(figures_dir: str, data_dir: str) -> list[str]:
 
 if __name__ == "__main__":
     figures_dir = ensure_figdir()
-    data_dir = os.path.join(os.path.dirname(__file__), "../data")
+    data_dir = Path(__file__).parent.parent / "data"
     out = generate_term_brackets(figures_dir, data_dir)
     print("\nGenerated files:")
     for file in out:

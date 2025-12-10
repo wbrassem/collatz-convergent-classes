@@ -16,11 +16,11 @@ Supports both:
 # 1. Imports
 # ======================================================================
 
-import os
 import csv
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+from pathlib import Path
 
 from figure_utils import ensure_figdir, save_pdf
 
@@ -38,35 +38,35 @@ mpl.rcParams.update({
 # 3. Main generator function
 # ======================================================================
 
-def generate_best_fit_31_43(figures_dir: str, data_dir: str) -> list[str]:
+def generate_best_fit_31_43(figures_dir: Path, data_dir: Path) -> list[Path]:
     """
     Generate the best-fit comparison plot for the 31-term and
     43-term partial-13 outlier sequences.
 
     Parameters
     ----------
-    figures_dir : str
-        Absolute path to /figures.
-    data_dir : str
-        Absolute path to /data containing the CSV input file.
+    figures_dir : Path
+        Path to /figures.
+    data_dir : Path
+        Path to /data containing the CSV input file.
 
     Returns
     -------
-    list[str]
+    list[Path]
         List containing the generated PDF path.
     """
 
     # ----------------------------
     # CSV file path
     # ----------------------------
-    csv_file = os.path.join(data_dir, "partial-13-csv-less-0.993.csv")
+    csv_file = data_dir / "partial-13-csv-less-0.993.csv"
 
     # ----------------------------
     # Load CSV data
     # ----------------------------
     n_values, series_31, series_43 = [], [], []
 
-    with open(csv_file, newline="") as f:
+    with csv_file.open(newline="") as f:
         reader = csv.reader(f)
         next(reader)  # skip header
         for row in reader:
@@ -113,7 +113,7 @@ def generate_best_fit_31_43(figures_dir: str, data_dir: str) -> list[str]:
     # ----------------------------
     # Save PDF
     # ----------------------------
-    pdf_path = save_pdf(fig, "best_fit_31_43", figures_dir)
+    pdf_path = save_pdf(fig, "best_fit_31_43", fig_dir=figures_dir)
     return [pdf_path]
 
 # ======================================================================
@@ -122,7 +122,7 @@ def generate_best_fit_31_43(figures_dir: str, data_dir: str) -> list[str]:
 
 if __name__ == "__main__":
     figures_dir = ensure_figdir()
-    data_dir = os.path.join(os.path.dirname(__file__), "../data")
+    data_dir = Path(__file__).parent.parent / "data"
     out = generate_best_fit_31_43(figures_dir, data_dir)
 
     print("\nGenerated files:")

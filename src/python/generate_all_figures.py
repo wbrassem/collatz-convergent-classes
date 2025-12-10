@@ -22,6 +22,7 @@ Supports both:
 # ======================================================================
 
 from figure_utils import ensure_figdir
+from pathlib import Path
 
 from A047749 import generate_A047749
 from d_dm_ln_A047749 import generate_d_dm_ln_A047749
@@ -38,8 +39,9 @@ from best_fit_31_43 import generate_best_fit_31_43
 # ======================================================================
 
 def main():
-    figures_dir = ensure_figdir()
-    data_dir = figures_dir.replace("figures", "data")
+    figures_dir = ensure_figdir()               # Path object
+    data_dir = figures_dir.parent / "data"      # Path to repo-root/data
+    data_dir.mkdir(parents=True, exist_ok=True) # ensure it exists
 
     print("=== Generating all Collatz figures ===")
 

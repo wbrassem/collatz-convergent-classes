@@ -4,8 +4,8 @@ d_dm2_ln_A047749.py
 Plot the second derivative (1st-order polygamma) of ln(A047749)
 for even and odd indices n = 2m and n = 2m+1.
 
-This function has no positive roots and approaches 0 from above
-as m → ∞.
+Callable function suitable for integration with generate_all_figures.py
+and utils paths.
 """
 
 # ======================================================================
@@ -16,8 +16,9 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from scipy.special import polygamma
+from pathlib import Path
 
-from figure_utils import ensure_figdir, save_pdf
+from figure_utils import save_pdf
 
 # ======================================================================
 # 2. Configure LaTeX-style plots
@@ -33,19 +34,21 @@ mpl.rcParams.update({
 # 3. Main figure-generation function
 # ======================================================================
 
-def generate_d_dm2_ln_A047749(figures_dir: str, data_dir: str) -> str:
+def generate_d_dm2_ln_A047749(figures_dir: Path, data_dir: Path = None) -> Path:
     """
     Generate the PDF plot of the second derivative of ln(A047749)
     using first-order polygamma ψ¹ for both even and odd subsequences.
 
     Parameters
     ----------
-    figures_dir : str
-        Absolute path to the /figures directory.
+    figures_dir : Path
+        Path to the /figures directory.
+    data_dir : Path, optional
+        Path to /data directory (not used here, included for consistency).
 
     Returns
     -------
-    str
+    Path
         Full path to the resulting PDF file.
     """
 
@@ -107,12 +110,13 @@ def generate_d_dm2_ln_A047749(figures_dir: str, data_dir: str) -> str:
     # ----------------------------
     # Save PDF
     # ----------------------------
-    return save_pdf(fig, "d_dm2_ln_A047749")
+    return save_pdf(fig, "d_dm2_ln_A047749", fig_dir=figures_dir)
 
 # ======================================================================
 # 4. Allow manual standalone execution
 # ======================================================================
 
 if __name__ == "__main__":
+    from figure_utils import ensure_figdir
     figures_dir = ensure_figdir()
     generate_d_dm2_ln_A047749(figures_dir)

@@ -1,11 +1,11 @@
 """
 A047749.py
 
-Plot the continuous represent of A047749) for
+Plot the continuous representation of A047749 for
 even and odd terms using the gamma function.
 
-This version is refactored into a callable function suitable for
-integration with generate_all_figures.py and utils paths.
+Callable function suitable for integration with generate_all_figures.py
+and utils paths.
 """
 
 # ======================================================================
@@ -16,8 +16,9 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.special import gamma
+from pathlib import Path
 
-from figure_utils import ensure_figdir, save_pdf
+from figure_utils import save_pdf
 
 # ======================================================================
 # 2. Configure LaTeX-style plots
@@ -33,19 +34,21 @@ mpl.rcParams.update({
 # 3. Main figure-generation function
 # ======================================================================
 
-def generate_A047749(figures_dir: str, data_dir: str) -> str:
+def generate_A047749(figures_dir: Path, data_dir: Path = None) -> Path:
     """
-    Generate the continuous-function plot for OEIS A047729 (even/odd forms)
+    Generate the continuous-function plot for OEIS A047749 (even/odd forms)
     and save it as A047749.pdf in the provided figures directory.
 
     Parameters
     ----------
-    figures_dir : str
-        Absolute path to the /figures directory.
+    figures_dir : Path
+        Path to the /figures directory.
+    data_dir : Path, optional
+        Path to /data directory (not used here, included for consistency).
 
     Returns
     -------
-    str
+    Path
         Full path to the resulting PDF file.
     """
 
@@ -88,12 +91,13 @@ def generate_A047749(figures_dir: str, data_dir: str) -> str:
     # ----------------------------
     # Save PDF
     # ----------------------------
-    return save_pdf(fig, "A047749")
+    return save_pdf(fig, "A047749", fig_dir=figures_dir)
 
 # ======================================================================
 # 4. Allow manual standalone execution
 # ======================================================================
 
 if __name__ == "__main__":
+    from figure_utils import ensure_figdir
     figures_dir = ensure_figdir()
     generate_A047749(figures_dir)

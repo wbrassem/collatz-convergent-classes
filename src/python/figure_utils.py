@@ -5,21 +5,23 @@ Utility functions for figure management:
 - ensure_figdir(): ensures the figure output directory exists
 - save_pdf(): saves a matplotlib figure to PDF and returns its path
 
-Intended for use by all figure-generation scripts in the Collatz project.
+Paths are now computed relative to the repository root.
 """
 
 # ======================================================================
 # 1. Imports
 # ======================================================================
 
-import os
+from pathlib import Path
 import matplotlib.pyplot as plt
 
 # ======================================================================
-# 2. Default figure directory
+# 2. Repository root and default figure directory
 # ======================================================================
 
-DEFAULT_FIG_DIR = os.path.join(os.path.dirname(__file__), "..", "figures")
+# Compute repo root dynamically: src/python -> src -> repo root
+REPO_ROOT = Path(__file__).resolve().parents[2]
+DEFAULT_FIG_DIR = REPO_ROOT / "figures"
 
 # ======================================================================
 # 3. Utility functions
@@ -31,15 +33,15 @@ def ensure_figdir(fig_dir=DEFAULT_FIG_DIR):
 
     Parameters
     ----------
-    fig_dir : str
+    fig_dir : Path
         Path to the desired figure directory.
 
     Returns
     -------
-    str
+    Path
         Absolute path to the ensured figure directory.
     """
-    os.makedirs(fig_dir, exist_ok=True)
+    fig_dir.mkdir(parents=True, exist_ok=True)
     return fig_dir
 
 
@@ -53,15 +55,15 @@ def save_pdf(fig, name, fig_dir=DEFAULT_FIG_DIR):
         The figure to save.
     name : str
         Base filename (without extension).
-    fig_dir : str
+    fig_dir : Path
         Directory in which to save the PDF.
 
     Returns
     -------
-    str
+    Path
         Full path to the saved PDF.
     """
-    path = os.path.join(ensure_figdir(fig_dir), f"{name}.pdf")
+    path = ensure_figdir(fig_dir) / f"{name}.pdf"
     fig.savefig(path, bbox_inches='tight')
     plt.close(fig)
     print(f"[OK] Saved {path}")

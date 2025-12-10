@@ -3,6 +3,9 @@ term_group_ratios.py
 
 Generate scatter plots of the ratio of current-to-previous group sums
 for several term lengths (10–15). Each term produces a separate figure.
+
+The data intentionally omits the first 500 points to focus on the flatter
+portions of the data sets.  Each set goes between 500 and 80,000 points.
 """
 
 # ======================================================================
@@ -12,6 +15,7 @@ for several term lengths (10–15). Each term produces a separate figure.
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+from pathlib import Path
 
 from figure_utils import ensure_figdir, save_pdf
 
@@ -29,20 +33,20 @@ mpl.rcParams.update({
 # 3. Main generator
 # ======================================================================
 
-def generate_term_group_ratios(figures_dir: str, data_dir: str) -> list[str]:
+def generate_term_group_ratios(figures_dir: Path, data_dir: Path) -> list[Path]:
     """
     Generate scatter plots for group-ratio data for terms 10–15.
 
     Parameters
     ----------
-    figures_dir : str
-        Absolute path to the /figures directory.
-    data_dir : str
-        Absolute path to the /data directory.
+    figures_dir : Path
+        Path to the /figures directory.
+    data_dir : Path
+        Path to the /data directory.
 
     Returns
     -------
-    list[str]
+    list[Path]
         List of absolute paths to the generated PDF files.
     """
 
@@ -54,12 +58,12 @@ def generate_term_group_ratios(figures_dir: str, data_dir: str) -> list[str]:
 
     # Loop over term values 10–15
     for idx, term in enumerate([10, 11, 12, 13, 14, 15]):
-        infile = f"{data_dir}/group_ratios_{term}_500.txt"
+        infile = data_dir / f"group_ratios_{term}_500.txt"
         x, y = np.loadtxt(infile, delimiter=",", unpack=True)
 
         # Apply the corresponding upper threshold
         threshold = upper_thresholds[idx]
-        exceed_mask = y > threshold
+        exceed_mask = y > threshold  # can be used for highlighting if needed
 
         # ========== Plotting ==========
         fig, ax = plt.subplots(figsize=(16, 6))
@@ -82,7 +86,7 @@ def generate_term_group_ratios(figures_dir: str, data_dir: str) -> list[str]:
         ax.grid(True, alpha=0.3)
 
         # ========== Save output ==========
-        outfile = save_pdf(fig, f"{term}_term_group_ratios")
+        outfile = save_pdf(fig, f"{term}_term_group_ratios", fig_dir=figures_dir)
         output_files.append(outfile)
 
     return output_files
@@ -92,6 +96,6 @@ def generate_term_group_ratios(figures_dir: str, data_dir: str) -> list[str]:
 # ======================================================================
 
 if __name__ == "__main__":
-    data_dir = "data"       # resolved automatically in generate_all_figures
     figures_dir = ensure_figdir()
+    data_dir = Path(__file__).parent.parent / "data"
     generate_term_group_ratios(figures_dir, data_dir)

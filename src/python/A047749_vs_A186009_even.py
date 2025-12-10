@@ -5,7 +5,6 @@ Compare the discrete even-index terms of OEIS A186009 with the
 continuous even-index representation of OEIS A047749.
 
 We plot ln(A186009[2m]) (discrete) vs ln(A047749(2m)) (continuous).
-Both sequences are convex and have no positive real roots.
 """
 
 # ======================================================================
@@ -16,8 +15,9 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from scipy.special import gamma
+from pathlib import Path
 
-from figure_utils import ensure_figdir, save_pdf
+from figure_utils import save_pdf
 
 # ======================================================================
 # 2. Configure LaTeX-style plots
@@ -33,19 +33,21 @@ mpl.rcParams.update({
 # 3. Main figure-generation function
 # ======================================================================
 
-def generate_A047749_vs_A186009_even(figures_dir: str, data_dir: str) -> str:
+def generate_A047749_vs_A186009_even(figures_dir: Path, data_dir: Path = None) -> Path:
     """
     Plot ln(A186009_even) vs ln(A047749_even_continuous).
 
     Parameters
     ----------
-    figures_dir : str
-        Absolute path to the /figures output directory.
+    figures_dir : Path
+        Path to the /figures output directory.
+    data_dir : Path, optional
+        Path to /data directory (not used here, included for consistency).
 
     Returns
     -------
-    str
-        Absolute path to the generated PDF file.
+    Path
+        Full path to the generated PDF file.
     """
 
     # ----------------------------
@@ -105,12 +107,13 @@ def generate_A047749_vs_A186009_even(figures_dir: str, data_dir: str) -> str:
     # ----------------------------
     # Save PDF
     # ----------------------------
-    return save_pdf(fig, "A047749_vs_A186009_even")
+    return save_pdf(fig, "A047749_vs_A186009_even", fig_dir=figures_dir)
 
 # ======================================================================
 # 4. Allow manual standalone execution
 # ======================================================================
 
 if __name__ == "__main__":
+    from figure_utils import ensure_figdir
     figures_dir = ensure_figdir()
     generate_A047749_vs_A186009_even(figures_dir)
