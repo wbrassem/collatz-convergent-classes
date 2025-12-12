@@ -1,0 +1,58 @@
+# ---------------------------------------------------------------------------
+# Doxyfile.in — Modernized for MathJax + HTML-only output
+# ---------------------------------------------------------------------------
+
+# Project info
+PROJECT_NAME           = "@PROJECT_NAME@"
+PROJECT_NUMBER         = "@PROJECT_VERSION@"
+
+# Input
+INPUT                  = @CMAKE_SOURCE_DIR@/src/cpp
+FILE_PATTERNS          = *.cpp *.hpp
+RECURSIVE              = YES
+
+# Output
+GENERATE_HTML          = YES
+HTML_OUTPUT            = doxygen
+GENERATE_LATEX         = NO     # Disable PDF pipeline entirely
+
+# MathJax (replaces latex + ghostscript)
+USE_MATHJAX            = YES
+MATHJAX_RELPATH        = https://cdn.jsdelivr.net/npm/mathjax@3/es5/
+MATHJAX_EXTENSIONS     =
+MATHJAX_CODEFILE       =
+
+# Source browsing
+SOURCE_BROWSER         = YES
+INLINE_SOURCES         = YES
+REFERENCED_BY_RELATION = YES
+REFERENCES_RELATION    = YES
+CALL_GRAPH             = NO
+CALLER_GRAPH           = NO
+
+# Documentation extraction
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = NO
+EXTRACT_STATIC         = YES
+EXTRACT_LOCAL_METHODS  = YES
+
+# Warnings
+WARNINGS               = YES
+WARN_IF_UNDOCUMENTED   = NO
+WARN_IF_DOC_ERROR      = YES
+
+# Diagrams
+HAVE_DOT               = YES
+CLASS_GRAPH            = YES
+CALL_GRAPH             = NO
+CALLER_GRAPH           = NO
+
+# Markdown support
+MARKDOWN_SUPPORT       = YES
+AUTOLINK_SUPPORT       = YES
+
+# Optimization
+GENERATE_TREEVIEW      = YES
+HTML_DYNAMIC_SECTIONS  = YES
+
+QUIET                  = NO
