@@ -3,18 +3,35 @@
  * @author Wayne Brassem (wbrassem@rogers.com)
  * @brief The orbit and path templates and derivatives are used to implement and space and execution speed efficient
  * way to store and retrieve Collatz orbits and convergent pathways
- * @version 1.0
- * @date 2023-04-08
+ * @version 1.1
+ * @date 2025-12-20
  * 
- * @copyright Copyright (c) 2023
+ * @copyright Copyright (c) 2023-2025 Wayne Brassem
  * 
  */
 
+#pragma once
 #include "common.hpp"
+#include "safe_arith.hpp"
+#include <bit>
 
-// Wrapper to prevent duplication if header included twice
-#if !defined path_hpp
-#define path_hpp
+/**
+ * @brief This constexpr function returns the correct orbit index based on the endianness of the host system.
+ * @details Because the orbit_key_t union uses an array of 8-bit unsigned integers to represent orbit elements
+ * the order of these elements in memory depends on the endianness of the host system.  This function abstracts
+ * away that detail by returning the correct index for accessing the orbit elements in a way that is independent
+ * of the underlying system architecture.
+ * 
+ * @param logical - The logical index (0 to 7) representing the position of the orbit element.
+ * @return size_t - The physical index adjusted for system endianness.
+ */
+constexpr size_t orbit_index(size_t logical)
+{
+    if constexpr (std::endian::native == std::endian::little)
+        return logical;
+    else
+        return 7 - logical;
+}
 
 /**
  * @brief The union orbit_key_t provides both an 8-element array of 8-bit unsigned integers and a 64-bit unsigned
@@ -140,6 +157,16 @@ template < class P >
 class t_path
 {
     public:
+        /**< Static assertion to ensure the template parameter P is an integral type or mpz_class */
+        static_assert(
+            std::is_integral<P>::value
+            #ifdef gnu_mp
+            || std::is_same<P, mpz_class>::value
+            #endif
+            ,
+            "t_path requires an integral type or mpz_class"
+        );
+
         t_path();                                       // Default constructor
 
         t_path( const P &start );                       // Integer constructor
@@ -192,10 +219,10 @@ class t_path
     
     protected:
         inline P connection( const P &terminus ) const;
-        P parse( const std::string &input ) const;
+        P parse( const std::string &input );
 
         long term( P &i ) const;
-        long factor( P &branch, const P &start ) const;
+        long factor( P &branch, const P &start );
         long set_ec( const P &start );
         long get_ec_len( const std::string &input ) const;
         bool is_signed( const std::string &input ) const;
@@ -214,6 +241,7 @@ class t_path
         int ec_len;                                                     /**< The length of the equivalence class representation. */
 
         int error_mask;                                                 /**< The bit positions are associate with error conditions. */
+        collatz_regime regime;                                          /**< The Collatz regime for this path object. */
 };
 
 /**
@@ -227,9 +255,9 @@ typedef t_path<int64_t> path;
  * @details This function is called from various prettyPrint variants defined in t_path<>.  The function is intended to support the int64_t
  * template instantiation and leverages the PRId64 macro in the format string.
  * @param [in] start - The starting integer when the path object was created.
- * @param [in] length - The number of consecutive Collatz conenction path downlegs needed to bring this integer to a smaller value.
+ * @param [in] length - The number of consecutive Collatz connection path downlegs needed to bring this integer to a smaller value.
  * @param [in] factors - The length of the equivalence class in the convergent flow - based on the starting integer and decreases.
- * @param [in] indent - Used to control the indenting of convergence classes - divergeance adds 1, convergence decreased by the factors of 2.
+ * @param [in] indent - Used to control the indenting of convergence classes - divergence adds 1, convergence decreased by the factors of 2.
  * @param [in] flow - The convergence flow whose length is initially set by the starting point and adjusts in the same way was indent does.
  * This std::string parameter is also used for printing out orbital path factors such as "0 1 1 1 3 2" for integer 79.
  * @param [in] max_digits - This is the column width of the first field and derived from the largest integer in the convergent orbit.
@@ -258,14 +286,28 @@ std::string to_str( const int64_t &remainder );
 typedef t_path<mpz_class> mp_path;
 
 /**
+ * @brief Specialization of the safe_arith struct for mpz_class type
+ * @details This specialization provides safe arithmetic operations for the mpz_class type.
+ * Since GMP handles arbitrary precision integers, the operations simply forward to the
+ * standard operators without additional overflow checks.
+ */
+template <>
+struct safe_arith<mpz_class> {
+    // GMP is arbitrarily large, so we just forward to normal operators
+    static mpz_class add(const mpz_class& a, const mpz_class& b) { return a + b; }
+    static mpz_class sub(const mpz_class& a, const mpz_class& b) { return a - b; }
+    static mpz_class mul(const mpz_class& a, const mpz_class& b) { return a * b; }
+};
+
+/**
  * @brief Multiple precision print function which all pretty print mpz_class template variants call
  * @details This function is called from various prettyPrint variants defined in t_path<>.  The function is intended to support the mpz_class
  * template instantiation.   In the case of a GNU multiple precision integer it requires the gmp_printf() extensions since the standard
  * printf() does not support mpz_class argumnts.
  * @param [in] start - The starting integer when the mp_path object was created.
- * @param [in] length - The number of consecutive Collatz conenction path downlegs needed to bring this integer to a smaller value.
+ * @param [in] length - The number of consecutive Collatz connection path downlegs needed to bring this integer to a smaller value.
  * @param [in] factors - The length of the equivalence class in the convergent flow - based on the starting integer and decreases.
- * @param [in] indent - Used to control the indenting of convergence classes - divergeance adds 1, convergence decreased by the factors of 2.
+ * @param [in] indent - Used to control the indenting of convergence classes - divergence adds 1, convergence decreased by the factors of 2.
  * @param [in] flow - The convergence flow whose length is initially set by the starting point and adjusts in the same way was indent does.
  * This std::string parameter is also used for printing out orbital path factors such as "0 1 1 1 3 2" for integer 79.
  * @param [in] max_digits - This is the column width of the first field and derived from the largest integer in the convergent orbit.
@@ -294,5 +336,3 @@ class antipath : public path
 
     protected:
 };
-
-#endif

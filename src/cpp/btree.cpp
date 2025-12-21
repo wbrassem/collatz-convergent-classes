@@ -2,10 +2,10 @@
  * @file btree.cpp
  * @author Wayne Brassem (wbrassem@rogers.com)
  * @brief Implementation of binary tree and nodes.  Used for storing Collatz convergent paths.
- * @version 0.1
- * @date 2023-04-23
+ * @version 1.1
+ * @date 2025-12-19
  * 
- * @copyright Copyright (c) 2023
+ * @copyright Copyright (c) 2023-2025 Wayne Brassem
  */
 
 #include "common.hpp"
@@ -47,7 +47,7 @@ btree::btree( const btree &tree )
 
 /**
  * @brief Destructor for the binary tree object
- * @details Recursively destroys subtrees and frees memory using the destoy_tree() function.
+ * @details Recursively destroys subtrees and frees memory using the destroy_tree() function.
  */
 btree::~btree()
 {
@@ -129,6 +129,10 @@ long btree::constReverseIterator( void (*func)( long key, long count )  ) const
  */
 btree& btree::operator=( const btree &tree )
 {
+    // Protect against self-assignment
+    if (this == &tree)
+        return *this;
+
     // First clear any existing state
     destroy_tree();
 
@@ -143,7 +147,7 @@ btree& btree::operator=( const btree &tree )
 }
 
 /**
- * @brief Inline function which returns the total number of nodes in the btree
+ * @brief Function which returns the total number of nodes in the btree
  * @return long - Return the number of nodes in the binary tree
  */
 long btree::nodes() const
@@ -230,16 +234,16 @@ node *btree::search( long key, node *leaf ) const
         if ( key == leaf->key_value )
             return leaf;
 
-        // If the serach key is less than the current search the left subtree
+        // If the search key is less than the current search the left subtree
         if ( key < leaf->key_value )
             return search ( key, leaf->left );
  
-        // If the serach key is greater than the current search the right subtree
+        // If the search key is greater than the current search the right subtree
         else
             return search ( key, leaf->right );
     }
 
-    // Otherwise the serach for the key failed and return a null pointer
+    // Otherwise the search for the key failed and return a null pointer
     else
         return nullptr;
 }
@@ -269,8 +273,10 @@ long btree::traverse( node *node, long &sum, void (*func)( const long key, long 
         if ( func )
         {
             (*func)( node->key_value, node->count );
-            sum += node->count;
         }
+
+        // Add the node count to the sum
+        sum += node->count;
 
         // Traverse the right or left subtree depending on the forward direction setting
         if ( forward )
@@ -292,7 +298,7 @@ long btree::traverse( node *node, long &sum, void (*func)( const long key, long 
  */
 node* btree::duplicate( node *nptr )
 {
-    // Cheack for leaf nodes
+    // Check for leaf nodes
     if ( nptr == nullptr )
         return nullptr;
 
@@ -311,7 +317,7 @@ node* btree::duplicate( node *nptr )
 /**
  * @brief Destroys current node and subtending nodes
  * @details This function can be used to destroy any subtree of a binary tree.  If called using the root node as
- * the starting point it will destory the entire tree.  The function recursively calls for the destruction of the
+ * the starting point it will destroy the entire tree.  The function recursively calls for the destruction of the
  * left and right subtrees and upon return frees the current node.
  * @param [in] leaf - The current node (and subtree) freed.
  */
@@ -320,7 +326,7 @@ void btree::destroy_tree( node *leaf )
     // If the current node is not null then destruction is required
     if( leaf != nullptr )
     {
-        // Prior to destroyng the current node recursively destroy left and right subtrees
+        // Prior to destroying the current node recursively destroy left and right subtrees
         destroy_tree(leaf->left);
         destroy_tree(leaf->right);
 

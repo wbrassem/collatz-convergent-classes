@@ -4,17 +4,14 @@
  * @brief Class definitions for selected OEIS https://oeis.org sequences.
  * The main goal of this set of classes is to provide a library of Collatz conjecture related integer sequence class objects and classes
  * common to and derived from them.  Where possible derived class names correspond to the identifiers of the OEIS sequences.
- * @version 1.0
- * @date 2023-04-08
+ * @version 1.1
+ * @date 2025-12-18
  * 
- * @copyright Copyright (c) 2023
+ * @copyright Copyright (c) 2023-2025 Wayne Brassem
  */
 
+#pragma once
 #include "common.hpp"
-
-// Wrapper to prevent duplication if header included twice
-#if !defined oeis_hpp
-#define oeis_hpp
 
 // The ability to compile the classes which implement the following OEIS sequences rely on GNU multiple precision libraries
 #ifdef gnu_mp
@@ -22,11 +19,16 @@
 /**
  * @brief Virtual base class definition for selected https://oeis.org sequences.
  * @details Note that there is no public constructor defined, so this class must be inherited.
+ * It provides core functionality for OEIS integer sequences:
+ * - Tracking sequence index and offset
+ * - Current term (mpz_class for arbitrary precision)
+ * - Increment/decrement operators
+ * - Random access operator[] (O(n) for terms beyond current)
  */
 class OEIS_base
 {
     public:
-        // Return class members
+        // Accessor member functions
 
         /**
          * @brief All OEIS sequences should have an offset defined.
@@ -54,6 +56,11 @@ class OEIS_base
          */
         inline const mpz_class& operator()() const { return term(); };
 
+        // --- Random access (O(n) cost!) ---
+        /**
+         * @brief Compute and return sequence term for 32-bit and mpz_class indices.
+         * @note This is O(n) and reinitializes the sequence. Best used sparingly.
+         */
         const mpz_class& operator[]( const int32_t index );                 // Index operation - calculates and returns term for a given index
         const mpz_class& operator[]( const mpz_class& index );              // Index operation - calculates and returns term for a given index
 
@@ -72,7 +79,9 @@ class OEIS_base
 
     protected:
         OEIS_base();                                                        // Default constructor is protected so this class must be inherited
-        OEIS_base( int32_t offset, int32_t index, int32_t term );           // Paramterized constructor allows derived class to vary from defaults
+
+        // Paramterized constructor allows derived class to vary from defaults
+        explicit OEIS_base(int32_t offset, int32_t index = 0, int32_t term = 1);
 
         // Virtual init() function which is used to specify initialization of base class variables
         virtual void init( int32_t offset, int32_t index, int32_t term );
@@ -84,8 +93,7 @@ class OEIS_base
 
 // User defined type on the right so this is a non-member function
 // This is defined for the base class so that all derived classes can benefit
-std::ostream& operator<<( std::ostream& os, OEIS_base oeis );
-
+std::ostream& operator<<(std::ostream& os, const OEIS_base& oeis);
 
 /**
  * @brief Class definition for https://oeis.org/A000079.
@@ -100,10 +108,11 @@ class A000079 : public OEIS_base
          */
         A000079();                                                          // Default constructor positions at first term in sequence
         A000079( int32_t index );                                           // Parameterized constructor positions at index term in sequence
+        A000079( const mpz_class& index );                                  // Parameterized constructor positions at index term in sequence
 
         // Increment and decrement operators
-        virtual const mpz_class& operator++();                              // Prefix increment
-        virtual const mpz_class& operator--();                              // Prefix decrement
+        virtual const mpz_class& operator++() override;                     // Prefix increment
+        virtual const mpz_class& operator--() override;                     // Prefix decrement
 
         /**
          * @brief Postfix increment to the next value in the sequence OEIS A000079.
@@ -205,7 +214,12 @@ class A020914 : public OEIS_base
  * @details Returns \b a(n) for the series OEIS A056576 where:
  * \f[ a(n) = \lfloor \log_2( 3^n ); n \in \mathbf{N_0} \f]
  * which is the \e highest \e k with: \f[ 2^k \le 3^n; k,n \in \mathbf{N_0} \f]
- * This result is equivalent to A020914(n) -1.
+ * 
+ * @note This sequence is directly derived from A020914 (number of digits in 3^n base 2),
+ * and in fact: \f[ A056576(n) = A020914(n) - 1 \f].
+ * Therefore it reuses the increment/decrement logic of A020914 but shifts the starting term
+ * so that the first term (n=0) is 0 instead of 1. This makes multilevel inheritance both
+ * efficient and conceptually consistent.
  */
 class A056576 : public A020914
 {
@@ -525,15 +539,29 @@ class A186009 : public OEIS_base
  * which is guaranteed to converge to a smaller positive integer value for all orbits up to length A020914(n).  As expected, the longer the orbit,
  * the greater the portion of positive integers that will converge to a smaller positive integer and thus become part of \b C(n).
  * 
+ * @note The fraction C(n) is intentionally stored unreduced. Maintaining a
+ *       common power-of-two denominator allows exact, incremental updates
+ *       without recomputation or loss of precision.
+ * 
  * The novel convergence factor \b N(n) can be expressed rather tersely in terms of other OEIS sequences. \b N(n) begins at n=0.  The A186009(n)
  * series adds one to the index because this series starts at n=1, not 0:
  * 
+ * @invariant For all n ≥ 0:
+ *   0 ≤ numerator ≤ denominator
+ *
+ * @invariant The ratio C(n) = numerator / denominator is monotonically increasing.
+ *
+ * @invariant The denominator is always an exact power of 2.
+ *
+ * @note No floating point arithmetic is used. All quantities are computed exactly
+ *       using integer arithmetic and OEIS-defined structural recurrences.
+ *
  * \f[ N(n) = \frac{ A186009( n + 1 ) }{ A000079( A020914( n ) ) }; n \in \mathbf{N_0}; N(n) \in \mathbf{Q} \f]
  * 
  * The first two terms are simple enough:
  * 
- * \f[ N(0) = \frac{A186009(1)}{A000079( A020814(0))} = \frac{1}{2^1} = \frac{1}{2}; n = 0 \f]
- * \f[ N(1) = \frac{A186009(2)}{A000079( A020814(1))} = \frac{1}{2^2} = \frac{1}{4}; n = 1 \f]
+ * \f[ N(0) = \frac{A186009(1)}{A000079( A020914(0))} = \frac{1}{2^1} = \frac{1}{2}; n = 0 \f]
+ * \f[ N(1) = \frac{A186009(2)}{A000079( A020914(1))} = \frac{1}{2^2} = \frac{1}{4}; n = 1 \f]
  * 
  * Beyond n=1, it is helpful to expand the expression in order to compute the \b N(n) series elements.  Note that there are some indexing
  * hurdles to overcome here as a result of the fact that different OEIS series have different starting offsets - and the fact that some series
@@ -571,6 +599,7 @@ class A186009 : public OEIS_base
  * 
  * \f[ \lim_{n \to \infty} C(n) = 1 \f]
  * 
+ * If true, this implies that for every positive integer there exists a finite orbit segment which maps it to a strictly smaller value.
  * Meaning that all integers eventually converge to a smaller value than where it started as the orbit length goes to infinity.
  * Then, by chaining together these sequences into convergent segments it is inevitable that starting with any positive integer
  * that the sequence will always converge to 1.
@@ -591,13 +620,13 @@ class Cumulative : public OEIS_base
 
         /**
          * @brief Return the denominator of the cumulative fraction as a multiple precision integer.
-         * @return const mpz_class& - Returns the denominator term as a const reference to a multiple precision integer.
+         * @return const mpz_class& - Returns the denominator term without advancing the sequence.
          */
         inline const mpz_class& denominator() const { return a000079(); };
 
         /**
          * @brief Return numerator of \b N(n), which is the incremental component
-         * @return const mpz_class& - Returns the numerator of the novel component as a const reference to a multiple precision integer.
+         * @return const mpz_class& - Returns the numerator of the novel component without advancing the sequence.
          */
         inline const mpz_class& novel() const { return a186009(); };
 
@@ -640,5 +669,3 @@ class Cumulative : public OEIS_base
 };
 
 #endif      // #ifdef gnu_mp
-
-#endif      // #if !defined oeis_hpp

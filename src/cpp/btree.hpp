@@ -3,15 +3,14 @@
  * @author Wayne Brassem (wbrassem@rogers.com)
  * @brief As the name implies the btree and node classes and templates implement a binary tree.  This structure is used
  * to efficiently search and store Collatz related objects like convergent pathways.
- * @version 0.1
- * @date 2023-04-23
+ * @version 1.1
+ * @date 2025-12-19
  * 
- * @copyright Copyright (c) 2023
+ * @copyright Copyright (c) 2023-2025 Wayne Brassem
  */
 
-// Wrapper to prevent duplication if header included twice
-#if !defined btree_hpp
-#define btree_hpp
+#pragma once
+#include "common.hpp"
 
 /**
  * @brief The node struct definition for use in btree implementation
@@ -50,8 +49,8 @@ class btree
         // Assignment operator
         btree& operator=( const btree &tree );          // Assignment operator
 
-        inline long nodes() const;                      // Return number of nodes in btree
-        inline void destroy_tree();                     // Destroys tree and free memory
+        long nodes() const;                             // Return number of nodes in btree
+        void destroy_tree();                            // Destroys tree and free memory
 
     protected:
         // Insert a node or increment existing one
@@ -95,6 +94,7 @@ struct t_node
  * @brief Construct a new templated t_node< K > object for use in a t_btree< K > binary tree
  * @details Set all initial values to 0 and pointers to subtended nodes to nullptr.
  * @tparam K - Ordinal type K - must support <, > and == comparison operations.
+ * The key_value member is default initialized.
  */
 template < class K >
 t_node< K >::t_node()
@@ -128,8 +128,8 @@ class t_btree
         // Block default shallow copy assignment operator
         t_btree< K >& operator=( const t_btree< K > &tree );
 
-        inline long nodes();
-        inline void destroy_tree();
+        long nodes() const;                             // Return number of nodes in btree
+        void destroy_tree();                            // Destroys tree and free memory
 
     protected:
         // Insert a node or increment existing one
@@ -143,7 +143,7 @@ class t_btree
 
         t_node< K > *duplicate( t_node< K > *nptr );    // Clone a tree and subtree given a starting point
 
-        void destroy_tree( t_node< K > *leaf );         // Destroy the tree and subtrer given a starting point
+        void destroy_tree( t_node< K > *leaf );         // Destroy the tree and subtree given a starting point
         void zeroize();
 
         t_node< K > *root;                              /**< Pointer to the root node or nullptr if empty tree. */
@@ -183,7 +183,7 @@ t_btree< K >::t_btree( const t_btree< K > &tree)
 
 /**
  * @brief Destructor for the binary t_btree< K > object
- * @details Recursively destroys subtrees and frees memory using the destoy_tree() function.
+ * @details Recursively destroys subtrees and frees memory using the destroy_tree() function.
  * @tparam K - Ordinal type K - must support <, > and == comparison operations.
  */
 template < class K >
@@ -212,7 +212,7 @@ void t_btree< K >::insert( const K &key )
         root->key_value = key;
 
         root->count = 1;
-        node_count++;
+        node_count = 1;
     } 
 }
 
@@ -277,6 +277,10 @@ long t_btree< K >::constReverseIterator( void (*func)( const K &key, long count 
 template < class K >
 t_btree< K >& t_btree< K >::operator=( const t_btree< K > &tree )
 {
+    // Protect against self-assignment
+    if (this == &tree)
+        return *this;
+
     // First clear any existing state
     destroy_tree();
 
@@ -291,12 +295,12 @@ t_btree< K >& t_btree< K >::operator=( const t_btree< K > &tree )
 }
 
 /**
- * @brief Inline function which returns the total number of nodes in the t_btree< K >
+ * @brief Fnction which returns the total number of nodes in the t_btree< K >
  * @tparam K - Ordinal type K - must support <, > and == comparison operations.
  * @return long - Return the number of nodes in the binary tree
  */
 template < class K >
-long t_btree< K >::nodes()
+long t_btree< K >::nodes() const
 {
     return node_count;
 }
@@ -328,7 +332,7 @@ void t_btree< K >::destroy_tree()
 template < class K >
 void t_btree< K >::insert( const K &key, t_node< K > *leaf )
 {
-    // If the jey is found increment the frequency
+    // If the key is found increment the frequency
     if ( key == leaf->key_value )
         leaf->count++;
 
@@ -386,16 +390,16 @@ t_node< K > *t_btree< K >::search( const K &key, t_node< K > *leaf ) const
         if ( key == leaf->key_value )
             return leaf;
 
-        // If the serach key is less than the current search the left subtree
+        // If the search key is less than the current search the left subtree
         if ( key < leaf->key_value )
             return search ( key, leaf->left );
 
-        // If the serach key is greater than the current search the right subtree
+        // If the search key is greater than the current search the right subtree
         else
             return search ( key, leaf->right );
     }
 
-    // Otherwise the serach for the key failed and return a null pointer
+    // Otherwise the search for the key failed and return a null pointer
     else
         return nullptr;
 }
@@ -454,7 +458,7 @@ long t_btree< K >::traverse( t_node< K > *node, long &sum, void (*func)( const K
 template < class K >
 t_node< K >* t_btree< K >::duplicate( t_node< K > *nptr )
 {
-    // Cheack for leaf nodes
+    // Check for leaf nodes
     if ( nptr == nullptr )
         return nullptr;
 
@@ -473,7 +477,7 @@ t_node< K >* t_btree< K >::duplicate( t_node< K > *nptr )
 /**
  * @brief Destroys current node and subtending nodes
  * @details This function can be used to destroy any subtree of a binary tree.  If called using the root t_node< K > as
- * the starting point it will destory the entire t_btree< K >.  The function recursively calls for the destruction of the
+ * the starting point it will destroy the entire t_btree< K >.  The function recursively calls for the destruction of the
  * left and right subtrees and upon return frees the current node.
  * @tparam K - Ordinal type K - must support <, > and == comparison operations.
  * @param [in] leaf - The current node (and subtree) freed.
@@ -484,7 +488,7 @@ void t_btree< K >::destroy_tree( t_node< K > *leaf )
     // If the current node is not null then destruction is required
     if ( leaf != nullptr )
     {
-        // Prior to destroyng the current node recursively destroy left and right subtrees
+        // Prior to destroying the current node recursively destroy left and right subtrees
         destroy_tree( leaf->left );
         destroy_tree( leaf->right );
 
@@ -503,5 +507,3 @@ void t_btree< K >::zeroize()
     root = nullptr;
     node_count = 0;
 }
-
-#endif      // #if !defined btree_hpp

@@ -1,0 +1,5 @@
+{
+    "cmake.configureSettings": {
+        "CMAKE_CXX_STANDARD": "20"
+    }
+}

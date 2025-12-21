@@ -2,10 +2,10 @@
  * @file oeis.cpp
  * @author Wayne Brassem (wbrassem@rogers.com)
  * @brief Class implementations for selected OEIS https://oeis.org sequences.
- * @version 1.0
- * @date 2023-04-08
+ * @version 1.1
+ * @date 2025-12-18
  * 
- * @copyright Copyright (c) 2023
+ * @copyright Copyright (c) 2023-2025 Wayne Brassem
  */
 
 // This include brings in the basic definitions
@@ -191,7 +191,7 @@ void OEIS_base::init( int32_t offset, int32_t index, int32_t term )
  * @param oeis [in] - A derived class from the OEIS base class
  * @return std::ostream& - Reference to ostream object
  */
-std::ostream& operator<<( std::ostream& os, OEIS_base oeis )
+std::ostream& operator<<(std::ostream& os, const OEIS_base& oeis)
 {
     // write obj to stream
     return os << oeis.term();
@@ -199,13 +199,17 @@ std::ostream& operator<<( std::ostream& os, OEIS_base oeis )
 
 
 // Implementation of A000079 OEIS sequences, a(n) = 2^n
+// Invariant: oeis_term == 2^(oeis_index)
 // A000079 public member functions
 
 /**
  * @brief Default constructor for a new A000079::A000079 object.
  * @details Default constructor initializes to the first term in the sequence where n=0.
  */
-A000079::A000079() {}
+A000079::A000079()
+{
+    init(0, 0, 1);   // a(0) = 1
+}
 
 /**
  * @brief Parameterized constructor for a new A000079::A000079 object.
@@ -213,6 +217,17 @@ A000079::A000079() {}
  * @param [in] index - The term to position the sequence on.
  */
 A000079::A000079( int32_t index )
+{
+    // Position at index term in sequence
+    operator[]( index );
+}
+
+/**
+ * @brief Parameterized constructor for a new A000079::A000079 object.
+ * @details Parameterized constructor initializes the sequence to where n=index.
+ * @param [in] index - The term to position the sequence on.
+ */
+A000079::A000079( const mpz_class& index )
 {
     // Position at index term in sequence
     operator[]( index );
@@ -238,7 +253,7 @@ const mpz_class& A000079::operator++()
 const mpz_class& A000079::operator--()
 {
     // Make sure you don't decrement the index beyond the offset
-    if ( oeis_index > oeis_offset )
+    if (oeis_index > oeis_offset && oeis_term > 1)
     {
         // Decrement the index
         --oeis_index;
@@ -300,7 +315,7 @@ const mpz_class& A002379::operator++()
 const mpz_class& A002379::operator--()
 {
     // Make sure you don't decrement the index beyond the offset
-    if ( oeis_index > oeis_offset )
+    if ( oeis_index > oeis_offset && oeis_index > 0)
     {
         // Decrement the index
         --oeis_index;
@@ -448,8 +463,9 @@ A020914::A020914( int32_t offset, int32_t index, int32_t term ) : OEIS_base( off
  */
 void A020914::init_local()
 {
-    // Initialize A020914 specific variables
-    twos = 2, threes = 1;                   // Representing the starting condition of 2^1 and 3^0
+    // Initialize A020914 specific variables, representing the starting condition of 2^1 and 3^0
+    twos = 2;
+    threes = 1;
 }
 
 
@@ -641,7 +657,12 @@ const mpz_class& A098294::operator++()
     mpz_class flat = threes / twos;
     mpz_class factors = 0;
 
-    // Loop until there is nothing left
+    // Compute a(n) = ceil(n * log2(3/2)) using only integer arithmetic.
+    // twos  = cumulative power of 2
+    // threes = cumulative power of 3
+    // flat = threes / twos → integer division automatically gives floor(3^n / 2^n)
+    // Counting the number of divisions by 2 of flat yields ceil(n*log2(3/2)) exactly.
+    // This avoids floating point and works efficiently with arbitrary precision integers.
     while( flat != 0 )
     {
         flat /= 2;
@@ -910,7 +931,7 @@ A186009::A186009( int32_t index ) : OEIS_base( 1, 1, 1 )
  */
 const mpz_class& A186009::operator++()
 {
-    // Artificially prepend an extra value of 1 in front of A1000982(n)
+    // Artificially prepend an extra value of 1 in front of A100982(n)
     if ( oeis_index++ == oeis_offset )
         return oeis_term;
 
@@ -918,7 +939,7 @@ const mpz_class& A186009::operator++()
     ++a100982;
 
     // Assign and return sequence value to term
-    return oeis_term = a100982();;
+    return oeis_term = a100982();
 }
 
 /**
@@ -1003,12 +1024,14 @@ const mpz_class& Cumulative::operator++()
     // Save the last denominator and go to the next one
     mpz_class last_denom = a000079++;
 
-    // Increment again if needed - if the sequence is a 1 then already done, if it is a 2 then go to next term
+    // A022921 indicates whether A020914 increased by 1 or 2.
+    // A value of 2 means the denominator gains an extra factor of 2.
     if ( a022921++ == 2 )
         ++a000079;
 
-    // Adjust the numerator based on the number of factors of two the denominator grew
-    oeis_term *= denominator() / last_denom;
+    // Scale numerator to match the new power-of-two denominator
+    mpz_class scale = denominator() / last_denom;
+    oeis_term *= scale;
 
     // Return the numerator with the residue added in
     return ( oeis_term += ++a186009 );
@@ -1034,11 +1057,12 @@ const mpz_class& Cumulative::operator--()
         if ( --a022921 == 2 )
             --a000079;
 
-        // Remove the residue from the numerator
+        // Remove the incremental contribution
         oeis_term -= a186009--;
 
-        // Adjust the numerator based on the number of factors of two the denominator contracted
-        oeis_term /= last_denom / denominator();
+        // Contract numerator to match the reduced power-of-two denominator
+        mpz_class scale = last_denom / denominator();
+        oeis_term /= scale;
     }
 
     // Return the term value
@@ -1065,7 +1089,7 @@ void Cumulative::init()
 void Cumulative::init_local()
 {
     // Initialize Cumulative specific variables
-    a000079[2];             // A020914(0) = 1, thus A000079( A020914(0) ) = 2, so initialize A000079 series at term 2 (2^1)
+    a000079[2];             // A020914(0) = 1, thus A000079( A020914(0) ) = 2, so initialize A000079 series at term 2 (2^1) without advancing
     a022921.init();         // A022921 is the first differences of A020914 - techincally either could work in this call implementation
     a186009.init();         // Collatz residues which are added or subtracted from the rational on increment or decrement as required
 }

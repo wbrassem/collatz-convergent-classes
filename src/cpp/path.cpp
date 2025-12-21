@@ -4,15 +4,16 @@
  * @brief Implementation of the orbit templated path object.  The path object is used to probe the integer convergence patterns.
  * The path objects record the equivalence class and convergent path information.
  * The underlying orbit data structure is a union which allows for faster comparison than simple character representation
- * @version 0.1
- * @date 2023-05-29
+ * @version 1.1
+ * @date 2025-12-20
  * 
- * @copyright Copyright (c) 2023
+ * @copyright Copyright (c) 2023-2025 Wayne Brassem
  */
 
 
 // This include brings in the basic definitions
 #include "path.hpp"
+#include <stdexcept>
 
 
 // orbit_node_t implementations
@@ -223,7 +224,7 @@ std::string orbit_t::path() const
         }
 
         // Append an integer to the path representing the number of divisor factors, then add a space as a separator
-        path_str += std::to_string( curr->key.c_key[sizeof( orbit_key_t ) - pos - 1] ) + ' ';
+        path_str += std::to_string(curr->key.c_key[orbit_index(pos)]) + ' ';
     }
 
     // remove the trailing space
@@ -241,6 +242,11 @@ std::string orbit_t::path() const
  */
 void orbit_t::append( const long divisors )
 {
+    // Ensure that the number of divisors fits in an 8-bit unsigned integer
+    if (divisors < 0 || divisors > 255) {
+        throw std::logic_error("Divisors exceed 8-bit bounds; adjust integer type.");
+    }
+
     // Calculate the position within the orbit to append the divisors
     long pos = path_length % sizeof( orbit_key_t );
 
@@ -261,8 +267,8 @@ void orbit_t::append( const long divisors )
         }
     }
 
-    // Insert path elements starting from the highest byte order position so that integer comparison operations work normally
-    curr->key.c_key[ sizeof( uint64_t ) - pos - 1] = divisors;
+    // Store the divisors at the correct physical index depending on endianness
+    curr->key.c_key[orbit_index(pos)] = static_cast<uint8_t>(divisors);
 
     // Increment the path length
     path_length++;
@@ -1197,10 +1203,9 @@ void t_path< P >::prettyPrintPath( int max_digits ) const
 template < class P >
 P t_path< P >::connection( const P &terminus ) const
 {
-    return terminus * statics::multiplier + statics::addend;
+    return safe_arith<P>::sub(terminus, start_int); // always safe
 }
 
-// This should probably be reimplemented so that is properly handles multiple precision to handle large EC
 /**
  * @brief Parse the equivalence class string representation
  * @details The program accept equivalence class input string and this parses them to find the leading integer of the class.  The class
@@ -1210,7 +1215,7 @@ P t_path< P >::connection( const P &terminus ) const
  * @return P - Returns the integer value computed - or 0 if there was an erro during parsing.
  */
 template < class P >
-P t_path< P >::parse( const std::string &input ) const
+P t_path< P >::parse( const std::string &input )
 {
     long pos = 0;                   // Position in the string
     long eq_sign = 1;               // Presume positive equivalence class
@@ -1234,37 +1239,36 @@ P t_path< P >::parse( const std::string &input ) const
         strlen--;
     }
 
+    // If there are no characters left after optional sign processing return error
+    if ( strlen == 0 )
+        return 0;
+
     // Make sure the first character is '0' through '5'
     // Note that this kind of limits this to the standard 3n + 1 and could be more generic with effort
     if ( ch < '0' || ch > '5' )
         return 0;
 
     // Otherwise the first character is indeed valid so "convert" to character to integer
-    P local = ch - '0';
-
-    P multiplier = statics::multiplier * statics::divisor;
-    bool rollover = false;
+    P local = static_cast<P>(ch - '0');
+    P multiplier = static_cast<P>(statics::multiplier * statics::divisor);
 
     // Consume all digits in the equivalence class representation
     while ( --strlen > 0 )
     {
-        // First check for integer rollover which really only matters if you need to actually add it
-        if ( abs( multiplier * 2 ) < multiplier )
-            rollover = true;
-
+        // Grab the next character
         ch = input[pos++];
 
         // Only non-zero partition components contribute to terminus
         if (ch == '1')
         {
-            // Okay well now it matters - you actually have to add in a value which causes integer rollover
-            if ( rollover )
+            try { local = safe_arith<P>::add( local, multiplier ); }
+            catch ( const std::overflow_error& )
+            {
+                error_mask |= statics::overflow;
                 return 0;
-
-            // Otherwise it's safe
-            else
-                local += multiplier;
+            }
         }
+
         // Error condition terminates parsing
         else if (ch != '0')
         {
@@ -1272,11 +1276,21 @@ P t_path< P >::parse( const std::string &input ) const
         }
 
         // Double the multiplier for the more significant digit
-        multiplier *= 2;
+        try { multiplier = safe_arith<P>::mul( multiplier, 2 ); }
+        catch ( const std::overflow_error& )
+        {
+            error_mask |= statics::overflow;
+            return 0;
+        }
     }
     
-    // Does this multiplication handle to zero case?
-    return local * eq_sign;
+    // Execute the final sign application and return
+    try { return safe_arith<P>::mul( local, static_cast<P>( eq_sign ) ); }
+    catch ( const std::overflow_error& )
+    {
+        error_mask |= statics::overflow;
+        return 0;
+    }
 }
 
 /**
@@ -1314,9 +1328,18 @@ long t_path< P >::term( P &i ) const
  * @return long - The number of divisor factors removed.
  */
 template < class P >
-long t_path< P >::factor( P &branch, const P &start ) const
+long t_path< P >::factor( P &branch, const P &start )
 {
     long facts = 0;         // Divisor factor counter
+
+    // Guard against the degenerate case branch == 0.
+    // In valid Collatz evolution this cannot occur: branch is always a positive
+    // even integer produced by a 3n+1 expansion.  If a non-Collatz starting point
+    // of zero is supplied, division by 2 would never terminate.
+    if ( branch == 0 )
+    {
+        return 0;
+    }
 
     // Loop until you're eaten up all the factors of the divisor
     while ( branch % statics::divisor == 0 )
@@ -1326,7 +1349,7 @@ long t_path< P >::factor( P &branch, const P &start ) const
         facts++;
 
         // Exit early if you converge
-        if ( abs( branch )  < abs( start ) )
+        if ( (branch >= 0 ? branch : -branch) < (start >= 0 ? start : -start) )
         {
             break;
         }
@@ -1411,6 +1434,14 @@ void t_path< P >::init( P start )
     // Initialize to the new starting value
     start_int = start;
     int_sign = sgn( start );
+
+    // Set the collatz regime
+    if (start == 0)
+        regime = collatz_regime::zero;
+    else if (start < 0)
+        regime = collatz_regime::negative;
+    else
+        regime = collatz_regime::positive;
 }
 
 /**

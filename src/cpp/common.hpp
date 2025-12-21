@@ -35,10 +35,10 @@
  * - `#include <gmp.h>          // C   header file`
  * - `#include <gmpxx.h>        // C++ header file (which in turn calls C header file <gmp.h>)`
  *  
- * @version 0.1
- * @date 2023-04-23
+ * @version 1.0
+ * @date 2025-12-20
  * 
- * @copyright Copyright (c) 2023
+ * @copyright Copyright (c) 2023-2025 Wayne Brassem
  * 
  */
 
@@ -53,6 +53,11 @@
 #include <stdlib.h>         // For the exit() function
 #include <time.h>           // Used for timing execution of program components
 #include <vector>           // Vector class definitions
+
+/** This static_assert ensures C++20 or later is used for bit.h and std::endian */
+static_assert(__cplusplus >= 202002L,
+              "This project requires C++20 or later (for <bit> and std::endian)");
+
 
 // Below is compiler directive switch used to control whether or not you wish to compile with GNU multiple precision or not
 
@@ -123,6 +128,13 @@ class statics
         // Print control values
         static int count;                               /**< Number of digits in base 10 representation */
         static int width;                               /**< Print width control, currently not used */
+};
+
+/** @brief Enumerated type for the three Collatz integer space regimes */
+enum class collatz_regime : uint8_t {
+    positive,      // classical Collatz
+    zero,          // absorbing fixed point
+    negative       // anti-Collatz dynamics
 };
 
 // Global typdefs and constants
