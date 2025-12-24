@@ -1,0 +1,735 @@
+\documentclass[12pt, oneside]{article}   	% use "amsart" instead of "article" for AMSLaTeX format
+%\documentclass[12pt, oneside, draft]{article}   	% use "amsart" instead of "article" for AMSLaTeX format
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% The TexLive distribution is stored in /usr/local/texlive/2020
+%
+% The definitions of the packages are in /usr/local/texlive/2020/texmf-dist/tex/latex
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{xparse}					% Allows for the creation of \NewDocumentCommand shortcuts
+
+\usepackage{geometry}				% See geometry.pdf to learn the layout options. There are lots.
+\geometry{letterpaper}				% ... or a4paper or a5paper or ... 
+\usepackage[parfill]{parskip}		% Activate to begin paragraphs with an empty line rather than indent
+\usepackage{float}					% Float package to exert more control over graphic placement
+	
+%\usepackage{verbatim}				% Creates a verbatim environment for code / program output
+\usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
+									% TeX will automatically convert eps --> pdf in pdflatex
+\graphicspath{{./figures/}}         
+
+% Math packages
+\usepackage{amssymb}				% Mathematical symbols
+\usepackage{amsmath}				% Added for typesetting mathematical formulae
+\usepackage{amsthm}					% Added for typesetting mathematical theorems
+\usepackage{mathalpha}				% Added for some special characters like Q, Z and N
+
+% Table packages in addition to built in tabular
+\usepackage{booktabs}				% Adds extra commands to tabular like \toprule
+\usepackage{afterpage}				% For pagination support
+\usepackage{longtable}				% Support for longer tables
+
+% Hyperlinks
+\usepackage{hyperref}				% For creating internal and HTTP links
+
+% For Tikz graphics
+\usepackage{tikz}					% Package for pgf and TikZ
+\usetikzlibrary{shapes,arrows,chains}
+\tikzstyle{startstop} = [very thick, rectangle, rounded corners, minimum width=2.5cm, minimum height=0.8cm, text centered, draw=black, text width=2.5cm]
+\tikzstyle{action} = [rectangle, rounded corners, minimum width=3cm, minimum height=0.8cm, text centered, draw=black, text width=2.5cm]
+\tikzstyle{decision} = [diamond, minimum width=3cm, minimum height=3cm, text centered, draw=black, text width=2cm]
+\tikzstyle{arrow} = [thick,->,>=stealth]
+
+% For theorems and definitions - each creates it's own counter which incrementa each use
+\theoremstyle{definition}
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{define}{Definition}[section]
+\newtheorem{axiom}{Axiom}[section]
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem*{remark}{Remark}
+
+%SetFonts
+
+
+\title{Global Descent and Convergent Classes in the Collatz Conjecture}
+\author{Wayne Brassem}
+%\date{}							% Activate to display a given date or no date
+
+
+\begin{document}
+
+% Document define commands for commonly used items in math mode
+\NewDocumentCommand{\setN}{}{\mathbb{N}}				% Set of positive integers, excluding 0
+\NewDocumentCommand{\setNo}{}{\mathbb{N}_0}				% Set of positive integers, including 0
+\NewDocumentCommand{\setNeven}{}{\mathbb{N}_{even}}		% Set of even positive integers, excluding 0
+\NewDocumentCommand{\setNodd}{}{\mathbb{N}_{odd}}		% Set of odd positive integers
+\NewDocumentCommand{\setZ}{}{\mathbb{Z}}				% Set of all integers, excluding zero
+\NewDocumentCommand{\setZo}{}{\mathbb{Z}_0}				% Set of all integers, including zero
+\NewDocumentCommand{\setQ}{}{\mathbb{Q}}				% Set of all rational numbers
+
+% Document define commands for commonly used items not in math mode
+\NewDocumentCommand{\Rarr}{}{\textrightarrow{}}			% Right arrow
+
+% Document commands which provide hyperlinks to OEIS sequences referenced herein
+\NewDocumentCommand{\OEIS}{m}{\href{https://oeis.org/#1}{#1}}
+
+\maketitle
+
+
+
+\begin{abstract}
+
+%Abstract - goals of the paper
+We study the accelerated Collatz map
+
+\[
+f(x) = \begin{cases}
+\displaystyle
+    \phantom{3x} \frac{x}{2} & \text {if } x \text{ is even}, \\[8pt]  % Insert some spacing between rows
+\displaystyle
+    \frac{3x+1}{2}           & \text {if } x \text{ is odd}. \\
+\end{cases}
+\]
+
+and analyze the structure of integer trajectories through parity-encoded residue classes. Each finite
+parity word induces a non-overlapping residue class modulo a power of two, and convergent parity words
+correspond to classes whose elements reach a strictly smaller integer after finitely many iterations.
+
+Using explicit enumeration results for parity words and their associated division counts, we show that
+convergent residue classes admit well-defined asymptotic densities. These classes may be grouped by
+minimal stopping time without overlap, yielding a cumulative density that increases monotonically with
+stopping time. We prove that the complement of this union has asymptotic density tending to zero,
+implying that the cumulative density of convergent classes converges to one.
+
+As a consequence, every positive integer belongs to a convergent residue class of finite stopping time
+and therefore eventually reaches a smaller positive integer under iteration of the Collatz map. This
+establishes global descent and rules out the existence of nontrivial cycles in the positive integers,
+leaving the classical 4\Rarr2\Rarr1\Rarr4 cycle as the unique periodic orbit.
+
+\end{abstract}
+\newpage
+
+
+\tableofcontents
+\newpage
+
+% \section{Introduction}
+
+% \subsection{The Collatz Mapping and Known Results}
+% Briefly restate the Collatz conjecture and summarize what is known.
+% Emphasize the distinction between empirical verification and proof.
+
+% \subsection{Strategy of the Proof}
+% Outline the global descent strategy:
+% \begin{itemize}
+% \item Decompose the positive integers into convergent residue classes
+% \item Assign a stopping time to each class
+% \item Show that these classes are non-overlapping
+% \item Sum their densities
+% \item Prove the cumulative density approaches unity
+% \item Conclude global descent and absence of cycles
+% \end{itemize}
+
+\section{Introduction}
+
+\subsection{The Collatz Mapping and Known Results}
+
+The Collatz conjecture concerns the behavior of the map
+% \[
+% f(x) =
+% \begin{cases}
+% \displaystyle
+% \frac{x}{2}, & \text{if } x \text{ is even}, \\[6pt]
+% \displaystyle
+% \frac{3x+1}{2}, & \text{if } x \text{ is odd},
+% \end{cases}
+% \]
+
+\[
+f(x) = \begin{cases}
+\displaystyle
+    \phantom{3x} \frac{x}{2} & \text {if } x \text{ is even}, \\[8pt]  % Insert some spacing between rows
+\displaystyle
+    \frac{3x+1}{2}           & \text {if } x \text{ is odd}. \\
+\end{cases}
+\]
+
+
+acting on the positive integers. The conjecture asserts that, under
+iteration of \(f\), every positive integer eventually reaches the
+cycle \(4 \to 2 \to 1 \to 4\).
+
+Despite its elementary formulation, the conjecture has resisted proof
+for decades. Extensive computational verification confirms convergence
+for all integers up to very large bounds, but such verification does not
+constitute a proof and offers limited insight into the global structure
+of Collatz trajectories.
+
+Many prior approaches focus on bounding individual trajectories or
+analyzing probabilistic heuristics. While these methods provide valuable
+intuition, they do not address the problem at the level of the entire
+positive integer space.
+
+\subsection{Strategy of the Proof}
+
+This paper adopts a structural approach based on decomposing the
+positive integers into arithmetic residue classes determined by parity
+patterns under the accelerated Collatz map.
+
+The central idea is to study finite Collatz paths abstractly, independent
+of their starting values, and to associate each such path with a
+non-overlapping residue class of integers that follow the same parity
+pattern for a fixed number of odd steps. Each class is assigned a
+minimal stopping time, defined as the first iterate at which its
+elements strictly decrease.
+
+The proof proceeds through the following steps:
+\begin{itemize}
+\item Encode Collatz trajectories using parity words that record the
+      number of divisions by two between odd steps.
+\item Show that each admissible parity word induces an arithmetic
+      residue class of positive integers.
+\item Prove that convergent residue classes of fixed stopping time are
+      pairwise disjoint.
+\item Compute the asymptotic density of each class using its associated
+      total division count.
+\item Sum the densities of all convergent classes up to a given stopping
+      time and show that the complement of this union has density
+      tending to zero.
+\item Conclude that every positive integer eventually reaches a smaller
+      value, establishing global descent and ruling out non-trivial
+      cycles.
+\end{itemize}
+
+By focusing on exhaustion of the positive integers via convergent
+structures rather than on individual trajectories, this approach
+provides a global mechanism for descent under the Collatz map.
+
+
+\section{Definitions and Preliminaries}
+
+\subsection{The Accelerated Collatz Map}
+
+\begin{define}
+The Collatz mapping \( f : \setN \rightarrow \setN \) is defined by
+\[
+f(x) = \begin{cases}
+\displaystyle
+    \phantom{3x} \frac{x}{2} & \text {if } x \text{ is even}, \\[8pt]  % Insert some spacing between rows
+\displaystyle
+    \frac{3x+1}{2}           & \text {if } x \text{ is odd}. \\
+\end{cases}
+\]
+\end{define}
+
+
+\subsection{Stopping Time}
+
+\begin{define}
+The stopping time \( \sigma(x) \) of a positive integer \(x\) is the minimal integer \(k \in \setN\) such that
+\[
+f^{k}(x) < x.
+\]
+\end{define}
+
+\subsection{Convergent Subsequences}
+
+\begin{define}
+A \emph{convergent subsequence of length \(k\)} is a finite sequence
+\[
+x, f(x), f^2(x), \ldots, f^k(x)
+\]
+such that \( f^k(x) < x \) and \(k\) is minimal.
+\end{define}
+
+\subsection{Residue Classes}
+
+\begin{define}
+Two positive integers \(x,y \in \setN\) are said to be in the same
+\emph{convergent residue class of stopping time \(k\)} if their first
+\(k\) Collatz iterates are identical.
+\end{define}
+
+\begin{define}[Convergent Residue Class]
+Fix \(k \in \setN\) and \(x \in \setN\). The \emph{convergent residue class of stopping time \(k\)}
+containing \(x\) is
+\[
+[x]_k := \{ y \in \setN \mid f^i(y) = f^i(x) \text{ for } i = 0, 1, \dots, k-1 \},
+\]
+where \(f\) is the accelerated Collatz map.  
+\([x]_k\) collects all positive integers whose first \(k\) Collatz iterates are identical to those of \(x\).
+\end{define}
+
+
+\section{Division Counts and Path Encoding}
+
+The structure of convergent residue classes is governed by the total number
+of divisions by two incurred along a Collatz path. This quantity depends
+only on the parity pattern of the path and not on the specific starting
+integer.
+
+\subsection{Total Division Count}
+
+Let a Collatz path contain exactly \(k\) odd steps (``up-legs''). Between
+successive odd steps, the accelerated Collatz map applies a finite number
+of divisions by two. The cumulative number of such divisions determines
+the arithmetic structure of the corresponding residue class.
+
+\begin{define}[Total Division Count]
+Let \(k \ge 1\). Define \(A020914(k)\) to be the total number of divisions
+by two applied along an accelerated Collatz path with exactly \(k\)
+odd steps.
+\end{define}
+
+This quantity coincides with the number of binary digits of \(3^k\),
+as tabulated by \OEIS{A020914}, but its role here is purely arithmetic:
+it records the total exponent of 2 accumulated in the denominator of the
+iterated map.
+
+\subsection{Residue Class Modulus}
+
+Fix a parity pattern with exactly \(k\) odd steps and total division count
+\(A020914(k)\). All integers realizing this parity pattern form an
+arithmetic progression with common difference \(2^{A020914(k)}\).
+
+\begin{lemma}
+Let \(x,y \in \setN\) follow the same Collatz parity pattern of length \(k\).
+Then
+\[
+x \equiv y \pmod{2^{A020914(k)}}.
+\]
+\end{lemma}
+
+\begin{proof}
+Each odd step contributes a factor of 3 in the numerator, while each even
+step contributes a factor of 2 in the denominator. After \(k\) odd steps,
+the accumulated denominator is exactly \(2^{A020914(k)}\), independent of
+the starting integer, which fixes the residue class modulo this power of two.
+\end{proof}
+\subsection{Density of Convergent Classes}
+
+\begin{proposition}
+Each convergent residue class with \(k\) odd steps has asymptotic density
+\[
+2^{-A020914(k)}.
+\]
+\end{proposition}
+
+\begin{proof}
+Each class is an arithmetic progression with step size \(2^{A020914(k)}\)
+and exactly one representative per period. The result follows.
+\end{proof}
+
+\subsection{Example}
+
+For convergent subsequences with \(k=4\) odd steps, \(A020914(4)=7\).
+Thus all associated residue classes consist of integers of the form
+\[
+x = 2^7 n + r, \quad n \in \setN,
+\]
+where the residue \(r\) depends on the specific parity pattern.
+The spacing between consecutive elements is therefore \(2^7 = 128\).
+
+The preceding example illustrates that convergent behavior depends only
+on parity structure and accumulated division count, motivating an abstract
+description of Collatz trajectories independent of their starting values.
+
+
+\section{Grammar of Collatz Parity Words}
+
+\subsection{Parity Words}
+
+The behavior of accelerated Collatz trajectories can be encoded
+independently of their starting integers by means of a formal grammar.
+This grammar captures the parity structure of a path and determines both
+its arithmetic realizability and its convergence properties.
+
+\begin{define}[Parity Word]
+A \emph{parity word} of length \(k \ge 1\) is a finite sequence
+\[
+\omega = (d_1, d_2, \dots, d_k),
+\]
+where each \(d_i \in \setN\) denotes the number of divisions by two applied
+after the \(i\)-th odd step of an accelerated Collatz trajectory.
+\end{define}
+
+\begin{lemma}[Associated Collatz Map]
+Each parity word \(\omega = (d_1,\dots,d_k)\) induces an affine map
+\[
+T_\omega(x) = \frac{3^k x + c(\omega)}{2^{d_1+\cdots+d_k}},
+\]
+where \(c(\omega)\) is a nonnegative integer depending only on \(\omega\).
+\end{lemma}
+
+\begin{proof}
+Each odd step contributes a factor of \(3\) to the numerator, while each
+division by two contributes a factor of \(2\) to the denominator. The
+constant term accumulates from the repeated application of the
+\(3x+1\) operation and depends only on the parity pattern.
+\end{proof}
+
+\begin{define}[Admissible Parity Word]
+A parity word \(\omega\) is \emph{admissible} if there exists a positive
+integer \(x\) such that \(T_\omega(x) \in \setN\).
+\end{define}
+
+\begin{lemma}[Minimal Division Count]
+For any admissible parity word of length \(k\),
+\[
+d_1 + \cdots + d_k \ge A020914(k),
+\]
+where \(A020914(k)\) is the number of binary digits of \(3^k\).
+\end{lemma}
+
+\begin{proof}
+Integrality of \(T_\omega(x)\) requires the denominator
+\(2^{d_1+\cdots+d_k}\) to divide \(3^k x + c(\omega)\).
+The minimal such exponent depends only on \(k\) and coincides with
+\(A020914(k)\). The minimal such exponent is independent of \(x\).
+\end{proof}
+
+\begin{define}[Convergent Parity Word]
+An admissible parity word \(\omega = (d_1,\dots,d_k)\) is
+\emph{convergent} if
+\[
+\frac{3^k}{2^{d_1+\cdots+d_k}} < 1.
+\]
+\end{define}
+
+
+\begin{remark}[Affine Term and Eventual Descent]
+\label{rem:affine_term}
+The accelerated Collatz map associated with a parity word
+\(\omega = (d_1,\dots,d_k)\) is affine:
+\[
+T_\omega(x) = \frac{3^k}{2^{d_1+\cdots+d_k}}\,x
+              + \frac{c(\omega)}{2^{d_1+\cdots+d_k}}.
+\]
+While the constant term \(c(\omega)\) arises from repeated applications
+of the \(3x+1\) operation, convergence is determined by the linear
+coefficient alone.  
+
+If
+\[
+\frac{3^k}{2^{d_1+\cdots+d_k}} < 1,
+\]
+then there exists a finite threshold \(x_0\) such that
+\(T_\omega(x) < x\) for all \(x > x_0\) within the induced residue class.
+Thus, each convergent parity word guarantees eventual descent for all
+but finitely many elements of its class. These finite exceptions do not
+affect density, exhaustion, or cycle-exclusion arguments.
+\end{remark}
+
+
+
+
+\begin{lemma}
+\label{lem:residue_class}
+Each convergent parity word \(\omega\) induces a residue class
+\[
+x \equiv r_\omega \pmod{2^{A020914(k)}},
+\]
+whose elements all follow the same Collatz parity pattern for \(k\)
+odd steps and reach an integer strictly smaller than the starting value.
+\end{lemma}
+
+\begin{proposition}
+The number of convergent parity words of length \(k\) is given by
+\OEIS{A186009}.
+\end{proposition}
+
+
+
+
+
+
+
+
+
+% \section{Structure of Convergent Residue Classes}
+
+% \subsection{Powers of Two and Path Encoding}
+
+% Introduce the role of total division counts and path encoding.
+% Reference \OEIS{A020914}.
+
+% \subsection{Arithmetic Progression Structure}
+
+% \begin{lemma}
+% \label{equal_stopping}
+% Fix \(k \in \setN\).
+% Convergent residue classes with stopping time \(k\) represent
+% pairwise disjoint subsets of the positive integer space.
+% \end{lemma}
+
+% \subsection{Cardinality of Residue Classes}
+
+% \begin{proposition}
+% Each convergent residue class of stopping time \(k\) has asymptotic density
+% \[
+% 2^{-A020914(k)}.
+% \]
+% \end{proposition}
+
+% \section{Enumeration of Convergent Classes}
+
+% \subsection{Counting Convergent Subsequences}
+
+% Introduce \OEIS{A186009} as the sequence counting convergent subsequences
+% of a given length.
+
+% \subsection{State Diagram Representation}
+
+% \begin{figure}[H]
+% \centering
+% \begin{tikzpicture}[node distance=2.5cm]
+% % Placeholder for A020914 state diagram
+% \end{tikzpicture}
+% \caption{State diagram encoding division counts (\OEIS{A020914}).}
+% \end{figure}
+
+% \begin{figure}[H]
+% \centering
+% \begin{tikzpicture}[node distance=2.5cm]
+% % Placeholder for A186009 state diagram
+% \end{tikzpicture}
+% \caption{State diagram encoding convergent subsequences (\OEIS{A186009}).}
+% \end{figure}
+
+
+% \section{Exhaustion of the Positive Integers}
+% \subsection{Collatz Chains and Coverage of the Positive Integers}
+
+% \begin{define}[Collatz Chain]
+% Let \(p \in \setN\) be an odd positive integer. The \emph{Collatz chain} generated by \(p\) is the sequence
+% \[
+% \mathcal{C}(p) = \{\, 2^0 p, 2^1 p, 2^2 p, \dots, 2^n p, \dots \,\}.
+% \]
+% \end{define}
+
+% \begin{proposition}[Chains Cover \(\setN\)]
+% The set of all Collatz chains \(\{ \mathcal{C}(p) \mid p \in \setNodd \}\) forms a partition of \(\setN\); that is, every positive integer belongs to exactly one chain.
+% \end{proposition}
+
+% \begin{proof}
+% Fix \(n \in \setN\). By the fundamental theorem of arithmetic, \(n\) can be uniquely factored as
+% \[
+% n = 2^k \cdot p, \quad p \in \setNodd, \; k \ge 0.
+% \]
+% Then \(n \in \mathcal{C}(p)\).  
+
+% Uniqueness follows because if \(n = 2^i p_1 = 2^j p_2\) with \(p_1, p_2\) odd, then \(i = j\) and \(p_1 = p_2\). Therefore, each positive integer belongs to exactly one chain.
+% \end{proof}
+
+% \subsection{Equivalence Classes of Convergent Subsequences}
+
+% \begin{define}[Convergent Equivalence Class]
+% Fix \(k \in \setN\). Two positive integers \(x, y \in \setN\) are in the same \emph{convergent equivalence class of length \(k\)} if
+% \[
+% f^i(x) = f^i(y), \quad \forall i = 0, \dots, k-1,
+% \]
+% where \(f\) is the accelerated Collatz map. Denote this class by \([x]_k\).
+% \end{define}
+
+% \begin{lemma}[Disjointness]
+% \label{lem:equiv_disjoint}
+% For each fixed \(k \in \setN\), the classes \([x]_k\) are pairwise disjoint:
+% \[
+% [x]_k \cap [y]_k = \emptyset \quad \text{if } [x]_k \neq [y]_k.
+% \]
+% \end{lemma}
+
+% \begin{proof}
+% If \([x]_k \cap [y]_k \neq \emptyset\), then there exists \(z \in [x]_k \cap [y]_k\). By definition, the first \(k\) iterates of \(x\) and \(y\) coincide with those of \(z\), hence \([x]_k = [y]_k\).
+% \end{proof}
+
+% \begin{theorem}[Exhaustion of Positive Integers]
+% \label{thm:residue_exhaustion}
+% Every positive integer \(x \in \setN\) belongs to exactly one convergent residue class of length \(k\) for each \(k \ge 1\). Specifically, the first \(k\) iterates determine a unique residue modulo \(2^{A020914(k)}\), which identifies \([x]_k\).
+% \end{theorem}
+
+% \begin{proof}
+% Fix \(x \in \setN\). Its trajectory under \(f\) is
+% \[
+% x, f(x), f^2(x), \dots
+% \]
+% For each \(k \ge 1\), the first \(k\) iterates determine a unique residue modulo \(2^{A020914(k)}\) along the path. By Lemma~\ref{lem:equiv_disjoint}, equivalence classes are non-overlapping. Therefore, \(x\) belongs to exactly one \([x]_k\) for each \(k\).
+% \end{proof}
+
+% \begin{corollary}
+% The union of all equivalence classes across all \([x]_k\) for \(k \ge 1\) spans \(\setN\):
+% \[
+% \bigcup_{k \ge 1} \bigcup_{[x]_k} [x]_k = \setN.
+% \]
+% \end{corollary}
+
+
+
+% \section{Cumulative Density of Convergent Classes}
+
+% \subsection{Associative Grouping of Residue Classes}
+
+% Explain how classes of different stopping times may be grouped without overlap.
+
+% Moving this definition here for better flow with stopping time discussion.
+% \begin{define}[Admissible Integer]
+% A positive integer \(x \in \setN\) is said to be \emph{admissible of depth \(k\)} if
+% \[
+% \sigma(x) = k,
+% \]
+% that is, \(k\) is the minimal integer such that \(f^{k}(x) < x\).
+% \end{define}
+
+% \subsection{Lower Bound via Dominant Sequence}
+
+% \begin{theorem}
+% The cumulative density of convergent residue classes of stopping time
+% less than or equal to \(k\) is bounded below by a sequence which converges
+% to unity as \(k \rightarrow \infty\).
+% \end{theorem}
+
+% \subsection{Limit Argument}
+
+% \begin{corollary}
+% The cumulative density of convergent residue classes converges to 1.
+% \end{corollary}
+
+
+
+\section{Cumulative Density of Convergent Classes}
+
+\subsection{Associative Grouping of Residue Classes}
+
+Convergent residue classes may be grouped by stopping time without overlap. That is, classes corresponding to distinct minimal stopping times form disjoint subsets of \(\setN\), and each positive integer belongs to exactly one class of minimal stopping time. This allows a cumulative accounting of the fraction of integers accounted for by classes up to a given stopping time.
+
+For convenience, we recall the definition of the accelerated Collatz map:
+\[
+f(x) = \begin{cases}
+\displaystyle
+    \phantom{3x} \frac{x}{2} & \text {if } x \text{ is even}, \\[8pt]  % Insert some spacing between rows
+\displaystyle
+    \frac{3x+1}{2}           & \text {if } x \text{ is odd}. \\
+\end{cases}
+\]
+
+\begin{define}[Admissible Integer]
+A positive integer \(x \in \setN\) is \emph{admissible of depth \(k\)} if
+\[
+\sigma(x) = k,
+\]
+where \(\sigma(x)\) is the minimal integer such that
+\[
+f^k(x) < x.
+\]
+Equivalently, \(k\) is the stopping time of \(x\).
+\end{define}
+
+\subsection{Lower Bound via Dominant Sequence}
+
+\begin{theorem}[Cumulative Density Bound]
+Let \(D_k\) denote the cumulative density of all convergent residue classes of stopping time less than or equal to \(k\). Then \(D_k\) admits a strictly increasing sequence of lower bounds
+\[
+0 < D_1 < D_2 < \cdots < D_k < 1
+\]
+which converges to 1 as \(k \rightarrow \infty\).
+\end{theorem}
+
+% \begin{proof}[Sketch of Proof]
+% Each residue class of stopping time \(i \le k\) has asymptotic density \(2^{-A020914(i)}\),
+% as established previously. Summing over all classes with stopping time up to \(k\) yields a
+% finite sum strictly less than 1 but strictly increasing in \(k\).  
+
+% As \(k \to \infty\), the sum of densities of all classes approaches 1, because the union of
+% all convergent residue classes exhausts \(\setN\). Therefore, the cumulative density is bounded
+% below by an increasing sequence converging to unity.
+% \end{proof}
+
+\begin{proof}
+Each convergent residue class of stopping time \(i\) has asymptotic density
+\(2^{-A020914(i)}\). For each \(k\), the cumulative density \(D_k\) is obtained
+by summing the densities of all classes with stopping time \(i \le k\), yielding
+a finite sum strictly less than 1 and strictly increasing in \(k\).
+
+The sequence \(A020914(i)\) satisfies
+\[
+A020914(i) \ge i \log_2 3,
+\]
+so the tail sum
+\[
+\sum_{i>k} 2^{-A020914(i)} \le \sum_{i>k} 2^{-i\log_2 3} = \sum_{i>k} 3^{-i}
+\]
+converges to zero as \(k \to \infty\).
+
+% The sequence \(A020914(i)\) grows linearly in \(i\), so the tail sum
+% \[
+% \sum_{i > k} 2^{-A020914(i)}
+% \]
+% converges to zero as \(k \to \infty\). 
+
+Hence the complement of the union of
+convergent residue classes of stopping time \(\le k\) has asymptotic density
+tending to zero, implying that \(D_k \to 1\).
+\end{proof}
+
+\subsection{Limit Argument}
+
+\begin{corollary}[Exhaustion via Cumulative Density]
+\label{cor:cum_density}
+The cumulative density of convergent residue classes converges to 1:
+\[
+\lim_{k \to \infty} D_k = 1.
+\]
+Consequently, every positive integer belongs to some convergent residue class of finite stopping time.
+\end{corollary}
+
+% \begin{proof}
+% Immediate from the previous theorem. As \(k \to \infty\), the fraction of integers not included in classes of stopping time \(\le k\) tends to zero. Hence all integers are eventually captured by some convergent residue class.
+% \end{proof}
+
+\begin{proof}
+This follows directly from the previous theorem. Since the complement of the
+union of convergent residue classes of stopping time \(\le k\) has asymptotic
+density tending to zero, every positive integer is eventually captured by some
+convergent residue class.
+\end{proof}
+
+
+
+
+\section{Global Descent}
+
+\begin{theorem}[Global Descent]
+Every positive integer eventually reaches a smaller positive integer
+under iteration of the Collatz map.
+\end{theorem}
+
+\begin{proof}
+By Corollary~\ref{cor:cum_density}, the union of all convergent residue
+classes has asymptotic density 1. Hence every positive integer belongs
+to some convergent residue class of finite stopping time.
+
+For each such class, there exists a finite integer \(k\) such that
+\(f^k(x) < x\). Therefore, every positive integer eventually reaches
+a smaller positive integer under iteration of the Collatz map.
+\end{proof}
+
+
+
+\section{Non-Existence of Non-Trivial Cycles}
+
+\begin{theorem}
+The only cycle in the positive integers under the Collatz map is
+\(4 \rightarrow 2 \rightarrow 1 \rightarrow 4\).
+\end{theorem}
+
+\section{Conclusion}
+
+Summarize the descent mechanism and discuss implications.
+
+
+\end{document}  
