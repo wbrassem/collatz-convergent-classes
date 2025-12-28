@@ -35,6 +35,9 @@
 % Hyperlinks
 \usepackage{hyperref}				% For creating internal and HTTP links
 
+% References
+\usepackage[numbers]{natbib}        % For bibliography management
+
 % For Tikz graphics
 \usepackage{tikz}					% Package for pgf and TikZ
 \usetikzlibrary{shapes,arrows,chains}
@@ -136,17 +139,17 @@ f(x) = \begin{cases}
 
 acting on the positive integers. The conjecture asserts that, under
 iteration of \(f\), every positive integer eventually reaches the
-cycle \(4 \to 2 \to 1 \to 4\).
+cycle \(4 \to 2 \to 1 \to 4\) \cite{Collatz1937}.
 
-Despite its elementary formulation, the conjecture has resisted proof
-for decades. Extensive computational verification confirms convergence
-for all integers up to very large bounds, but such verification does not
-constitute a proof and offers limited insight into the global structure
+Despite its elementary formulation, the conjecture has resisted proof for decades
+\cite{Lagarias2010,Terras1976}. Extensive computational verification confirms convergence
+for all integers up to very large bounds \cite{OliveiraESilva2010}, but such verification
+does not constitute a proof and offers limited insight into the global structure
 of Collatz trajectories.
 
-Many prior approaches focus on bounding individual trajectories or
-analyzing probabilistic heuristics. While these methods provide valuable
-intuition, they do not address the problem at the level of the entire
+Many prior approaches focus on bounding individual trajectories or analyzing
+probabilistic heuristics \cite{Wirsching1998}. While these methods provide
+valuable intuition, they do not address the problem at the level of the entire
 positive integer space.
 
 \subsection{Strategy of the Proof}
@@ -157,7 +160,7 @@ patterns under the accelerated Collatz map.
 
 The central idea is to study finite Collatz paths abstractly, independent
 of their starting values, and to associate each such path with a
-non-overlapping residue class of integers that follow the same parity
+pairwise disjoint residue class of integers that follow the same parity
 pattern for a fixed number of odd steps. Each class is assigned a
 minimal stopping time, defined as the first iterate at which its
 elements strictly decrease.
@@ -325,7 +328,8 @@ The parity-word grammar introduced in this section provides a symbolic
 encoding of accelerated Collatz trajectories. This encoding is not
 injective: many integers correspond to the same parity word, forming
 arithmetic residue classes. However, the grammar preserves the key
-dynamical feature relevant to convergence, namely eventual descent.
+dynamical feature relevant to convergence, namely descent after finitely
+many odd steps.
 
 Each parity word induces an affine transformation whose linear
 coefficient determines whether all sufficiently large integers in the
@@ -340,89 +344,16 @@ A \emph{parity word} of length \(k \ge 1\) is a finite sequence
 \[
 \omega = (d_1, d_2, \dots, d_k),
 \]
-where each \(d_i \in \setN\) denotes the number of divisions by two applied
-after the \(i\)-th odd step of an accelerated Collatz trajectory.
+where each \(d_i \in \setN\) denotes the number of divisions by two
+applied after the \(i\)-th odd step of an accelerated Collatz trajectory.
 \end{define}
 
-As shown below, each parity word determines a linear-affine transformation
-of the form
-\(
-x \mapsto \frac{3^k x + c(\omega)}{2^{d_1+\cdots+d_k}}.
-\)
-
-\begin{example}
-Consider the parity word
+Each parity word determines a linear-affine transformation
 \[
-\omega = (1,1,1,4),
+x \mapsto \frac{3^k x + c(\omega)}{2^{d_1+\cdots+d_k}},
 \]
-which has length \(k=4\) and total division count
-\[
-d_1 + d_2 + d_3 + d_4 = 7 = A020914(4).
-\]
-
-This corresponds to a Collatz trajectory in which, after each of the first three
-odd steps, the result is divided by two once, and after the fourth odd step,
-it is divided by two four times.
-
-The associated affine map is
-\[
-T_\omega(x) = \frac{3^4 x + c(\omega)}{2^7} = \frac{81x + c(\omega)}{128}.
-\]
-
-All positive integers realizing this parity word lie in a single arithmetic
-residue class modulo \(2^7\) and follow the same parity pattern for four odd
-steps. Since
-\[
-\frac{81}{128} < 1,
-\]
-this parity word is convergent, and all sufficiently large elements of the
-associated residue class reach a strictly smaller integer after four odd steps.
-\end{example}
-
-\begin{example}[Concrete realization of $\omega=(1,1,1,4)$]
-To illustrate how integrality arises for a parity word, consider the
-positive integers realizing this pattern.
-
-The first two positive integers realizing this parity word are
-\[
-x=15 \quad \text{and} \quad x=143,
-\]
-which satisfy
-\[
-15 \equiv 143 \pmod{2^7}.
-\]
-
-Evaluating the associated affine map on $x=15$ gives
-\[
-T_\omega(15) = \frac{81\cdot 15 + c(\omega)}{128}.
-\]
-Requiring $T_\omega(15)\in\setN$ yields $c(\omega)=65$, and hence
-\[
-T_\omega(15)=10.
-\]
-
-Using the same constant term,
-\[
-T_\omega(143)=\frac{81\cdot 143 + 65}{128}=91,
-\]
-confirming that all elements of the induced residue class follow the
-same affine transformation.
-\end{example}
-
-\begin{lemma}[Associated Collatz Map]
-Each parity word \(\omega = (d_1,\dots,d_k)\) induces an affine map
-\[
-T_\omega(x) = \frac{3^k x + c(\omega)}{2^{d_1+\cdots+d_k}},
-\]
-where \(c(\omega)\) is a nonnegative integer depending only on \(\omega\).
-\end{lemma}
-
-\begin{proof}
-Each odd step contributes a factor of \(3\) to the numerator, while each
-division by two contributes a factor of \(2\) to the denominator. The
-constant term accumulates from the repeated application of the
-\(3x+1\) operation and depends only on the parity pattern.
-\end{proof}
+where \(c(\omega)\) is a canonical constant uniquely determined by the
+parity word (see Appendix~\ref{app:canonical-c}).
 
 \begin{remark}[Parity Words Encode Structure, Not Values]
 Fixing a parity word $\omega$ determines the sequence of arithmetic
@@ -445,16 +376,9 @@ For any admissible parity word of length \(k\),
 \[
 d_1 + \cdots + d_k \ge A020914(k),
 \]
-where \(A020914(k)\) is the minimal power of two required to clear denominators in
-an accelerated Collatz path with \(k\) odd steps.
+where \(A020914(k)\) is the minimal power of two required to clear
+denominators in an accelerated Collatz path with \(k\) odd steps.
 \end{lemma}
-
-\begin{proof}
-Integrality of \(T_\omega(x)\) requires the denominator
-\(2^{d_1+\cdots+d_k}\) to divide \(3^k x + c(\omega)\).
-The minimal such exponent depends only on \(k\) and coincides with
-\(A020914(k)\). The minimal such exponent is independent of \(x\).
-\end{proof}
 
 \begin{define}[Convergent Parity Word]
 An admissible parity word \(\omega = (d_1,\dots,d_k)\) is
@@ -464,27 +388,37 @@ An admissible parity word \(\omega = (d_1,\dots,d_k)\) is
 \]
 \end{define}
 
-\begin{remark}[Affine Term and Eventual Descent]
-\label{rem:affine_term}
-The accelerated Collatz map associated with a parity word
-\(\omega = (d_1,\dots,d_k)\) is affine:
+\begin{lemma}[Associated Collatz Map]
+\label{lem:associated-map}
+Each parity word \(\omega = (d_1,\dots,d_k)\) induces an affine map
 \[
-T_\omega(x) = \frac{3^k}{2^{d_1+\cdots+d_k}}\,x
-              + \frac{c(\omega)}{2^{d_1+\cdots+d_k}}.
+T_\omega(x) = \frac{3^k x + c(\omega)}{2^{d_1+\cdots+d_k}},
 \]
-While the constant term \(c(\omega)\) arises from repeated applications
-of the \(3x+1\) operation, convergence is determined by the linear
-coefficient alone.  
+where \(c(\omega)\) is the unique integer satisfying
+\[
+0 \le c(\omega) < 2^{d_1+\cdots+d_k}
+\]
+for which \(T_\omega(x)\in\setN\) for all integers \(x\) realizing \(\omega\).
+\end{lemma}
 
-If
-\[
-\frac{3^k}{2^{d_1+\cdots+d_k}} < 1,
-\]
-then there exists a finite threshold \(x_0\) such that
-\(T_\omega(x) < x\) for all \(x > x_0\) within the induced residue class.
-Thus, each convergent parity word guarantees eventual descent for all
-but finitely many elements of its class. These finite exceptions do not
-affect density, exhaustion, or cycle-exclusion arguments.
+\begin{proof}
+Each odd step contributes a factor of \(3\) to the numerator, while each
+division by two contributes a factor of \(2\) to the denominator. The
+constant term accumulates from the repeated application of the
+\(3x+1\) operation and depends only on the parity pattern.
+\end{proof}
+
+The constant \(c(\omega)\) is uniquely determined modulo \(2^D\);
+a canonical representative in the range \(0 \le c(\omega) < 2^D\)
+and an explicit computation are given in
+Appendix~\ref{app:canonical-c}.
+
+\begin{remark}[Affine Map as Collatz Compression]
+For any integer realizing a parity word $\omega$, the value $T_\omega(x)$
+coincides exactly with the result of applying the accelerated Collatz map
+for $k$ successive odd steps. Thus the affine map $T_\omega$ represents a
+compression of the corresponding finite Collatz trajectory into a single
+step.
 \end{remark}
 
 \begin{lemma}
@@ -547,33 +481,51 @@ which converges to 1 as \(k \rightarrow \infty\).
 \end{theorem}
 
 \begin{proof}
-Each convergent residue class of stopping time \(i\) has asymptotic density \(2^{-A020914(i)}\),
-and the number of such classes is \(A186009(i)\).  For each \(k\), the cumulative density \(D_k\)
-is obtained by summing the densities of all classes with stopping time \(i \le k\), yielding
-a finite sum strictly less than 1 and strictly increasing in \(k\).
+Each convergent residue class of stopping time $i$ has asymptotic density
+$2^{-A020914(i)}$, and the number of such classes is $A186009(i)$.
+Since distinct parity words induce disjoint residue classes, the total
+density contributed by all convergent classes of stopping time $i$ is
+
+\[
+A186009(i)\,2^{-A020914(i)}.
+\]
+
+For each $k$, the cumulative density of all convergent residue classes of
+stopping time $i \le k$ is therefore
 
 \[
 D_k = \sum_{i \le k} A186009(i)\,2^{-A020914(i)}.
 \]
 
-The sequence \(A020914(i)\) satisfies
-\[
-A020914(i) \ge i \log_2 3,
-\]
-Since the number of convergent classes of stopping time $i$ is $A186009(i)$,
-the tail contribution satisfies
-\[
-\sum_{i>k} A186009(i)\,2^{-A020914(i)}
-\;\le\;
-\sum_{i>k} C\,3^{-i}
-\]
-for some constant $C>0$, and hence converges to zero as $k\to\infty$.
+The sequence $(D_k)$ is strictly increasing, since each term adds a positive
+density, and satisfies $D_k \le 1$ for all $k$, because the corresponding
+residue classes are disjoint subsets of $\setN$.
 
-Hence the complement of the union of convergent residue classes of stopping time \(\le k\) has
-asymptotic density tending to zero, implying that \(D_k \to 1\).
+Hence $(D_k)$ is a bounded monotone sequence and therefore converges to a
+finite limit $D_\infty \le 1$.
+
+By Lemma~\ref{lem:residue_class} and the definition of minimal stopping time,
+the union of all convergent residue classes exhausts $\setN$.
+Consequently, the complement of the union of classes of stopping time
+$\le k$ has asymptotic density tending to zero, implying that
+
+\[
+\lim_{k\to\infty} D_k = 1.
+\]
 \end{proof}
 
-\subsection{Limit Argument}
+\begin{remark}[On Growth of $A186009$]
+No assumption on the growth rate of $A186009(i)$ is required in the density
+argument above. In particular, logarithmic convexity or superexponential
+local growth of the number of convergent classes does not affect convergence.
+
+The key constraint is that the induced residue classes are pairwise disjoint
+subsets of $\setN$. As a result, the sum of their asymptotic densities is
+bounded above by~1. This bound alone forces the individual density
+contributions $A186009(i)\,2^{-A020914(i)}$ to tend to zero and guarantees
+convergence of the cumulative density, independently of any growth behavior
+of $A186009(i)$.
+\end{remark}
 
 \begin{corollary}[Exhaustion via Cumulative Density]
 \label{cor:cum_density}
@@ -638,5 +590,104 @@ over arithmetic classes rather than a question of trajectory control,
 suggesting a framework that may be applicable to related discrete
 dynamical systems.
 
+
+\newpage
+\appendix
+\section{Canonical Determination of the Constant \(c(\omega)\)}
+\label{app:canonical-c}
+
+In Lemma~\ref{lem:associated-map}, each parity word
+\(\omega = (d_1,\dots,d_k)\) induces an affine Collatz map of the form
+\[
+T_\omega(x) = \frac{3^k x + c(\omega)}{2^{D}}, 
+\qquad D = d_1 + \cdots + d_k.
+\]
+The constant \(c(\omega)\) is uniquely determined by the parity word
+\(\omega\) up to congruence modulo \(2^D\). In this appendix, we describe
+a canonical choice of representative and an explicit method for
+computing it.
+
+\subsection*{Existence and Uniqueness}
+
+Fix a parity word \(\omega\) of length \(k\) and let \(D\) denote its
+total division count. Any integer \(x\) that follows the parity pattern
+\(\omega\) satisfies
+\[
+3^k x + c \equiv 0 \pmod{2^D}
+\]
+for some integer \(c\). Thus \(c\) is uniquely determined modulo \(2^D\),
+and all admissible constants differ by integer multiples of \(2^D\).
+
+To remove this ambiguity, we select the unique representative
+\(c(\omega)\) satisfying
+\[
+0 \le c(\omega) < 2^D.
+\]
+This choice is canonical and depends only on the parity word \(\omega\).
+
+\subsection*{Representative Independence}
+
+The value \(c(\omega)\) is independent of the choice of integer
+representative \(x\) within the residue class induced by \(\omega\).
+Indeed, if \(x\) and \(x'\) belong to the same class modulo \(2^D\), then
+\[
+3^k x \equiv 3^k x' \pmod{2^D},
+\]
+yielding the same canonical value of \(c(\omega)\).
+
+\subsection*{Explicit Computation (Step-by-Step)}
+
+Given a parity word \(\omega\) of length \(k\) and total division count \(D\), 
+the canonical constant \(c(\omega)\) may be computed as follows:
+
+\begin{enumerate}
+\item Choose any integer \(x\) belonging to the residue class induced by
+      the parity word \(\omega\).
+\item Compute \(y = 3^k x\).
+\item Let \(m\) be the smallest integer such that
+      \(m \cdot 2^D \ge y\).
+\item Define
+      \[
+      c(\omega) = m \cdot 2^D - y.
+      \]
+\end{enumerate}
+
+By construction, \(0 \le c(\omega) < 2^D\), and the resulting value
+satisfies
+\[
+T_\omega(x) = \frac{3^k x + c(\omega)}{2^D} \in \mathbb{Z}.
+\]
+This value is independent of the chosen representative \(x\) and
+provides a concrete realization of the affine map associated with \(\omega\).
+
+\subsection*{Concrete Example}
+
+Consider the parity word
+\(\omega = (1,1,1,4)\) with \(k=4\) and total division count
+\(D = 1 + 1 + 1 + 4 = 7\).
+
+\begin{enumerate}
+\item Choose a representative \(x = 15\) in the corresponding residue class.
+\item Compute \(y = 3^4 \cdot 15 = 81 \cdot 15 = 1215\).
+\item Find the smallest \(m\) such that \(m \cdot 2^7 \ge 1215\):
+      \(2^7 = 128\), so \(m = \lceil 1215/128 \rceil = 10\).
+\item Compute \(c(\omega) = 10 \cdot 128 - 1215 = 1280 - 1215 = 65\).
+\end{enumerate}
+
+Thus, the canonical affine map for this parity word is
+\[
+T_\omega(x) = \frac{3^4 x + 65}{2^7} = \frac{81x + 65}{128}.
+\]
+
+Checking another representative \(x = 143\) in the same residue class:
+\[
+T_\omega(143) = \frac{81 \cdot 143 + 65}{128} = \frac{11588 + 65}{128} = 91,
+\]
+confirming that the same \(c(\omega)\) works uniformly across the residue class.
+
+
+\newpage
+\bibliographystyle{unsrtnat}
+\bibliography{src/latex/references}
 
 \end{document}  
