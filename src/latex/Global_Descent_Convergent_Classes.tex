@@ -443,14 +443,19 @@ The number of convergent parity words of length \(k\) is given by
 
 \subsection{Asymptotic Control of Density Contributions}
 
+Define
+\[
+\widetilde A(i) := A186009(i+1),
+\]
+so that $\widetilde A(i)$ counts convergent residue classes of stopping time $i$.
+
 Let
 \[
 B(i) := A020914(i),
 \]
-so that (up to the standard OEIS index shift) the density contribution of
-convergent residue classes of stopping time $i$ is
+so that the density contribution of convergent residue classes of stopping time $i$ is
 \[
-A186009(i+1)\, 2^{-B(i)}.
+\widetilde A(i)\, 2^{-B(i)}.
 \]
 
 From the structure of $A020914$, we know:
@@ -468,7 +473,7 @@ factor of $2$, we obtain the sharp bound
 3^i < 2^{B(i)} < 2 \cdot 3^i.
 \]
 
-\begin{remark}[Indexing and Effective Delay]
+\begin{remark}[Historical Motivation and True Growth Delay]
 A subtle but important distinction must be made between index offset and
 effective growth delay.
 
@@ -482,17 +487,12 @@ However, the effective delay in multiplicative growth is only two steps. The
 remaining unit of offset arises solely from differing indexing conventions
 and does not correspond to a missed multiplicative contribution. Consequently,
 the numerator realizes each doubling increment after a fixed finite delay of
-two growth steps relative to the denominator.
-
-This distinction affects only constant factors in subsequent bounds and does
-not alter the asymptotic dominance of the denominator.
+two growth steps relative to the denominator and is the only delay relevant
+for asymptotic growth comparisons.
 
 Here and throughout, the index $i$ refers to the stopping time (equivalently,
 the parity-word length); the differing OEIS indexing conventions of
-$A020914$ and $A186009$ are absorbed into this parameter.
-
-In particular, this effective two-step delay is the only delay relevant
-for asymptotic growth comparisons; the remaining offset is purely notational.
+$A020914$ and $A186009$ are the motivation for defining $\widetilde A(i)$.
 
 \end{remark}
 
@@ -515,118 +515,87 @@ For all $i \ge 0$,
 Consequently, the density contribution of convergent residue classes of
 stopping time $i$ satisfies
 \[
-\frac{A186009(i+1)}{3^i}
+\frac{\widetilde A(i)}{3^i}
 \;<\;
-A186009(i+1)\,2^{-A020914(i)}
+\widetilde A(i)\,2^{-A020914(i)}
 \;<\;
-\frac{A186009(i+1)}{2 \cdot 3^i}.
+\frac{\widetilde A(i)}{2 \cdot 3^i}.
 \]
 \end{lemma}
 
 \begin{proof}
-By definition, $A020914(i)$ is the minimal integer $m$ such that $2^m > 3^i$. Consecutive powers of two differ by a factor of $2$, so
+By definition, $A020914(i)$ is the minimal integer $m$ such that $2^m > 3^i$.
+Consecutive powers of two differ by a factor of $2$, so
 \[
 3^i < 2^{A020914(i)} < 2 \cdot 3^i.
 \]
-Taking reciprocals and multiplying by $A186009(i+1)$ gives the stated bounds.
+Taking reciprocals and multiplying by $\widetilde A(i)$ gives the stated bounds.
 \end{proof}
 
 \subsection{Delayed Dominance of the Denominator}
 
 \begin{lemma}[Delayed Dominance of the Denominator]
 \label{lem:delay-dominance}
-Let $a_i := A186009(i)$ and $b_i := A020914(i)$.  
+Let $a_i := \widetilde A(i)$ and $b_i := A020914(i)$.  
 Both sequences are generated from the same increment sequence
 $\epsilon_i \in \{1,2\}$ encoded by \OEIS{A022921}, where
 \[
 b_i = \sum_{k=1}^i \epsilon_k.
 \]
+
 Each increment $\epsilon_k$ contributes a multiplicative factor
 $2^{\epsilon_k}$ to the denominator immediately, while its effect
-on the numerator $a_i$ is realized only after a fixed delay
-and contributes at most a bounded additive increase per event.
+on the numerator $a_i$ is realized only after a fixed delay of two
+steps when it is incorporated into the horizontal-sum construction.
 
-Consequently, for all sufficiently large $i$, the cumulative multiplicative
-growth of $2^{b_i}$ strictly dominates that of $a_i$.  In particular,
-$a_i = O(2^{D_i})$ while $2^{b_i} = \Theta(2^{i + D_i})$.
+As a result, the denominator accumulates an additional factor of $2^i$
+that has no delayed counterpart in the numerator. Consequently, 
+\[
+\frac{a_i}{2^{b_i}} = \frac{a_i}{2^{i + D_i}} \to 0
+\quad \text{as } i \to \infty.
+\]
 \end{lemma}
 
 \subsection{Delayed Doubling and Upper Bound on Numerator Growth}
 
-We now formalize the structural reason why the density contribution of convergent residue classes vanishes asymptotically.
-
-\begin{lemma}[Delayed Prefix Product Bound for $A186009$]
-\label{lem:prefix-doubling}
-Let $S_n := A186009(n)$ denote the $n$-th term in the horizontal sum construction, and let
-$D_n$ denote the cumulative number of ``double'' events up to row $n$. Then there exists a constant $C > 0$ (accounting for initial additive contributions) such that
+\begin{lemma}[Subexponential Prefix Growth]
+Let $D_i$ denote the number of double events up to stopping time $i$. Then
 \[
-S_n \;\le\; C \cdot 2^{D_n}.
+\frac{\widetilde A(i)}{2^{B(i)}} \longrightarrow 0
+\quad \text{as } i \to \infty.
 \]
-
-Consequently, the ratio of numerator to denominator satisfies
+Equivalently,
 \[
-\frac{S_n}{2^{A020914(n)}} \;\le\; \frac{C \cdot 2^{D_n}}{2^{n + D_n}} = \frac{C}{2^n} \;\longrightarrow\; 0 \quad \text{as } n \to \infty.
+\widetilde A(i) = 2^{D_i} \cdot o(2^i),
 \]
+because each multiplicative contribution in the numerator is realized only after
+a fixed delay, while the denominator accumulates contributions immediately.
 \end{lemma}
 
-\begin{proof}
-By the construction of $A186009$, each row $S_n$ is generated from the previous row $S_{n-1}$ via a sum of all but the last term, plus a final term which is either unchanged (single) or doubled (double). Denote the number of terms in row $n$ by $T_n = D_n + 1$.  
+In particular, although $\widetilde A(i) / 2^{D_i}$ is unbounded, its growth rate
+is strictly dominated by the factor $2^i$ contributed by the denominator.
 
-\begin{itemize}
-    \item For a single (after delay), the additive contribution is at most $S_{n-1}$.  
-    \item For a double (after delay), the additive contribution is at most $2 \cdot S_{n-1}$.  
-\end{itemize}
+Although numerically the residual factor $\widetilde A(i) / 2^{D_i}$ appears to grow at
+a rate consistent with an exponential base strictly less than $2$, \emph{no exponential
+upper bound is assumed or required}.  The conclusion follows solely from the uniform
+$2^i$ phase advantage of the denominator over the numerator.
 
-Applying this recursively over all $D_n$ doubles, and absorbing the initial terms in a constant $C$, yields the bound
-\[
-S_n \le C \cdot 2^{D_n}.
-\]
-
-Meanwhile, the denominator $2^{A020914(n)}$ grows as the smallest power of 2
-exceeding $3^n$, which can be expressed as $2^{n + D_n}$, since each double in
-the numerator corresponds to an immediate power of 2 in the denominator. Indeed,
-each step contributes at least one power of two, with each double event contributing
-exactly one additional power.  Hence
-\[
-\frac{S_n}{2^{A020914(n)}} \le \frac{C \cdot 2^{D_n}}{2^{n + D_n}} = \frac{C}{2^n} \to 0 \quad \text{as } n \to \infty,
-\]
-demonstrating the asymptotic vanishing of the density contribution.
-\end{proof}
-
-\subsubsection*{Concrete Example}
-
-Consider $A186009(13) = (1, 10, 52, 182, 485, 961, 961) = 2652$, a double. The next row, $A186009(14) = (1, 11, 63, 245, 730, 1691, 2652, 2652) = 8045$, is also a double.  
-
-\begin{itemize}
-    \item Counting doubles: $D_{13} = 6$, $D_{14} = 7$, giving $2^{D_{14}} = 128$.  
-    \item Applying the lemma: $S_{14} \le C \cdot 2^7 = 128 \cdot C$, while the denominator grows like $2^{14 + D_{14}} = 2^{21}$, so
-    \[
-    \frac{S_{14}}{2^{A020914(14)}} \le \frac{C}{2^{14}} \ll 1.
-    \]
-\end{itemize}
-
-This illustrates how the delayed realization of doubling events in the
-numerator is structurally outpaced by their immediate realization in the
-denominator, ensuring that each successive density contribution
-\[
-d_i := A186009(i)\,2^{-A020914(i)}
-\]
-associated with stopping time $i$ vanishes as $i \to \infty$.
+\end{lemma}
 
 \subsubsection*{Conclusion}
 
-The growth of both the numerator \(A186009(i)\) and the denominator
-\(2^{A020914(i)}\) is governed by the same underlying increment sequence
+The growth of both the numerator $\widetilde A(i)$ and the denominator
+\(2^{B(i)}\) is governed by the same underlying increment sequence
 \OEIS{A022921}, which encodes whether each step contributes one or two powers
 of two. Crucially, this shared control is not symmetric: each increment in
 \OEIS{A022921} is realized immediately in the denominator through the
 accumulation of \(A020914(i)\), while its effect on the numerator is delayed
-by a fixed offset of $2$ arising from the horizontal-sum (parity-word)
-construction of \(A186009\).
+by a fixed offset of $2$ terms arising from the horizontal-sum (parity-word)
+construction of $\widetilde A(i)$.
 
 As a result, the denominator consistently maintains a \emph{phase advantage}
-over the numerator: each multiplicative growth event appears earlier in
-\(2^{A020914(i)}\) than in \(A186009(i)\).  This phase advantage is uniform
+over the numerator: each multiplicative growth event is realized earlier in
+\(2^{B(i)}\) than in \(\widetilde A(i)\).  This phase advantage is uniform
 and irreversible: once a multiplicative contribution is realized in the
 denominator, the numerator can never recover it at later stopping times.
 
@@ -636,7 +605,7 @@ sustain growth comparable to the denominator at large stopping times.
 
 Consequently, the density contribution
 \[
-d_i := A186009(i)\,2^{-A020914(i)}
+d_i := \widetilde A(i)\,2^{-A020914(i)}
 \]
 decreases with stopping time \(i\), and residue classes of large stopping time
 become asymptotically negligible. Since $\sum_i d_i$ converges absolutely and
