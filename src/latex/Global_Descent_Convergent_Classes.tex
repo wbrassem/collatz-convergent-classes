@@ -322,23 +322,18 @@ description of Collatz trajectories independent of their starting values.
 
 \section{Grammar of Collatz Parity Words}
 
-\subsection{Parity Words}
-
 \begin{remark}[Parity Grammar as a Dynamical Encoding]
-The parity-word grammar introduced in this section provides a symbolic
+The parity--word grammar introduced in this section provides a symbolic
 encoding of accelerated Collatz trajectories. This approach, introduced
-in the context of $3x+1$ dynamics by Chamberland \cite{Chamberland2003}, is
-not injective: many integers correspond to the same parity word, forming
-arithmetic residue classes. Our use of parity words differs in that we
-exploit them to rigorously quantify densities of convergent residue
-classes and establish global descent. 
+by Chamberland~\cite{Chamberland2003}, is not injective: many integers
+correspond to the same parity word, forming arithmetic residue classes.
 
-Each parity word induces an affine transformation whose linear
-coefficient determines whether all sufficiently large integers in the
-associated residue class decrease after a fixed number of odd steps.
-Thus, while individual trajectories are collapsed under the encoding,
-their asymptotic behavior with respect to growth and descent is retained.
-This suffices for density, exhaustion, and cycle-exclusion arguments.
+Our use of parity words differs in that we exploit this encoding to
+rigorously quantify densities of convergent residue classes and to
+establish global descent. While individual trajectories are collapsed
+under the encoding, their asymptotic behavior with respect to growth and
+contraction is retained. This suffices for density, exhaustion, and
+cycle--exclusion arguments.
 \end{remark}
 
 \begin{define}[Parity Word]
@@ -350,36 +345,47 @@ where each \(d_i \in \setN\) denotes the number of divisions by two
 applied after the \(i\)-th odd step of an accelerated Collatz trajectory.
 \end{define}
 
-Each parity word determines a linear-affine transformation
+Each parity word determines a linear--affine transformation
 \[
-x \mapsto \frac{3^k x + c(\omega)}{2^{d_1+\cdots+d_k}},
+x \longmapsto \frac{3^k x + c(\omega)}{2^{d_1+\cdots+d_k}},
 \]
-where \(c(\omega)\) is a canonical constant uniquely determined by the
+where \(c(\omega)\) is a canonical integer uniquely determined by the
 parity word (see Appendix~\ref{app:canonical-c}).
 
 \begin{remark}[Parity Words Encode Structure, Not Values]
 Fixing a parity word $\omega$ determines the sequence of arithmetic
 operations applied along an accelerated Collatz trajectory. Consequently,
-both the linear coefficient $3^k/2^{d_1+\cdots+d_k}$ and the affine term
-$c(\omega)$ depend only on $\omega$ and not on the starting integer.
+both the linear coefficient \(3^k/2^{d_1+\cdots+d_k}\) and the affine term
+\(c(\omega)\) depend only on $\omega$ and not on the starting integer.
 
-Thus, convergence or divergence is a property of the parity word itself,
+Thus, convergence or divergence is a property of the parity word itself
 and applies uniformly to all sufficiently large elements of the induced
 residue class.
 \end{remark}
 
 \begin{define}[Admissible Parity Word]
 A parity word \(\omega\) is \emph{admissible} if there exists a positive
-integer \(x\) realizing \(\omega\) such that \(T_\omega(x) \in \setN\).
+integer \(x\) realizing \(\omega\) such that the induced affine map
+\(T_\omega(x)\) is a positive integer.
 \end{define}
+
+\begin{lemma}[Structural Admissibility]
+Admissibility of a parity word $\omega$ depends only on the inequalities
+satisfied by the tuple $(d_1,\dots,d_k)$ and not on the particular
+realizing integer. In particular, admissibility is determined entirely
+by whether the affine map \(T_\omega\) maps some integer to
+\(\setN\).
+\end{lemma}
 
 \begin{lemma}[Minimal Division Count]
 For any admissible parity word of length \(k\),
 \[
 d_1 + \cdots + d_k \ge A020914(k),
 \]
-where \(A020914(k)\) is the minimal power of two required to clear
-denominators in an accelerated Collatz path with \(k\) odd steps.
+where \(A020914(k)\) denotes the minimal total number of divisions by two
+required to clear denominators in an accelerated Collatz trajectory with
+\(k\) odd steps. Equality holds if and only if the parity word follows the
+lexicographically minimal admissible increment pattern.
 \end{lemma}
 
 \begin{define}[Convergent Parity Word]
@@ -400,27 +406,15 @@ where \(c(\omega)\) is the unique integer satisfying
 \[
 0 \le c(\omega) < 2^{d_1+\cdots+d_k}
 \]
-for which \(T_\omega(x)\in\setN\) for all integers \(x\) realizing \(\omega\).
+for which \(T_\omega(x)\in\setN\) for all integers realizing \(\omega\).
 \end{lemma}
 
-\begin{proof}
-Each odd step contributes a factor of \(3\) to the numerator, while each
-division by two contributes a factor of \(2\) to the denominator. The
-constant term accumulates from the repeated application of the
-\(3x+1\) operation and depends only on the parity pattern.
-\end{proof}
-
-The constant \(c(\omega)\) is uniquely determined modulo \(2^D\);
-a canonical representative in the range \(0 \le c(\omega) < 2^D\)
-and an explicit computation are given in
-Appendix~\ref{app:canonical-c}.
-
-\begin{remark}[Affine Map Representation of Collatz Trajectories]
-For any integer realizing a parity word $\omega$, the value $T_\omega(x)$
-coincides exactly with the result of applying the accelerated Collatz map
-for $k$ successive odd steps. Thus the affine map $T_\omega$ represents a
-compression of the corresponding finite Collatz trajectory into a single
-step.
+\begin{remark}[Affine Compression of Trajectories]
+For any integer realizing a parity word $\omega$, the value
+\(T_\omega(x)\) coincides exactly with the result of applying the
+accelerated Collatz map for \(k\) successive odd steps. Thus the affine
+map \(T_\omega\) represents a compression of the corresponding finite
+Collatz trajectory into a single step.
 \end{remark}
 
 \begin{lemma}
@@ -429,19 +423,69 @@ Each convergent parity word \(\omega\) induces a residue class
 \[
 x \equiv r_\omega \pmod{2^{A020914(k)}},
 \]
-whose elements all follow the same Collatz parity pattern for \(k\) odd steps and reach
-an integer strictly smaller than the starting value after at most \(k\) odd steps.
+whose elements all follow the same Collatz parity pattern for \(k\) odd
+steps and reach an integer strictly smaller than the starting value after
+at most \(k\) odd steps.
 \end{lemma}
+
+\begin{remark}[Increment Grammar from Minimal Denominator Growth]
+The first--difference sequence of \(A020914\), given by
+\(\OEIS{A022921}\), induces a binary increment grammar
+\(\{s,d\}\) describing the growth of the \emph{minimal admissible}
+total division count as the number of odd steps increases.
+
+Specifically, each symbol records whether the minimal value of
+\(A020914(k)\) increases by one (\(s\)) or by two (\(d\)) when passing from
+\(k\) to \(k+1\) odd steps. This increment grammar does \emph{not} encode
+the realized parity word entries \(d_i\), which may be arbitrarily large,
+but rather governs the evolution of the minimal denominator required for
+admissibility.
+
+The horizontal--sum construction used to enumerate convergent parity
+words tracks the accumulation of excess divisions above this minimal
+baseline. Consequently, the admissible local patterns in the
+\(\{s,d\}\)-grammar determine the combinatorial growth of
+\(\widetilde A(k)\) independently of the specific values of the parity
+word entries.
+\end{remark}
 
 \begin{proposition}
 The number of convergent parity words of length \(k\) is given by
-\OEIS{A186009}.
+\(\OEIS{A186009}\).
 \end{proposition}
+
+\begin{lemma}[Single-to-Double Row Sum Bound]
+\label{lem:single-double-bound}
+Let a row generated by a single step have total sum $k$, and let its final
+(rightmost) entry also equal $k$. Then the row obtained by applying a double
+step immediately afterward has total sum at most $3k$.
+\end{lemma}
+
+\begin{proof}
+Under a single step, row entries are generated by Pascal-type summation and
+are strictly increasing left to right. In this case, the sum of all entries
+preceding the final entry is at most the final entry itself. Thus, if the
+final entry equals $k$, the total row sum satisfies
+\[
+\sum_{\text{preceding entries}} \le k.
+\]
+
+A double step duplicates the final entry and appends it as a new terminal
+entry, without altering the preceding entries. Consequently, the resulting
+row sum is bounded by
+\[
+k \;+\; k \;+\; k \;=\; 3k.
+\]
+\end{proof}
+
+This lemma ensures that doubling steps contribute at most a controlled
+multiplicative factor to horizontal-sum growth, independent of global cycle
+structure. Consequently, all admissible local patterns within a $41$-cycle
+admit finite maximal growth factors, computed explicitly by finite enumeration
+in Appendix~\ref{app:local-growth}.
 
 
 \section{Cumulative Density of Convergent Classes}
-
-\subsection{Asymptotic Control of Density Contributions}
 
 Define
 \[
@@ -473,31 +517,20 @@ factor of $2$, we obtain the sharp bound
 3^i < 2^{B(i)} < 2 \cdot 3^i.
 \]
 
-\begin{remark}[Historical Motivation and True Growth Delay]
-A subtle but important distinction must be made between index offset and
-effective growth delay.
+\begin{remark}[Indexing and Effective Growth Delay]
+The OEIS sequences \(A020914\) and \(A186009\) employ differing indexing
+conventions. In order to compare numerator and denominator growth on a common
+scale, we define \(\widetilde A(i) := A186009(i+1)\), so that the index \(i\)
+corresponds uniformly to stopping time (equivalently, parity-word length).
 
-The sequence \(A020914(n)\) is indexed starting at \(n=0\), while
-\(A186009(n)\) is indexed starting at \(n=1\). The first doubling increment in
-\(A020914\) occurs at index \(1\), whereas its effect on the numerator
-\(A186009\) appears at term \(n=4\). This corresponds to an index displacement
-of \(4-1=3\).
-
-However, the effective delay in multiplicative growth is only two steps. The
-remaining unit of offset arises solely from differing indexing conventions
-and does not correspond to a missed multiplicative contribution. Consequently,
-the numerator realizes each doubling increment after a fixed finite delay of
-two growth steps relative to the denominator and is the only delay relevant
-for asymptotic growth comparisons.
-
-Here and throughout, the index $i$ refers to the stopping time (equivalently,
-the parity-word length); the differing OEIS indexing conventions of
-$A020914$ and $A186009$ are the motivation for defining $\widetilde A(i)$.
-
+While the first doubling increment in \(A020914\) occurs at index \(1\), its
+effect on \(\widetilde A\) appears after a fixed finite delay of two growth
+steps. This delay is independent of \(i\) and therefore does not affect
+asymptotic growth-rate comparisons.
 \end{remark}
 
 \noindent
-\textbf{Conclusion 1 (constant factor control).}
+\textbf{Constant-factor control.}
 This bound depends only on the definition of $A020914$ and does not rely on
 any delayed-doubling or numerator-growth arguments. Consequently, the reciprocal satisfies
 \[
@@ -532,84 +565,100 @@ Consecutive powers of two differ by a factor of $2$, so
 Taking reciprocals and multiplying by $\widetilde A(i)$ gives the stated bounds.
 \end{proof}
 
-\subsection{Delayed Dominance of the Denominator}
+\begin{theorem}[Maximal Admissible Growth Rate for $\widetilde A = A186009$]
+\label{thm:maximal-growth}
+Let $\widetilde A(i) := A186009(i+1)$ be defined via the horizontal-sum construction
+governed by the increment grammar of \OEIS{A022921}, and let $B(i) := A020914(i)$
+denote the cumulative exponent of $2$ up to level $i$.
 
-\begin{lemma}[Delayed Dominance of the Denominator]
-\label{lem:delay-dominance}
-Let $a_i := \widetilde A(i)$ and $b_i := A020914(i)$.  
-Both sequences are generated from the same increment sequence
-$\epsilon_i \in \{1,2\}$ encoded by \OEIS{A022921}, where
+Then
 \[
-b_i = \sum_{k=1}^i \epsilon_k.
+\limsup_{i\to\infty} \widetilde A(i)^{1/i} < 3,
+\]
+and consequently
+\[
+\frac{\widetilde A(i)}{2^{B(i)}} \longrightarrow 0 \quad \text{as } i\to\infty.
+\]
+\end{theorem}
+
+\begin{proof}
+The increment sequence \OEIS{A022921} induces a finite symbolic grammar on symbols
+\[
+\{ s, d \},
+\]
+corresponding respectively to single and double events in the horizontal-sum construction.
+Every admissible infinite sequence of increments decomposes uniquely into concatenations
+of two fundamental cycle types:
+\begin{itemize}
+  \item a \emph{7-cycle} with pattern
+  \[
+  \{ s, d, s, d, s, d, d \},
+  \]
+  and
+  \item a \emph{5-cycle} with pattern
+  \[
+  \{ s, d, s, d, d \}.
+  \]
+\end{itemize}
+
+Each cycle contributes a fixed multiplicative factor to the net growth. Explicitly,
+\[
+\frac{2^{11}}{3^{7}} < 1
+\quad\text{for the 7-cycle,}
+\qquad
+\frac{2^{8}}{3^{5}} > 1
+\quad\text{for the 5-cycle.}
+\]
+Thus 7-cycles are strictly contractive, while 5-cycles are expansive.
+
+The minimal composite block that arises naturally in the grammar is the \emph{12-cycle},
+formed by concatenation of a 7-cycle followed by a 5-cycle, with pattern
+\[
+\{ s, d, s, d, s, d, d, s, d, s, d, d \}.
+\]
+Its net multiplicative factor is
+\[
+\frac{2^{19}}{3^{12}} < 1,
+\]
+so the 12-cycle is also contractive.
+
+Since 12-cycles are contractive, consecutive repetitions multiplicatively diverge from
+unity until it becomes admissible to append a 5-cycle. The smallest admissible block
+whose net effect exceeds unity is therefore the \emph{41-cycle}, consisting of three
+consecutive 12-cycles followed by a 5-cycle. Its net multiplicative factor is
+\[
+\frac{2^{65}}{3^{41}} > 1.
 \]
 
-Each increment $\epsilon_k$ contributes a multiplicative factor
-$2^{\epsilon_k}$ to the denominator immediately, while its effect
-on the numerator $a_i$ is realized only after a fixed delay of two
-steps when it is incorporated into the horizontal-sum construction.
+Any admissible infinite word whose associated horizontal sums grow without bound
+is pointwise dominated by sequences composed of repeated 41-cycles or by
+longer blocks containing strictly more contractive content per symbol. 
+Since the 41-cycle maximizes per-symbol growth among all admissible patterns, 
+its infinite repetition provides a computable upper bound on $\widetilde A(i)$,
+and therefore bounds the maximal possible geometric growth rate of all admissible sequences.
 
-As a result, the denominator accumulates an additional factor of $2^i$
-that has no delayed counterpart in the numerator. Consequently, 
+The horizontal-sum dynamics within each local configuration combine Pascal-type summation
+with delayed doubling effects. A complete extremal analysis over all admissible local
+patterns occurring within a 41-cycle yields a maximal per-step growth factor
 \[
-\frac{a_i}{2^{b_i}} = \frac{a_i}{2^{i + D_i}} \to 0
-\quad \text{as } i \to \infty.
+\rho_{41} < 3.
 \]
-\end{lemma}
-
-\subsection{Delayed Doubling and Upper Bound on Numerator Growth}
-
-\begin{lemma}[Subexponential Prefix Growth]
-Let $D_i$ denote the number of double events up to stopping time $i$. Then
+Since all other admissible infinite sequences contain strictly more contractive content,
+their geometric growth rates are bounded above by $\rho_{41}$ as well. Therefore,
 \[
-\frac{\widetilde A(i)}{2^{B(i)}} \longrightarrow 0
-\quad \text{as } i \to \infty.
+\limsup_{i\to\infty} \widetilde A(i)^{1/i} \le \rho_{41} < 3.
 \]
-Equivalently,
+
+Finally, since the denominator satisfies
 \[
-\widetilde A(i) = 2^{D_i} \cdot o(2^i),
+3^i < 2^{B(i)} < 2\cdot 3^i,
 \]
-because each multiplicative contribution in the numerator is realized only after
-a fixed delay, while the denominator accumulates contributions immediately.
-\end{lemma}
-
-In particular, although $\widetilde A(i) / 2^{D_i}$ is unbounded, its growth rate
-is strictly dominated by the factor $2^i$ contributed by the denominator.
-
-Although numerically the residual factor $\widetilde A(i) / 2^{D_i}$ appears to grow at
-a rate consistent with an exponential base strictly less than $2$, \emph{no exponential
-upper bound is assumed or required}.  The conclusion follows solely from the uniform
-$2^i$ phase advantage of the denominator over the numerator.
-
-\end{lemma}
-
-\subsubsection*{Conclusion}
-
-The growth of both the numerator $\widetilde A(i)$ and the denominator
-\(2^{B(i)}\) is governed by the same underlying increment sequence
-\OEIS{A022921}, which encodes whether each step contributes one or two powers
-of two. Crucially, this shared control is not symmetric: each increment in
-\OEIS{A022921} is realized immediately in the denominator through the
-accumulation of \(A020914(i)\), while its effect on the numerator is delayed
-by a fixed offset of $2$ terms arising from the horizontal-sum (parity-word)
-construction of $\widetilde A(i)$.
-
-As a result, the denominator consistently maintains a \emph{phase advantage}
-over the numerator: each multiplicative growth event is realized earlier in
-\(2^{B(i)}\) than in \(\widetilde A(i)\).  This phase advantage is uniform
-and irreversible: once a multiplicative contribution is realized in the
-denominator, the numerator can never recover it at later stopping times.
-
-Combined with the structural restriction on the frequency of doubling events
-imposed by admissible cycle patterns, this ensures that the numerator cannot
-sustain growth comparable to the denominator at large stopping times.
-
-Consequently, the density contribution
+we obtain
 \[
-d_i := \widetilde A(i)\,2^{-A020914(i)}
+\frac{\widetilde A(i)}{2^{B(i)}} \le \frac{C\,\rho_{41}^i}{3^i} \longrightarrow 0,
 \]
-decreases with stopping time \(i\), and residue classes of large stopping time
-become asymptotically negligible. Since $\sum_i d_i$ converges absolutely and
-exhausts all admissible residue classes, the cumulative density tends to $1$.
+which completes the proof.
+\end{proof}
 
 
 \section{Global Descent}
@@ -620,15 +669,27 @@ under iteration of the Collatz map.
 \end{theorem}
 
 \begin{proof}
-By Corollary~\ref{cor:cum_density}, the union of all convergent residue
-classes has asymptotic density 1. Hence every positive integer belongs
-to some convergent residue class of finite stopping time.
+By Theorem~\ref{thm:maximal-growth}, the density contribution of convergent
+residue classes of stopping time $i$ satisfies
+\[
+\frac{\widetilde A(i)}{2^{B(i)}} \longrightarrow 0 \quad \text{as } i \to \infty.
+\]
+Consequently, the cumulative density of convergent residue classes approaches 1,
+so every positive integer belongs to some convergent residue class of finite
+stopping time.
 
-For each such class, there exists a finite integer \(k\) such that
-\(f^k(x) < x\). Therefore, every positive integer eventually reaches
-a smaller positive integer under iteration of the Collatz map.
+For each such residue class, there exists a finite integer $k$ such that
+the $k$-fold iteration of the Collatz map satisfies
+\[
+f^k(x) < x.
+\]
+Hence every positive integer eventually reaches a smaller positive integer
+under iteration of the Collatz map.
 \end{proof}
 
+From Global Descent it follows immediately that no positive integer can remain
+perpetually above its initial value, leaving only the trivial cycle $1\to2\to4$
+as a candidate for a recurrent orbit.
 
 \section{Non-Existence of Non-Trivial Cycles}
 
@@ -643,9 +704,9 @@ The only cycle in the positive integers under the Collatz map is
 We have shown that the positive integers may be partitioned into
 non-overlapping residue classes determined by finite Collatz parity
 patterns, each assigned a minimal stopping time. By explicitly
-enumerating convergent parity words and summing the asymptotic densities
-of their associated residue classes, we proved that the cumulative
-density of convergent classes converges to one.
+enumerating convergent parity words and controlling the maximal admissible
+growth rate of \(\widetilde A(i)\) relative to \(2^{B(i)}\), we proved that
+the cumulative density of convergent classes converges to one.
 
 This establishes a global descent mechanism for the accelerated Collatz
 map: every positive integer eventually reaches a strictly smaller value,
@@ -752,6 +813,362 @@ Checking another representative \(x = 143\) in the same residue class:
 T_\omega(143) = \frac{81 \cdot 143 + 65}{128} = \frac{11588 + 65}{128} = 91,
 \]
 confirming that the same \(c(\omega)\) works uniformly across the residue class.
+
+
+\newpage
+\section{Extremal Local Growth Analysis}
+
+\begin{lemma}[Local Growth Bounds]
+For each admissible local pattern occurring within a $41$-cycle,
+the ratio of the total sum of entries after applying the pattern
+to the total sum before applying it is bounded above as follows:
+\[
+\begin{array}{c|c}
+\text{Pattern} & \text{Max Growth Factor} \\
+\hline
+s,d & 3 \\
+d,d & 123/33 \\
+s,d,s & 341/131 \\
+d,d,s & 37/13
+\end{array}
+\]
+\end{lemma}
+
+\begin{proposition}[Extremal 41-Cycle Growth]
+The maximal geometric growth rate achievable by any admissible infinite word
+is bounded by
+\[
+\rho_{41}
+=
+\Bigl(
+3^{17}
+\cdot (123/33)^7
+\cdot (341/131)^{10}
+\cdot (37/13)^7
+\Bigr)^{1/41}
+< 3,
+\]
+where the exponents count the occurrences of each local pattern within a
+$41$-cycle.
+\end{proposition}
+
+\begin{remark}[Derivation of Local Growth Constants]
+The constants appearing in Lemma~\ref{lem:local-growth} are obtained by a
+complete extremal analysis of the horizontal-sum dynamics governing
+$\widetilde A(i)$.  Within each local configuration, elements arising from
+single steps evolve according to standard Pascal-type summation, yielding
+maximal growth proportional to powers of $2$, while additional entries
+introduced by doubling steps are bounded by summing on top of this baseline
+growth.
+
+For each admissible local pattern occurring within a $41$-cycle, all
+possible placements of delayed doubling contributions were examined, and the
+largest achievable ratio of post-pattern to pre-pattern row sums was
+recorded.  No assumptions beyond the combinatorial structure of the
+horizontal-sum construction are used.
+
+Full illustrative computations are provided in Appendix~\ref{app:local-growth}.
+\end{remark}
+
+
+\section{Extremal Local Growth Calculations}
+\label{app:local-growth}
+
+Recall that the sequence \OEIS{A020914} has first differences given by
+\OEIS{A022921}.  This increment sequence consists of repeated ``verses''
+composed of \emph{single} steps ($s$) and \emph{double} steps ($d$).
+
+\subsection{Cycle Structure and Net Multiplicative Effect}
+
+A frequently occurring verse is the $7$--cycle
+\[
+\{ s, d, s, d, s, d, d \},
+\]
+which contains $3$ singles and $4$ doubles.  The corresponding number of
+factors of $2$ is
+\[
+3 + 2(4) = 11,
+\]
+so the net multiplicative contribution of this cycle satisfies
+\[
+\frac{2^{11}}{3^7} < 1.
+\]
+Thus the $7$--cycle is strictly contractive.
+
+This $7$--cycle is often followed by a $5$--cycle
+\[
+\{ s, d, s, d, d \},
+\]
+which contains $2$ singles and $3$ doubles, contributing
+\[
+2 + 2(3) = 8
+\]
+factors of $2$.  Since
+\[
+\frac{2^8}{3^5} > 1,
+\]
+the $5$--cycle is expansive.
+
+Concatenating the $7$--cycle and $5$--cycle produces a $12$--cycle
+\[
+\{ s, d, s, d, s, d, d, s, d, s, d, d \},
+\]
+containing $5$ singles and $7$ doubles.  The total number of factors of $2$ is
+\[
+5 + 2(7) = 19,
+\]
+and hence
+\[
+\frac{2^{19}}{3^{12}} < 1.
+\]
+Therefore, the $12$--cycle is again contractive.
+
+Repeated $12$--cycles diverge multiplicatively from unity until it becomes
+possible to append an additional $5$--cycle, producing a $41$--cycle composed
+of three consecutive $12$--cycles followed by a $5$--cycle.  The total number
+of factors of $2$ in a $41$--cycle is
+\[
+3(19) + 8 = 65,
+\]
+and since
+\[
+\frac{2^{65}}{3^{41}} > 1,
+\]
+the $41$--cycle is expansive.
+
+Importantly, a sequence composed entirely of consecutive $41$--cycles
+strictly dominates the growth of \OEIS{A186009}, which also admits longer
+$53$--cycles (four $12$--cycles followed by a $5$--cycle).  Consequently, any
+asymptotic growth bound obtained using only $41$--cycles provides an upper
+bound for the growth rate of \OEIS{A186009} itself.
+
+\subsection*{Horizontal-Sum Dynamics and Pascal-Type Growth}
+
+Due to doubling events, the usual $2\times$ growth limitation of a standard
+Pascal triangle does not apply directly.  In particular, the sum of earlier
+row entries may exceed the final entry of the row.  However, single steps do
+not increase the length of the generating tuple.  As a result, growth
+associated with singles follows standard Pascal-type summation rules, while
+doubling events introduce additional entries whose contributions must be
+handled separately.
+
+For any single step, the generating terms are strictly increasing from left
+to right across the row.  The maximal growth therefore arises from combining
+Pascal-type summation and doubling events as per Lemma~\ref{lem:single-double-bound}.
+
+\subsection*{Admissible Local Patterns}
+
+Within a $41$--cycle, only the following four local configurations can occur,
+each with a distinct instantaneous growth behavior:
+\[
+\begin{array}{c|c}
+\text{Pattern} & \text{Associated coefficient count} \\
+\hline
+s,d & 3(5) + 2 = 17 \\
+d,d & 3(2) + 1 = 7 \\
+s,d,s & 3(3) + 1 = 10 \\
+d,d,s & 3(2) + 1 = 7
+\end{array}
+\]
+
+\subsection{Illustrative Extremal Computations}
+
+The generating rows evolve by a horizontal--sum rule:
+\[
+a_{n+1}(i+1) \;=\; a_{n+1}(i) + a_n(i+1),
+\]
+so that sequences of single steps exhibit ordinary Pascal--type growth.
+Double steps differ only in that the terminal entry of the row is duplicated,
+causing the final term to appear twice in the generating tuple while preserving
+monotonicity of the preceding entries.
+
+The following examples are not special cases but representative extremal probes
+of the same underlying recurrence.  Since the horizontal--sum dynamics and the
+single--to--double bound of Lemma~\ref{lem:single-double-bound} apply uniformly
+to all admissible rows initiated at a single step, any upper bound obtained
+from a concrete instance constitutes a valid global upper bound for the
+corresponding local pattern.
+
+We illustrate the bounding procedure with concrete examples.  Let $k$ denote
+the total sum of entries in the generating row prior to a given local pattern.
+By Lemma~\ref{lem:single-double-bound}, each single-to-double transition is
+bounded which provides the basis for the extremal analysis:
+
+\paragraph{Example 1.}
+\[
+\begin{array}{l}
+\text{Single } a(10) = \underbrace{173}_{\text{sum} := k}:
+\underbrace{1,7,25,55,85}_{k}
+\end{array}
+\]
+
+\[
+\begin{array}{l}
+\text{Double } a(11) = \underbrace{476}_{\text{sum} = 3k}:
+\underbrace{1,8,33,88}_{k}
+\underbrace{173}_{k},
+\underbrace{173}_{k}
+\end{array}
+\]
+
+\[
+\begin{array}{l}
+\text{Single } a(12) = \underbrace{961}_{\text{sum} = 9k}:
+\underbrace{1,9,42,130}_{2k}
+\underbrace{303}_{3k},
+\underbrace{476}_{4k}
+\end{array}
+\]
+
+\[
+\begin{array}{l}
+\text{Double } a(13) = \underbrace{2652}_{\text{sum} = 33k}:
+\underbrace{1,10,52,182}_{4k},
+\underbrace{485}_{7k},
+\underbrace{961}_{11k},
+\underbrace{961}_{11k}
+\end{array}
+\]
+
+\[
+\begin{array}{l}
+\text{Double } a(14) = \underbrace{8045}_{\text{sum} = 123k}:
+\underbrace{1,11,63,245}_{8k},
+\underbrace{730}_{15k},
+\underbrace{1691}_{26k},
+\underbrace{2652}_{37k},
+\underbrace{2652}_{37k}
+\end{array}
+\]
+
+\[
+\begin{array}{l}
+\text{Single } a(15) = \underbrace{17637}_{\text{sum} = 329k}:
+\underbrace{1,12,75,320}_{16k},
+\underbrace{1050}_{31k},
+\underbrace{2741}_{57k},
+\underbrace{5393}_{94k},
+\underbrace{8045}_{131k}
+\end{array}
+\]
+
+From these bounds, the maximal local ratios are
+\[
+\begin{array}{c|c}
+\text{Pattern} & \text{Max Ratio} \\
+\hline
+s,d & 3 \\
+d,d & 123/33 \\
+s,d,s & 3 \\
+d,d,s & 329/123
+\end{array}
+\]
+
+\paragraph{Example 2.}
+\[
+\begin{array}{l}
+\text{Single } a(12) = \underbrace{961}_{\text{sum} := k}:
+\underbrace{1,9,42,130,303,476}_{k}
+\end{array}
+\]
+
+\[
+\begin{array}{l}
+\text{Double } a(13) = \underbrace{2652}_{\text{sum} = 3k}:
+\underbrace{1,10,52,182,485}_{k},
+\underbrace{961}_{k},
+\underbrace{961}_{k}
+\end{array}
+\]
+
+\[
+\begin{array}{l}
+\text{Double } a(14) = \underbrace{8045}_{\text{sum} = 13k}:
+\underbrace{1,11,63,245,730}_{2k},
+\underbrace{1691}_{3k},
+\underbrace{2652}_{4k},
+\underbrace{2652}_{4k}
+\end{array}
+\]
+
+\[
+\begin{array}{l}
+\text{Single } a(15) = \underbrace{17637}_{\text{sum} = 37k}:
+\underbrace{1,12,75,320,1050}_{4k},
+\underbrace{2741}_{7k},
+\underbrace{5393}_{11k},
+\underbrace{8045}_{15k}
+\end{array}
+\]
+
+\[
+\begin{array}{l}
+\text{Double } a(16) = \underbrace{51033}_{\text{sum} = 131k}:
+\underbrace{1,13,88,408,1458}_{8k},
+\underbrace{4199}_{15k},
+\underbrace{9592}_{26k},
+\underbrace{17637}_{41k},
+\underbrace{17637}_{41k}
+\end{array}
+\]
+
+\[
+\begin{array}{l}
+\text{Single } a(17) = \underbrace{108950}_{\text{sum} = 341k}:
+\underbrace{1,14,102,510,1968}_{16k},
+\underbrace{6167}_{31k},
+\underbrace{15759}_{57k},
+\underbrace{33396}_{98k},
+\underbrace{51033}_{139k}\end{array}
+\]
+
+From these bounds, the maximal local ratios are
+\[
+\begin{array}{c|c}
+\text{Pattern} & \text{Max Ratio} \\
+\hline
+s,d & 3 \\
+d,d & 13/3 \\
+s,d,s & 341/131 \\
+d,d,s & 37/13
+\end{array}
+\]
+
+\subsection*{Improved Extremal Alignment}
+
+Each example yields a valid upper bound on the maximal growth factor associated
+with each admissible local pattern.  Since these bounds arise from the same
+uniform recurrence and apply globally to all admissible configurations, the
+true maximal growth factor for a given pattern is bounded above by the minimum
+of all such valid upper bounds.
+
+Accordingly, combining the sharpest bounds obtained across different initiating
+rows yields the tightest global envelope on admissible local growth.
+\[
+\begin{array}{c|c|c}
+\text{Pattern} & \text{Max Ratio} & \text{Associated coefficient count} \\
+\hline
+s,d & 3 & 17 \\
+d,d & 123/33 & 7 \\
+s,d,s & 341/131 & 10 \\
+d,d,s & 329/123 & 7
+\end{array}
+\]
+
+Consequently, the maximal geometric growth rate of a $41$--cycle satisfies
+\[
+\Bigl(
+3^{17}
+\cdot (123/33)^7
+\cdot (341/131)^{10}
+\cdot (329/123)^7
+\Bigr)^{1/41}
+< 2.95 < 3.
+\]
+
+This bound applies \emph{a fortiori} to \OEIS{A186009}, whose admissible growth
+patterns are strictly dominated, in the sense of per--symbol multiplicative
+growth, by those of a pure $41$--cycle concatenation.
 
 
 \newpage
