@@ -87,9 +87,7 @@
 
 \begin{abstract}
 
-%Abstract - goals of the paper
 We study the accelerated Collatz map
-
 \[
 f(x) = \begin{cases}
 \displaystyle
@@ -98,24 +96,29 @@ f(x) = \begin{cases}
     \frac{3x+1}{2}           & \text {if } x \text{ is odd}. \\
 \end{cases}
 \]
+and analyze integer trajectories through parity-encoded residue classes.
+Each finite parity word determines a non-overlapping residue class modulo
+a power of two, and convergent parity words correspond to classes whose
+elements reach a strictly smaller integer after finitely many iterations.
 
-and analyze the structure of integer trajectories through parity-encoded residue classes. Each finite
-parity word induces a non-overlapping residue class modulo a power of two, and convergent parity words
-correspond to classes whose elements reach a strictly smaller integer after finitely many iterations.
+Using explicit enumeration of admissible parity words and their associated
+division counts, we show that each convergent residue class admits a
+well-defined asymptotic density. Grouping these classes by minimal stopping
+time yields a disjoint family whose cumulative density increases
+monotonically. We prove that the density contribution of newly appearing
+convergent classes tends to zero as the stopping time grows. Since these
+classes exhaust all non-convergent residue classes, the complement of the
+convergent union has asymptotic density zero.
 
-Using explicit enumeration results for parity words and their associated division counts, we show that
-convergent residue classes admit well-defined asymptotic densities. These classes may be grouped by
-minimal stopping time without overlap, yielding a cumulative density that increases monotonically with
-stopping time. We prove that the complement of this union has asymptotic density tending to zero,
-implying that the cumulative density of convergent classes converges to one.
-
-As a consequence, every positive integer belongs to a convergent residue class of finite stopping time
-and therefore eventually reaches a smaller positive integer under iteration of the Collatz map. This
-establishes global descent and rules out the existence of nontrivial cycles in the positive integers,
-leaving the classical 4\Rarr2\Rarr1\Rarr4 cycle as the unique periodic orbit.
+Consequently, the cumulative density of convergent residue classes converges
+to one. Every positive integer therefore belongs to a convergent residue
+class of finite stopping time and eventually reaches a smaller positive
+integer under iteration of the Collatz map. This establishes global descent
+and rules out the existence of nontrivial cycles in the positive integers,
+leaving the classical \(4 \rightarrow 2 \rightarrow 1 \rightarrow 4\) cycle
+as the unique periodic orbit.
 
 \end{abstract}
-\newpage
 
 
 \tableofcontents
@@ -126,7 +129,8 @@ leaving the classical 4\Rarr2\Rarr1\Rarr4 cycle as the unique periodic orbit.
 
 \subsection{The Collatz Mapping and Known Results}
 
-The Collatz conjecture concerns the behavior of the (accelerated) map:
+The Collatz conjecture concerns the behavior of the accelerated map defined below
+on the positive integers.
 
 \begin{define}
 \label{def:accelerated-map}
@@ -140,13 +144,13 @@ f(x) = \begin{cases}
     \frac{3x+1}{2}           & \text {if } x \text{ is odd}. \\
 \end{cases}
 \]
-This map acts on the positive integers and combines each odd step of the classical Collatz iteration
-\(x \mapsto 3x+1\) with the immediately following division by two
+This map acts on the positive integers and combines each odd step of the classical Collatz
+iteration \(x \mapsto 3x+1\) with the immediately following division by two
 \cite{Everett1977}.
 \end{define}
 
-The Collatz conjecture asserts that, under iteration of \(f\), every positive integer eventually
-reaches the cycle \(4 \to 2 \to 1 \to 4\) \cite{Collatz1937}.
+The Collatz conjecture asserts that, under iteration of \(f\), every positive integer
+eventually reaches the cycle \(4 \to 2 \to 1 \to 4\) \cite{Collatz1937}.
 
 Despite its elementary formulation, the conjecture has resisted proof for decades
 \cite{Lagarias2010,Terras1976}. Extensive computational verification confirms convergence
@@ -154,10 +158,9 @@ for all integers up to very large bounds \cite{OliveiraESilva2010}, but such ver
 does not constitute a proof and offers limited insight into the global structure
 of Collatz trajectories.
 
-Many prior approaches focus on bounding individual trajectories or analyzing
-probabilistic heuristics \cite{Wirsching1998}. While these methods provide
-valuable intuition, they do not address the problem at the level of the entire
-positive integer space.
+Many prior approaches focus on bounding individual trajectories or probabilistic heuristics 
+\cite{Wirsching1998}. While these methods provide valuable intuition, they do not address
+the problem at the level of the entire positive integer space.
 
 \subsection{Strategy of the Proof}
 
@@ -182,9 +185,9 @@ The proof proceeds through the following steps:
       pairwise disjoint.
 \item Compute the asymptotic density of each class using its associated
       total division count.
-\item Sum the densities of all convergent classes up to a given stopping
-      time and show that the complement of this union has density
-      tending to zero.
+\item Show that the density contribution of newly appearing convergent
+      classes tends to zero as the stopping time increases, and that
+      these classes exhaust all non-convergent residue classes.
 \item Conclude that every positive integer eventually reaches a smaller
       value, establishing global descent and ruling out non-trivial
       cycles.
@@ -192,7 +195,8 @@ The proof proceeds through the following steps:
 
 By focusing on exhaustion of the positive integers via convergent
 structures rather than on individual trajectories, this approach
-provides a global mechanism for descent under the Collatz map.
+provides a global and deterministic mechanism for descent under
+the Collatz map.
 
 
 \section{Definitions and Preliminaries}
@@ -244,9 +248,8 @@ first \(k\) Collatz iterates are identical to those of \(x\).
 \section{Division Counts and Path Encoding}
 
 The structure of convergent residue classes is governed by the total number
-of divisions by two incurred along a Collatz path. This quantity depends
-only on the parity pattern of the path and not on the specific starting
-integer.
+of divisions by two incurred along a Collatz path, which depends only on the
+parity pattern of the path and not on the specific starting integer.
 
 \subsection{Total Division Count}
 
@@ -260,6 +263,12 @@ Let \(k \ge 1\). Define \(A020914(k)\) to be the total number of divisions
 by two applied along an accelerated Collatz path with exactly \(k\)
 odd steps.
 \end{define}
+
+Although admissible parity words with the same number of odd steps may differ
+in the distribution of divisions by two between steps, the total number of
+divisions is invariant. For any Collatz path with exactly \(k\) odd steps,
+the sum of the division counts equals \(A020914(k)\). This quantity depends
+only on the number of odd steps and not on the specific parity word.
 
 This quantity coincides with the number of binary digits of \(3^k\),
 as tabulated by \OEIS{A020914}, but its role here is purely arithmetic:
@@ -291,19 +300,27 @@ step contributes a factor of 2 in the denominator. After \(k\) odd steps,
 the accumulated denominator is exactly \(2^{A020914(k)}\), independent of
 the starting integer, which fixes the residue class modulo this power of two.
 \end{proof}
-\subsection{Density of Convergent Classes}
+
+\subsection{Density of Residue Classes}
 
 \begin{proposition}
-Each convergent residue class with \(k\) odd steps has asymptotic density
-\[
-2^{-A020914(k)}.
-\]
+Each residue class with \(k\) odd steps has asymptotic density
+\[ 2^{-A020914(k)}. \]
 \end{proposition}
 
 \begin{proof}
 Each class is an arithmetic progression with step size \(2^{A020914(k)}\)
 and exactly one representative per period. The result follows.
 \end{proof}
+
+\begin{remark}
+At fixed \(k\), there are finitely many distinct convergent residue classes.
+Let \(\widetilde A(k)\) denote the number of such classes. Since these classes
+are pairwise disjoint, their total density contribution at stopping time \(k\) is
+\[
+\widetilde A(k)\,2^{-A020914(k)}.
+\]
+\end{remark}
 
 \subsection{Example}
 
@@ -385,7 +402,8 @@ d_1 + \cdots + d_k \ge A020914(k),
 where \(A020914(k)\) denotes the minimal total number of divisions by two
 required to clear denominators in an accelerated Collatz trajectory with
 \(k\) odd steps. Equality holds if and only if the parity word follows the
-lexicographically minimal admissible increment pattern.
+lexicographically minimal admissible increment pattern (i.e., the parity
+word achieving admissibility with minimal total division count).
 \end{lemma}
 
 \begin{define}[Convergent Parity Word]
@@ -443,12 +461,15 @@ admissibility.
 
 The horizontal--sum construction used to enumerate convergent parity
 words tracks the accumulation of excess divisions above this minimal
-baseline. Consequently, the admissible local patterns in the
-\(\{s,d\}\)-grammar determine the combinatorial growth of
+baseline, following the algorithmic framework introduced by
+Winkler~\cite{Winkler2017}. Consequently, the admissible local patterns
+in the \(\{s,d\}\)-grammar determine the combinatorial growth of
 \(\widetilde A(k)\) independently of the specific values of the parity
 word entries.
 \end{remark}
 
+The preceding grammar restricts admissible parity words to a finite,
+recursively generated family.
 \begin{proposition}
 The number of convergent parity words of length \(k\) is given by
 \(\OEIS{A186009}\).
@@ -456,25 +477,23 @@ The number of convergent parity words of length \(k\) is given by
 
 \begin{lemma}[Single-to-Double Row Sum Bound]
 \label{lem:single-double-bound}
-Let a row generated by a single step have total sum $k$, and let its final
-(rightmost) entry also equal $k$. Then the row obtained by applying a double
-step immediately afterward has total sum at most $3k$.
+Let a row produced by a single step have total sum $k$. Apply a double step
+immediately afterward. Then the resulting row has total sum at most $3k$.
 \end{lemma}
 
 \begin{proof}
-Under a single step, row entries are generated by Pascal-type summation and
-are strictly increasing left to right. In this case, the sum of all entries
-preceding the final entry is at most the final entry itself. Thus, if the
-final entry equals $k$, the total row sum satisfies
-\[
-\sum_{\text{preceding entries}} \le k.
-\]
+By definition, the total sum of the single row equals $k$. Under a subsequent
+double step, the terminal entry of the new row is formed as the sum of all
+entries of the preceding row, and the previous terminal entry is duplicated.
 
-A double step duplicates the final entry and appends it as a new terminal
-entry, without altering the preceding entries. Consequently, the resulting
-row sum is bounded by
+Thus the double row consists of:
+(i) the interior entries of the single row, whose total is $\le k$;
+(ii) one terminal entry equal to $k$; and
+(iii) a duplicated terminal entry, also equal to $k$.
+
+Hence the total sum of the double row is bounded by
 \[
-k \;+\; k \;+\; k \;=\; 3k.
+k + k + k = 3k.
 \]
 \end{proof}
 
@@ -502,7 +521,8 @@ so that the density contribution of convergent residue classes of stopping time 
 \widetilde A(i)\, 2^{-B(i)}.
 \]
 
-From the structure of $A020914$, we know:
+By definition of $A020914$ as the minimal exponent with $2^{B(i)} > 3^i$, the function
+$B(i)$ satisfies the following properties:
 \begin{itemize}
     \item $B(i)$ is strictly increasing, with increments either 1 or 2 and no zeros.
     \item Asymptotically, $B(i) \sim (\log_2 3)\, i$.
@@ -548,11 +568,11 @@ For all $i \ge 0$,
 Consequently, the density contribution of convergent residue classes of
 stopping time $i$ satisfies
 \[
-\frac{\widetilde A(i)}{3^i}
+\frac{\widetilde A(i)}{2 \cdot 3^i}
 \;<\;
 \widetilde A(i)\,2^{-A020914(i)}
 \;<\;
-\frac{\widetilde A(i)}{2 \cdot 3^i}.
+\frac{\widetilde A(i)}{3^i}.
 \]
 \end{lemma}
 
@@ -587,7 +607,7 @@ The increment sequence \OEIS{A022921} induces a finite symbolic grammar on symbo
 \{ s, d \},
 \]
 corresponding respectively to single and double events in the horizontal-sum construction.
-Every admissible infinite sequence of increments decomposes uniquely into concatenations
+Every admissible infinite sequence of increments can be partitioned into concatenations
 of two fundamental cycle types:
 \begin{itemize}
   \item a \emph{7-cycle} with pattern
@@ -631,8 +651,8 @@ consecutive 12-cycles followed by a 5-cycle. Its net multiplicative factor is
 \]
 
 Any admissible infinite word whose associated horizontal sums grow without bound
-is pointwise dominated by sequences composed of repeated 41-cycles or by
-longer blocks containing strictly more contractive content per symbol. 
+is eventually dominated, in per-symbol growth rate, by sequences composed of repeated
+41-cycles or by longer blocks containing strictly more contractive content per symbol.
 Since the 41-cycle maximizes per-symbol growth among all admissible patterns, 
 its infinite repetition provides a computable upper bound on $\widetilde A(i)$,
 and therefore bounds the maximal possible geometric growth rate of all admissible sequences.
@@ -674,9 +694,9 @@ residue classes of stopping time $i$ satisfies
 \[
 \frac{\widetilde A(i)}{2^{B(i)}} \longrightarrow 0 \quad \text{as } i \to \infty.
 \]
-Consequently, the cumulative density of convergent residue classes approaches 1,
-so every positive integer belongs to some convergent residue class of finite
-stopping time.
+Consequently, the cumulative density of convergent residue classes approaches 1. 
+Since the residue classes form a partition of the positive integers, 
+every integer must belong to some convergent residue class of finite stopping time.
 
 For each such residue class, there exists a finite integer $k$ such that
 the $k$-fold iteration of the Collatz map satisfies
@@ -687,9 +707,8 @@ Hence every positive integer eventually reaches a smaller positive integer
 under iteration of the Collatz map.
 \end{proof}
 
-From Global Descent it follows immediately that no positive integer can remain
-perpetually above its initial value, leaving only the trivial cycle $1\to2\to4$
-as a candidate for a recurrent orbit.
+Global Descent implies that no positive integer can remain perpetually above
+its initial value, leaving only the trivial 1-2-4 cycle as a recurrent orbit.
 
 \section{Non-Existence of Non-Trivial Cycles}
 
@@ -773,8 +792,7 @@ the canonical constant \(c(\omega)\) may be computed as follows:
 \item Choose any integer \(x\) belonging to the residue class induced by
       the parity word \(\omega\).
 \item Compute \(y = 3^k x\).
-\item Let \(m\) be the smallest integer such that
-      \(m \cdot 2^D \ge y\).
+\item Let \(m\) be the smallest integer greater than or equal to \(y / 2^D \).
 \item Define
       \[
       c(\omega) = m \cdot 2^D - y.
@@ -810,7 +828,7 @@ T_\omega(x) = \frac{3^4 x + 65}{2^7} = \frac{81x + 65}{128}.
 
 Checking another representative \(x = 143\) in the same residue class:
 \[
-T_\omega(143) = \frac{81 \cdot 143 + 65}{128} = \frac{11588 + 65}{128} = 91,
+T_\omega(143) = \frac{81 \cdot 143 + 65}{128} = \frac{11583 + 65}{128} = 91,
 \]
 confirming that the same \(c(\omega)\) works uniformly across the residue class.
 
@@ -819,9 +837,12 @@ confirming that the same \(c(\omega)\) works uniformly across the residue class.
 \section{Extremal Local Growth Analysis}
 
 \begin{lemma}[Local Growth Bounds]
+\label{lem:local-growth-bounds}
 For each admissible local pattern occurring within a $41$-cycle,
 the ratio of the total sum of entries after applying the pattern
-to the total sum before applying it is bounded above as follows:
+to the total sum before applying it is bounded above as follows,
+uniformly over all admissible placements of delayed doubling within
+the pattern:
 \[
 \begin{array}{c|c}
 \text{Pattern} & \text{Max Growth Factor} \\
@@ -829,14 +850,14 @@ to the total sum before applying it is bounded above as follows:
 s,d & 3 \\
 d,d & 123/33 \\
 s,d,s & 341/131 \\
-d,d,s & 37/13
+d,d,s & 329/123
 \end{array}
 \]
 \end{lemma}
 
 \begin{proposition}[Extremal 41-Cycle Growth]
-The maximal geometric growth rate achievable by any admissible infinite word
-is bounded by
+The maximal geometric growth rate achievable by any admissible infinite
+word under the horizontal-sum dynamics ~\cite{Winkler2017} is bounded by
 \[
 \rho_{41}
 =
@@ -844,7 +865,7 @@ is bounded by
 3^{17}
 \cdot (123/33)^7
 \cdot (341/131)^{10}
-\cdot (37/13)^7
+\cdot (329/123)^7
 \Bigr)^{1/41}
 < 3,
 \]
@@ -852,9 +873,15 @@ where the exponents count the occurrences of each local pattern within a
 $41$-cycle.
 \end{proposition}
 
+\noindent
+Here the exponents record the total number of coefficients generated by each
+admissible local pattern within a single $41$--cycle; the enumeration of these
+patterns and the derivation of the counts $17,7,10,7$ are given explicitly in
+Appendix~\ref{app:local-growth-details}, Section~\ref{sec:admissible-patterns}.
+
 \begin{remark}[Derivation of Local Growth Constants]
-The constants appearing in Lemma~\ref{lem:local-growth} are obtained by a
-complete extremal analysis of the horizontal-sum dynamics governing
+The constants shown in Lemma~\ref{lem:local-growth-bounds} are obtained
+by a complete extremal analysis of the horizontal-sum dynamics governing
 $\widetilde A(i)$.  Within each local configuration, elements arising from
 single steps evolve according to standard Pascal-type summation, yielding
 maximal growth proportional to powers of $2$, while additional entries
@@ -867,20 +894,21 @@ largest achievable ratio of post-pattern to pre-pattern row sums was
 recorded.  No assumptions beyond the combinatorial structure of the
 horizontal-sum construction are used.
 
-Full illustrative computations are provided in Appendix~\ref{app:local-growth}.
+Full illustrative computations are provided in Appendix~\ref{app:local-growth-details}.
 \end{remark}
 
 
+\newpage
 \section{Extremal Local Growth Calculations}
-\label{app:local-growth}
+\label{app:local-growth-details}
 
 Recall that the sequence \OEIS{A020914} has first differences given by
-\OEIS{A022921}.  This increment sequence consists of repeated ``verses''
+\OEIS{A022921}.  This increment sequence consists of repeated blocks
 composed of \emph{single} steps ($s$) and \emph{double} steps ($d$).
 
 \subsection{Cycle Structure and Net Multiplicative Effect}
 
-A frequently occurring verse is the $7$--cycle
+A frequently occurring block is the $7$--cycle
 \[
 \{ s, d, s, d, s, d, d \},
 \]
@@ -956,10 +984,27 @@ For any single step, the generating terms are strictly increasing from left
 to right across the row.  The maximal growth therefore arises from combining
 Pascal-type summation and doubling events as per Lemma~\ref{lem:single-double-bound}.
 
+\newpage
 \subsection*{Admissible Local Patterns}
+\label{sec:admissible-patterns}
 
-Within a $41$--cycle, only the following four local configurations can occur,
-each with a distinct instantaneous growth behavior:
+Within a $41$--cycle, only the following four local configurations can occur.
+This is a consequence of the cycle structure described above.  Each $41$--cycle
+is composed of repeated $12$--cycles and a terminal $5$--cycle, where the only
+step patterns are
+\[
+\{ s,d,s,d,s,d,d \} \quad \text{and} \quad \{ s,d,s,d,d \}.
+\]
+In particular, no two single steps can occur consecutively, while double steps
+may occur either singly or in pairs.  Examining all contiguous subwords of these
+cycles therefore yields exactly four admissible local patterns:
+\[
+(s,d),\quad (d,d),\quad (s,d,s),\quad (d,d,s),
+\]
+and no others.
+
+Enumerating the number of occurrences of each pattern within a $41$--cycle gives
+the following counts:
 \[
 \begin{array}{c|c}
 \text{Pattern} & \text{Associated coefficient count} \\
@@ -983,11 +1028,11 @@ causing the final term to appear twice in the generating tuple while preserving
 monotonicity of the preceding entries.
 
 The following examples are not special cases but representative extremal probes
-of the same underlying recurrence.  Since the horizontal--sum dynamics and the
-single--to--double bound of Lemma~\ref{lem:single-double-bound} apply uniformly
-to all admissible rows initiated at a single step, any upper bound obtained
-from a concrete instance constitutes a valid global upper bound for the
-corresponding local pattern.
+of the same underlying recurrence.  Since the horizontal--sum recurrence and
+Lemma~\ref{lem:single-double-bound} provide a uniform inequality valid for all
+admissible generating rows, any concrete realization that saturates these
+inequalities yields an upper bound that applies to every occurrence of the same
+local pattern.
 
 We illustrate the bounding procedure with concrete examples.  Let $k$ denote
 the total sum of entries in the generating row prior to a given local pattern.
@@ -1064,6 +1109,7 @@ d,d,s & 329/123
 \end{array}
 \]
 
+\newpage
 \paragraph{Example 2.}
 \[
 \begin{array}{l}
@@ -1136,12 +1182,22 @@ d,d,s & 37/13
 
 \subsection*{Improved Extremal Alignment}
 
+Because the total multiplicative growth over a cycle is the product of the local
+growth factors, the geometric mean over one full cycle is maximized by selecting
+the maximal admissible factor at each local pattern occurrence. Consequently,
+once a uniform upper bound has been established for each admissible local pattern,
+the extremal global growth rate over a complete cycle is obtained by multiplying
+these maximal local factors according to their frequencies and taking the
+corresponding geometric mean.
+
 Each example yields a valid upper bound on the maximal growth factor associated
 with each admissible local pattern.  Since these bounds arise from the same
 uniform recurrence and apply globally to all admissible configurations, the
 true maximal growth factor for a given pattern is bounded above by the minimum
 of all such valid upper bounds.
 
+Since the recurrence is monotone with respect to the placement of delayed doubling,
+no other admissible configuration can exceed these extremal realizations.
 Accordingly, combining the sharpest bounds obtained across different initiating
 rows yields the tightest global envelope on admissible local growth.
 \[
@@ -1169,6 +1225,13 @@ Consequently, the maximal geometric growth rate of a $41$--cycle satisfies
 This bound applies \emph{a fortiori} to \OEIS{A186009}, whose admissible growth
 patterns are strictly dominated, in the sense of per--symbol multiplicative
 growth, by those of a pure $41$--cycle concatenation.
+
+\paragraph{Conclusion.}
+Since every admissible growth pattern of \OEIS{A186009} is composed of
+$12$--cycles and $5$--cycles, and since concatenations of $41$--cycles
+maximize per--symbol multiplicative growth among all such admissible
+concatenations, the bound obtained above for the $41$--cycle applies
+\emph{a fortiori} to \OEIS{A186009} itself.
 
 
 \newpage
