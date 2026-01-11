@@ -106,7 +106,9 @@ Using explicit enumeration of admissible parity words and their associated
 division counts, we show that each convergent residue class admits a
 well-defined asymptotic density. Grouping these classes by minimal stopping
 time yields, at each level, a finite disjoint family whose cumulative density
-increases monotonically. We prove that the density contribution of newly
+increases monotonically. The asymptotic density encodes the fraction of
+integers guaranteed to decrease at each stopping time, providing a quantitative
+measure of global descent. We prove that the density contribution of newly
 appearing convergent classes tends to zero as the stopping time grows.
 Consequently, the total density of the union of convergent residue classes
 approaches one.
@@ -149,7 +151,9 @@ g(x) =
 
 In this paper, we primarily study the accelerated map defined below on the
 positive integers.  All results are stated in terms of the accelerated map
-\( f \), which is dynamically equivalent to the standard Collatz map \( g \).
+\( f \), which is dynamically equivalent to the standard Collatz map \( g \)
+in the sense that each orbit of \( g \) corresponds to an orbit of  \( f \)
+obtained by collapsing consecutive divisions by two, and vice versa. 
 
 \begin{define}[Accelerated Collatz Map]
 \label{def:accelerated-map}
@@ -192,36 +196,45 @@ patterns under the accelerated Collatz map.
 
 The central idea is to study finite Collatz paths abstractly and to associate each such
 path with a pairwise disjoint residue class of integers that follow the same parity
-pattern for a fixed number of odd steps. Each class is assigned a
-minimal stopping time, defined as the first iterate at which its
-elements strictly decrease.
+pattern for a fixed number of odd steps. Each class is assigned a minimal stopping time,
+defined as the first iterate at which all elements of the class map to a value strictly
+smaller than their initial value. The key novelty is to control the global behavior of
+these classes by analyzing the \emph{grammar of admissible parity words} and the maximal
+multiplicative growth they permit.
 
 The proof proceeds through the following steps:
 \begin{itemize}
 \item Encode Collatz trajectories using parity words that record the
       number of divisions by two between odd steps.
-\item Show that each admissible parity word induces an arithmetic
-      residue class of positive integers.
+\item Show that each admissible parity word (i.e., one satisfying the
+      prefix-wise growth constraint) induces an arithmetic residue class
+      of positive integers.
 \item Prove that convergent residue classes of fixed stopping time are
       pairwise disjoint.
-\item Compute the asymptotic density of each class using its associated
+\item Express the asymptotic density of each class in terms of its
       total division count.
-\item Show that the density contribution of newly appearing convergent
-      classes tends to zero as the stopping time increases, and that
-      any residue classes not appearing among the convergent classes
-      have vanishing asymptotic density.
-\item Conclude that every positive integer eventually reaches a smaller
-      value, establishing global descent and ruling out non-trivial
-      cycles.
+\item Analyze the grammar of admissible parity words to identify all
+      possible local growth patterns, and establish sharp upper bounds
+      on the multiplicative growth associated with each such pattern.
+\item Show that the locally maximal growth pattern corresponds to a
+      $5$--cycle which is globally forbidden by the grammar, and that
+      an infinite concatenation of this forbidden word therefore provides
+      a strict upper envelope on the growth of all admissible words.
+\item Deduce that the density contribution of newly appearing convergent
+      classes tends to zero as the stopping time increases, so that the
+      union of all convergent residue classes has asymptotic density one.
+\item Conclude that for every positive integer $n$, there exists an iterate
+      $k$ such that $f^k(n) < n$, establishing global descent and ruling out
+      non-trivial cycles.
 \end{itemize}
 
 By focusing on cumulative densities of the positive integers via convergent
-structures rather than on individual trajectories, this approach
-provides a global and deterministic mechanism for descent under
-the Collatz map.
+structures, and by bounding growth through extremal but grammatically
+forbidden parity patterns, this approach provides a global and deterministic
+mechanism for descent under the Collatz map, independent of probabilistic
+heuristics or trajectory-by-trajectory analysis.
 
 
-\newpage
 \section{Definitions and Preliminaries}
 
 \subsection{Stopping Time}
@@ -232,7 +245,8 @@ The \emph{stopping time} \( \sigma(x) \) of a positive integer \(x\) is the mini
 \[
 f^k(x) < x.
 \]
-Stopping time has been studied in the context of the $3x+1$ problem
+If no such $k$ exists, we say that $x$ has infinite stopping time. Stopping time has been
+studied in the context of the $3x+1$ problem.
 \cite{Terras1976}.
 \end{define}
 
@@ -252,7 +266,7 @@ considered in the context of the accelerated Collatz map by Everett \cite{Everet
 
 \begin{define}
 Two positive integers \(x,y \in \setN\) are said to be in the same \emph{residue class of
-stopping time \(k\)} if their first \(k\) Collatz iterates are identical. The idea of encoding
+depth \(k\)} if their first \(k\) Collatz iterates are identical. The idea of encoding
 trajectories via residue classes or arithmetic progressions has appeared in prior works on
 symbolic and structural approaches to the $3x+1$ problem \cite{Wirsching1998,Chamberland2003}.
 \end{define}
@@ -268,12 +282,13 @@ containing \(x\) is
 \begin{define}[Convergent Residue Class]
 A residue class \([x]_k\) is called \emph{convergent of stopping time \(k\)} if
 \[
-f^k(x) < x.
+f^k(y) < y \quad \text{for all } y \in [x]_k.
 \]
 \end{define}
 
 
 \section{Division Counts and Path Encoding}
+\label{sec:division-counts}
 
 The structure of convergent residue classes is governed by the total number
 of divisions by two incurred along a Collatz path, which depends only on the
@@ -291,22 +306,38 @@ of divisions by two. The cumulative number of such divisions determines
 the arithmetic structure of the corresponding residue class.
 
 \begin{define}[Total Division Count]
-Let $k \ge 1$. Define $A020914(k)$ to be the minimal total number of divisions 
-by two incurred along an accelerated Collatz path containing exactly $k$
-odd steps.
+Let $k \ge 0$. For a given parity word with $k$ odd steps and division
+counts $d_0, \dots, d_{k-1}$, define its \emph{total division count} by
+\[
+D = \sum_{i=0}^{k-1} d_i.
+\]
 \end{define}
 
-Although parity words with the same number of odd steps may differ
-in the distribution of divisions by two between steps, the total number
-of divisions is invariant. For any Collatz path with exactly $k$ odd steps,
-the sum of the division counts equals $A020914(k)$. This quantity depends
-only on the number of odd steps and not on the specific parity word.
+\begin{remark}[Empty Parity Words and Purely Even Trajectories]
+The case $k=0$ corresponds to \emph{empty parity words}, representing numbers
+that are even and experience no odd steps before decreasing below their starting
+value. These paths are trivially convergent under repeated division by two,
+and their corresponding residue class is simply the set of powers of 2.
+Thus, the parity word framework naturally includes purely even sequences
+without requiring special treatment.
+\end{remark}
 
-This quantity coincides with the number of binary digits of $3^k$,
-as tabulated by \OEIS{A020914}, but its role here is purely arithmetic:
-it records the total exponent of 2 accumulated in the denominator of the
-iterated map, a perspective implicit in earlier analyses of stopping times
-and parity sequences \cite{Terras1976,Wirsching1998}.
+Parity words with the same number of odd steps may differ in the
+distribution of divisions by two between steps and hence in their total
+division count. However, for each parity word the value of $D$ is uniquely
+determined by its parity structure.
+
+\begin{define}[Minimal Total Division Count]
+Let $A020914(k)$ denote the minimal total number of divisions by two among
+all parity words containing exactly $k$ odd steps.
+\end{define}
+
+This quantity coincides with $\lceil \log_2(3^k) \rceil$, the number of binary
+digits of $3^k$, as tabulated by \OEIS{A020914}. Its role here is purely arithmetic:
+it records the smallest possible exponent of $2$ appearing in the denominator of
+the iterated map for a path with $k$ odd steps, a perspective implicit in earlier
+analyses of stopping times and parity sequences
+\cite{Terras1976,Wirsching1998}.
 
 
 \subsection{Density of Residue Classes}
@@ -316,29 +347,32 @@ For fixed $k$, the residue classes induced by distinct parity words are pairwise
 \end{lemma}
 
 \begin{proof}
-Each parity word with $k$ odd steps determines a unique residue
-class of the form
+Each parity word with $k$ odd steps and total division count $D$
+determines a unique residue class of the form
 \[
-n \equiv r \pmod{2^{A020914(k)}},
+n \equiv r \pmod{2^{D}},
 \]
-with exactly one representative per period of length $2^{A020914(k)}$, which
-defines the residue class modulo $2^{A020914(k)}$. If two distinct parity words
-produced the same residue $r \pmod{2^{A020914(k)}}$, then they would induce
-identical arithmetic progressions and hence identical Collatz trajectories,
-contradicting the uniqueness of the parity encoding. Therefore, distinct
-words correspond to distinct residues modulo $2^{A020914(k)}$, and the
-associated residue classes are disjoint.
+with exactly one representative per period of length $2^{D}$. If two
+distinct parity words produced the same residue class, they would induce
+identical arithmetic progressions and hence identical Collatz
+trajectories, contradicting the uniqueness of the parity encoding.
+Therefore, distinct words correspond to distinct residue classes, and the
+associated classes are disjoint.
 \end{proof}
 
 \begin{proposition}
-Each residue class with $k$ odd steps has asymptotic density
+A residue class with total division count $D$ has asymptotic density
 \[
-2^{-A020914(k)}.
+2^{-D}.
+\]
+In particular, for any class with $k$ odd steps,
+\[
+\text{density} \le 2^{-A020914(k)}.
 \]
 \end{proposition}
 
 \begin{proof}
-Each class is an arithmetic progression with step size $2^{A020914(k)}$
+Each class is an arithmetic progression with step size $2^{D}$
 and exactly one representative per period. The result follows.
 \end{proof}
 
@@ -354,14 +388,14 @@ are pairwise disjoint, their total density contribution at stopping time $k$ is
 
 \subsection{Example}
 
-For convergent segments with $k=4$ odd steps, $A020914(4)=7$.
-Thus all associated residue classes consist of integers of the form
+For convergent segments with $k=4$ odd steps, the minimal total division
+count is $A020914(4)=7$. For parity words attaining this minimum, the
+associated residue classes consist of integers of the form
 \[
 x = 2^7 n + r, \quad n \in \setN,
 \]
-where the residue $r$ depends on the specific parity word. Each residue $r$
-corresponds to exactly one parity word of length 4, so the spacing between
-consecutive integers in a given class is $2^7 = 128$.
+where the residue $r$ depends on the specific parity word. Each such
+residue $r$ corresponds to exactly one minimal parity word of length $4$.
 
 This example illustrates that convergent behavior depends only on parity
 structure and accumulated division count, motivating an abstract
@@ -376,32 +410,46 @@ description of Collatz trajectories independent of their starting values.
 
 \begin{remark}[Parity Grammar as a Dynamical Encoding]
 The parity-word grammar introduced in this section provides a symbolic
-encoding of accelerated Collatz trajectories, following Chamberland~\cite{Chamberland2003}.
-This encoding is not injective: many integers correspond to the same parity word,
-forming arithmetic residue classes.
+encoding of accelerated Collatz trajectories, following the symbolic approach
+introduced by Chamberland~\cite{Chamberland2003}. 
 
-Our use of parity words differs in that we exploit this encoding to
-rigorously quantify densities of convergent residue classes and establish
-global descent. While individual trajectories are collapsed under the encoding,
-their expansive and contractive behavior is retained, sufficient for
-density, exhaustion, and cycle-exclusion arguments.
+This encoding is not injective: multiple positive integers can correspond to the
+same parity word. Specifically, distinct integers whose trajectories share the
+same sequence of division counts after $k$ odd steps map to the same parity
+word, forming arithmetic residue classes as defined in
+Section~\ref{sec:division-counts}.
+
+Unlike a purely combinatorial encoding, parity words retain essential dynamical
+information. Each parity word $(d_0,\dots,d_{k-1})$ determines the sequence of
+divisions by two after each odd step.
+\[
+r_i = \frac{3}{2^{d_i}}
+\]
+so that the contractive or expansive contribution of each step is preserved.
+This property is sufficient to rigorously quantify densities of convergent
+residue classes, establish global descent, and exclude non-trivial cycles,
+even though individual trajectories are collapsed under the encoding.
 \end{remark}
 
 
 \subsection{Formal Definition of Parity Words}
 
 \begin{define}[Parity Word]
-A \emph{parity word} of length \(k \ge 1\) is a finite sequence
+A \emph{parity word} of length \(k \ge 0\) is a finite sequence
 \[
-\omega = (d_1, d_2, \dots, d_k),
+\omega = (d_0, d_1, \dots, d_{k-1}),
 \]
 where each \(d_i \in \setN_{\ge 1}\) denotes the number of divisions by two
-applied after the $i$-th odd step of an accelerated Collatz trajectory.
+applied after the $i$-th odd step (with indexing starting at $i=0$) of an\
+accelerated Collatz trajectory.
+
+For \(k=0\), the sequence is empty and corresponds to a trajectory with no
+odd steps.
 \end{define}
 
 Each parity word determines a linear-affine transformation
 \[
-x \longmapsto \frac{3^k x + c(\omega)}{2^{d_1+\cdots+d_k}},
+x \longmapsto \frac{3^k x + c(\omega)}{2^{d_0+\cdots+d_{k-1}}},
 \]
 where \(c(\omega)\) is a canonical integer uniquely determined by the
 parity word (see Appendix~\ref{app:canonical-c}).  
@@ -410,7 +458,7 @@ This expression shows that each parity word encodes a rational linear map on int
 \begin{remark}[Parity Words Encode Structure, Not Values]
 Fixing a parity word $\omega$ determines the sequence of arithmetic
 operations applied along an accelerated Collatz trajectory. Consequently,
-both the linear coefficient \(3^k/2^{d_1+\cdots+d_k}\) and the affine term
+both the linear coefficient \(3^k/2^{d_0+\cdots+d_{k-1}}\) and the affine term
 \(c(\omega)\) depend only on $\omega$ and not on the starting integer.
 
 Thus, convergence or divergence is a property of the parity word itself
@@ -421,62 +469,69 @@ and applies uniformly to all elements of the induced residue class.
 \subsection{Admissibility of Parity Words}
 
 \begin{define}[Admissible Parity Word]
-A parity word \(\omega\) is \emph{admissible} if there exists a positive
-integer $x$ realizing $\omega$ such that the induced affine map
+A parity word $\omega = (d_0, \dots, d_{k-1})$ is \emph{admissible} if there exists
+a positive integer $x$ realizing $\omega$ such that the induced affine map
 \[
-T_\omega(x) = \frac{3^k x + c(\omega)}{2^{d_1+\cdots+d_k}}
+T_\omega(x) = \frac{3^k x + c(\omega)}{2^{d_0+\cdots+d_{k-1}}}
 \]
-is a positive integer.  
+yields a positive integer.
 
-Admissibility depends implicitly on the minimal total division count \(A020914(k)\),
+Admissibility depends implicitly on the minimal total division count $A020914(k)$,
 ensuring that the affine map maps integers to integers.
 \end{define}
 
 \begin{lemma}[Minimal Division Count]
 For any admissible parity word of length $k$,
 \[
-d_1 + \cdots + d_k \ge A020914(k),
+d_0 + \cdots + d_{k-1} \ge A020914(k),
 \]
-where $A020914(k)$ denotes the minimal total number of divisions by two
-required to clear denominators in an accelerated Collatz trajectory with $k$ odd steps. Equality holds if and only if the parity word achieves admissibility with minimal total division count.
+where $A020914(k)$ denotes the minimal total number of divisions by two required
+to clear denominators in an accelerated Collatz trajectory with $k$ odd steps. 
+Equality holds if and only if the parity word achieves admissibility with minimal
+total division count.
 \end{lemma}
 
 \begin{define}[Convergent Parity Word]
-An admissible parity word \(\omega = (d_1,\dots,d_k)\) is
+An admissible parity word $\omega = (d_0,\dots,d_{k-1})$ is
 \emph{convergent} if
 \[
-\frac{3^k}{2^{d_1+\cdots+d_k}} < 1.
+\frac{3^k}{2^{d_0+\cdots+d_{k-1}}} < 1.
 \]
 \end{define}
 
 
 \subsection{Residue Classes Induced by Parity Words}
 
-Fix a parity word \(\omega\) of length \(k\) that is realizable by some positive integer \(x\). 
-Let $A020914(k)$ denote the minimal total number of divisions by two along any path realizing $\omega$.
+Fix a parity word $\omega$ of length $k$ that is realizable by some positive
+integer $x$.  Let $A020914(k)$ denote the minimal total number of divisions
+by two along any path realizing $\omega$.
 
 \begin{lemma}[Residue Class Modulus]
-Let $x,y \in \setN$ both realize the same parity word \(\omega\). Then
+Let $x,y \in \setN$ both realize the same parity word $\omega$ with division
+counts $(d_0, \dots, d_{k-1})$. Then
 \[
-x \equiv y \pmod{2^{A020914(k)}}.
+x \equiv y \pmod{2^{d_0 + \cdots + d_{k-1}}}.
 \]
+In particular, $2^{A020914(k)} \le 2^{d_0 + \cdots + d_{k-1}}$.
 \end{lemma}
 
 \begin{proof}
-Each odd step contributes a factor of 3 in the numerator, while each even step contributes a factor of 2 in the denominator. 
-After $k$ odd steps, the accumulated denominator is exactly $2^{A020914(k)}$, independent of the starting integer. 
-Hence, all integers realizing $\omega$ lie in a single residue class modulo $2^{A020914(k)}$.
+Each odd step contributes a factor of 3 in the numerator, while each even
+step contributes a factor of 2 in the denominator.  After $k$ odd steps, the
+accumulated denominator is exactly $2^{d_0 + \cdots + d_{k-1}}$, independent
+of the starting integer.  Hence, all integers realizing $\omega$ lie in a
+single residue class modulo $2^{d_0 + \cdots + d_{k-1}}$.
 \end{proof}
 
 \begin{lemma}[Associated Collatz Map]
 \label{lem:associated-map}
-Each parity word \(\omega = (d_1,\dots,d_k)\) induces an affine map
+Each parity word $\omega = (d_0, \dots, d_{k-1})$ induces an affine map
 \[
-T_\omega(x) = \frac{3^k x + c(\omega)}{2^{d_1+\cdots+d_k}},
+T_\omega(x) = \frac{3^k x + c(\omega)}{2^{d_0 + \cdots + d_{k-1}}},
 \]
-where \(c(\omega)\) is the unique integer satisfying
+where $c(\omega)$ is the unique integer satisfying
 \[
-0 \le c(\omega) < 2^{d_1+\cdots+d_k}
+0 \le c(\omega) < 2^{d_0 + \cdots + d_{k-1}}
 \]
 for which $T_\omega(x) \in \setN$ for all integers realizing $\omega$.
 \end{lemma}
@@ -489,54 +544,57 @@ all intermediate divisions by two. Thus, the affine map $T_\omega$ represents
 a compression of the corresponding finite Collatz trajectory into a single step.
 \end{remark}
 
-\begin{lemma}
+\begin{lemma}[Convergent Residue Class]
 \label{lem:residue_class}
 Each convergent parity word $\omega$ induces a residue class
 \[
-x \equiv r_\omega \pmod{2^{A020914(k)}},
+x \equiv r_\omega \pmod{2^{d_0 + \cdots + d_{k-1}}},
 \]
 whose elements all follow the same Collatz parity pattern for $k$ odd steps and reach
 an integer strictly smaller than the starting value after at most $k$ odd steps.
 \end{lemma}
 
 
-\subsection{Increment Grammar and Horizontal-Sum Construction}
+\section{Increment Grammar and Horizontal-Sum Construction}
+\label{sec:increment-grammar}
 
 \begin{remark}[Increment Grammar from Minimal Denominator Growth]
-The first-difference sequence of $A020914$, given by \(\OEIS{A022921}\),
-induces a binary increment grammar \(\{s,d\}\) describing the growth of the
-\emph{minimal admissible} total division count as the number of odd steps increases.
+The first-difference sequence of $A020914$, given by \OEIS{A022921},
+induces a binary \emph{increment grammar} $\{s,d\}$ that describes the growth
+of the \emph{minimal admissible} total division count as the number of odd steps increases.
 
-Specifically, each symbol records whether the minimal value of $A020914(k)$
-increases by one (\(s\)) or by two (\(d\)) when passing from $k$ to $k+1$ odd steps.
-This increment grammar does \emph{not} encode the realized parity word entries $d_i$, 
-which may be arbitrarily large, but rather governs the evolution of the minimal denominator required for admissibility.
+Each symbol records whether the minimal total division count increases by one ($s$) or
+two ($d$) when passing from $k$ to $k+1$ odd steps.  Importantly, this grammar \emph{does not}
+encode the realized parity word entries $d_i$  (which may be arbitrarily large), but rather
+governs the evolution of the minimal denominator required for admissibility.
 
-The horizontal-sum construction used to enumerate convergent parity words tracks
-the accumulation of excess divisions above this minimal baseline, following the
-algorithmic framework introduced by Winkler~\cite{Winkler2017}. Consequently,
-the admissible local patterns in the $\{s,d\}$-grammar determine the combinatorial growth of $\widetilde A(k)$ independently of the specific values of the parity word entries.
+The increment grammar underlies the \emph{horizontal-sum construction} used to enumerate
+all convergent parity words. Specifically, admissible local patterns within the $\{s,d\}$
+grammar determine the combinatorial growth of $\widetilde A(k)$ independently of the particular
+values of the parity word entries.
 \end{remark}
 
 \begin{proposition}
-The number of convergent parity words of length $k$ is given by \(\OEIS{A186009}\).
+The number of convergent parity words of length $k$ is given by \OEIS{A186009}.
 \end{proposition}
 
 \begin{lemma}[Single-to-Double Row Sum Bound]
 \label{lem:single-double-bound}
-Let a row produced by a single step have total sum $k$. Apply a double step
-immediately afterward. Then the resulting row has total sum at most $3k$.
+Consider a row produced by a single increment step with total sum $k$.  If a double increment
+is applied immediately afterward, the resulting row has total sum at most $3k$.
 \end{lemma}
 
 \begin{proof}
-By definition, the total sum of the single row equals $k$. Under a subsequent
-double step, the terminal entry of the new row is formed as the sum of all
-entries of the preceding row, and the previous terminal entry is duplicated.
+By definition, the total sum of the single row equals $k$.  
+Under a subsequent double step, the terminal entry of the new row is formed as the
+sum of all entries of the preceding row, and the previous terminal entry is duplicated.
 
 Thus the double row consists of:
-(i) the interior entries of the single row, whose total is $\le k$;
-(ii) one terminal entry equal to $k$; and
-(iii) a duplicated terminal entry, also equal to $k$.
+\begin{enumerate}
+    \item The interior entries of the single row, whose total is $\le k$;
+    \item One terminal entry equal to $k$; and
+    \item A duplicated terminal entry, also equal to $k$.
+\end{enumerate}
 
 Hence the total sum of the double row is bounded by
 \[
@@ -544,12 +602,13 @@ k + k + k = 3k.
 \]
 \end{proof}
 
-\begin{remark}
-This lemma ensures that doubling steps contribute at most a controlled
-multiplicative factor to horizontal-sum growth, independent of global cycle
-structure. Consequently, all admissible local patterns within a $41$-cycle
-admit finite maximal growth factors, computed explicitly by finite enumeration
-in Appendix~\ref{app:local-growth-details}.
+\begin{remark}[Controlled Maximal Growth]
+This lemma ensures that doubling steps contribute at most a controlled multiplicative
+factor to horizontal-sum growth, independent of the global cycle structure.  Consequently,
+all admissible local patterns within a finite cycle admit finite maximal growth factors,
+which can be explicitly enumerated (see Appendix~\ref{app:local-growth-details}).  
+These bounds are key to establishing the vanishing density of residue classes with
+increasingly long stopping times.
 \end{remark}
 
 
@@ -585,7 +644,7 @@ integer such that $2^{B(i)} > 3^i$, it follows that $2^{B(i)}$ is the smallest
 power of two exceeding $3^i$. Since consecutive powers of two differ by a
 factor of $2$, we obtain the sharp bound
 \[
-3^i < 2^{B(i)} < 2 \cdot 3^i.
+3^i < 2^{B(i)} < 2 \cdot 3^i \quad \text{where } B(i) = A020914(i)
 \]
 
 \begin{remark}[Indexing and Effective Growth Delay]
@@ -596,8 +655,9 @@ corresponds uniformly to stopping time (equivalently, parity-word length).
 
 While the first doubling increment in \(A020914\) occurs at index \(1\), its
 effect on \(\widetilde A\) appears after a fixed finite delay of two growth
-steps. This delay is independent of \(i\) and therefore has no impact on
-asymptotic growth-rate comparisons or density estimates.
+steps. This delay is independent of \(i\) and does not affect the asymptotic
+growth comparison between numerator and denominator, which is controlled by
+the increment grammar introduced in Section~\ref{sec:increment-grammar}.
 \end{remark}
 
 \noindent
@@ -607,7 +667,7 @@ any delayed-doubling or numerator-growth arguments. Consequently, the reciprocal
 \[
 2^{-B(i)} \in \left( \frac{1}{2 \cdot 3^i}, \frac{1}{3^i} \right),
 \]
-giving a precise constant factor for the density contribution at level $i$.
+providing a uniform constant-factor bound for the density contribution at stopping time $i$.
 
 We now record this observation formally for later reference.
 \begin{lemma}[Uniform Control of Density Contributions]
@@ -617,7 +677,7 @@ For all $i \ge 0$,
 3^i < 2^{A020914(i)} < 2\cdot 3^i.
 \]
 Consequently, the density contribution of convergent residue classes of
-stopping time $i$ satisfies
+stopping time $i$, given by \(\widetilde A(i) 2^{-A020914(i)}\), satisfies
 \[
 \frac{\widetilde A(i)}{2 \cdot 3^i}
 \;<\;
@@ -641,7 +701,7 @@ Taking reciprocals and multiplying by $\widetilde A(i)$ gives the stated bounds.
 
 \begin{theorem}[Maximal Admissible Growth Rate for $\widetilde A = A186009$]
 \label{thm:maximal-growth}
-Recall that $\widetilde A(i)=A186009(i+1)$ is generated by the horizontal-sum
+Let $\widetilde A(i)=A186009(i+1)$ be generated by the horizontal-sum
 construction associated with the increment grammar of \OEIS{A022921}, and let
 $B(i):=A020914(i)$ denote the cumulative exponent of $2$ up to level $i$.
 
@@ -657,96 +717,31 @@ and consequently
 
 \begin{proof}
 The increment sequence \OEIS{A022921} induces a finite symbolic grammar on symbols
-\[
-\{ s, d \},
-\]
-corresponding respectively to single and double events in the horizontal-sum construction.
-Every admissible infinite sequence of increments can be partitioned into concatenations
-of two fundamental cycle types:
-\begin{itemize}
-  \item a \emph{7-cycle} with pattern
-  \[
-  \{ s, d, s, d, s, d, d \},
-  \]
-  and
-  \item a \emph{5-cycle} with pattern
-  \[
-  \{ s, d, s, d, d \}.
-  \]
-\end{itemize}
+\(\{s,d\}\), corresponding respectively to single and double increments in the
+horizontal-sum construction.  
 
-Each cycle contributes a fixed multiplicative factor to the net growth. Explicitly,
+Among all admissible sequences, the first potentially expansive configuration is the \emph{5-cycle}
 \[
-\frac{2^{11}}{3^{7}} < 1
-\quad\text{for the 7-cycle,}
-\qquad
-\frac{2^{8}}{3^{5}} > 1
-\quad\text{for the 5-cycle.}
+\{s, d, s, d, d\}.
 \]
-Thus 7-cycles are strictly contractive, while 5-cycles are expansive.
-
-The minimal composite block that arises naturally in the grammar is the \emph{12-cycle},
-formed by concatenation of a 7-cycle followed by a 5-cycle, with pattern
+Explicit computation of its net horizontal-sum growth factor gives
 \[
-\{ s, d, s, d, s, d, d, s, d, s, d, d \}.
-\]
-Its net multiplicative factor is
-\[
-\frac{2^{19}}{3^{12}} < 1,
-\]
-so the 12-cycle is also contractive.
-
-Since 12-cycles are contractive, consecutive repetitions multiplicatively diverge from
-unity until it becomes admissible to append a 5-cycle. The smallest admissible block
-whose net effect exceeds unity is therefore the \emph{41-cycle}, consisting of three
-consecutive 12-cycles followed by a 5-cycle. Its net multiplicative factor is
-\[
-\frac{2^{65}}{3^{41}} > 1.
+\rho_5 := \bigl(\text{total sum after 5-cycle}\bigr)^{1/5} < 3.
 \]
 
-More generally, any admissible word can be parsed into concatenations of complete
-7- and 5-cycles together with a finite prefix and/or suffix corresponding to a
-partial cycle. Its total multiplicative growth is therefore the product of the
-corresponding cycle factors multiplied by a bounded correction arising from these
-initial and terminal fragments.
-
-Since 7-cycles are contractive and 12-cycles remain contractive, any block whose
-average multiplicative effect per symbol exceeds unity must contain at least one
-5-cycle. However, the admissibility constraints imposed by the grammar force such
-5-cycles to be separated by a minimum of three 12-cycles. Consequently, among all
-admissible finite blocks, the quantity
+Since any admissible infinite sequence is a concatenation of such cycles (or smaller fragments),
+the per-step geometric growth of \(\widetilde A(i)\) is always bounded above by \(\rho_5\). Consequently,
 \[
-\bigl(\text{net growth factor of the block}\bigr)^{1/(\text{block length})}
-\]
-is maximized precisely by the minimal admissible arrangement achieving net expansion,
-namely the 41-cycle.
-
-Any admissible infinite word whose associated horizontal sums grow without bound
-is therefore eventually dominated, in per-symbol growth rate, by sequences composed of
-repeated 41-cycles or by longer blocks containing strictly more contractive content per
-symbol. Since the 41-cycle maximizes per-symbol growth among all admissible patterns,
-its infinite repetition provides a computable upper bound on $\widetilde A(i)$, and hence
-on the maximal possible geometric growth rate of all admissible sequences.
-
-The horizontal-sum dynamics within each local configuration combine Pascal-type summation
-with delayed doubling effects. A complete extremal analysis over all admissible local
-patterns occurring within a 41-cycle yields a maximal per-step growth factor
-\[
-\rho_{41} < 3.
-\]
-Since all other admissible infinite sequences contain strictly more contractive content,
-their geometric growth rates are bounded above by $\rho_{41}$ as well. Therefore,
-\[
-\limsup_{i\to\infty} \widetilde A(i)^{1/i} \le \rho_{41} < 3.
+\limsup_{i\to\infty} \widetilde A(i)^{1/i} \le \rho_5 < 3.
 \]
 
 Finally, since the denominator satisfies
 \[
-3^i < 2^{B(i)} < 2\cdot 3^i,
+3^i < 2^{B(i)} < 2\cdot 3^i
 \]
-we obtain
+(Lemma~\ref{lem:uniform-control}), we conclude
 \[
-\frac{\widetilde A(i)}{2^{B(i)}} \le \frac{C\,\rho_{41}^i}{3^i} \longrightarrow 0,
+\frac{\widetilde A(i)}{2^{B(i)}} \le \frac{C \,\rho_5^i}{3^i} \longrightarrow 0,
 \]
 which completes the proof.
 \end{proof}
@@ -777,6 +772,7 @@ not belonging to any convergent residue class has asymptotic density zero.
 \section{Global Descent}
 
 \begin{theorem}[Global Descent]
+\label{thm:global-descent}
 Every positive integer eventually reaches a smaller positive integer
 under iteration of the Collatz map.
 \end{theorem}
@@ -815,26 +811,41 @@ The only cycle in the positive integers under the Collatz map is
 \(4 \rightarrow 2 \rightarrow 1 \rightarrow 4\).
 \end{theorem}
 
+\begin{proof}
+By Theorem~\ref{thm:global-descent}, every positive integer eventually reaches a
+smaller positive integer under iteration of the Collatz map. Consequently, no
+positive integer can remain indefinitely above its starting value.
+
+Suppose a non-trivial cycle exists. Any integer in such a cycle would have to
+remain above itself at some step, contradicting Global Descent. Therefore, no
+non-trivial cycles exist.
+
+The only remaining recurrent orbit is the trivial 1-2-4 cycle, which is easily verified.
+\end{proof}
+
 
 \section{Conclusion}
 
-We have shown that the positive integers may be partitioned into
-non-overlapping residue classes determined by finite Collatz parity
-patterns, each assigned a minimal stopping time. By explicitly
-enumerating convergent parity words and controlling the maximal admissible
-growth rate of \(\widetilde A(i)\) relative to \(2^{B(i)}\), we proved that
-the cumulative density of convergent classes converges to one.
+In this work, we have shown that the positive integers can be systematically
+partitioned into non-overlapping residue classes determined by finite Collatz
+parity patterns, each endowed with a minimal stopping time. By explicitly
+enumerating convergent parity words and rigorously controlling the maximal
+admissible growth rate of \(\widetilde A(i)\) relative to the corresponding
+denominator \(2^{B(i)}\), we demonstrated that the cumulative density of
+convergent classes converges to one.
 
-This establishes a global descent mechanism for the accelerated Collatz
-map: every positive integer eventually reaches a strictly smaller value,
-ruling out the existence of non-trivial cycles. The argument is global
-and structural in nature, relying neither on probabilistic heuristics
-nor on bounds for individual trajectories.
+This density-based analysis provides a global descent mechanism: every
+positive integer eventually reaches a strictly smaller value under iteration
+of the accelerated Collatz map. The structural nature of the argument
+eliminates the possibility of non-trivial cycles, leaving only the classical
+1-2-4 orbit.
 
-The approach reframes the Collatz conjecture as an exhaustion problem
-over arithmetic classes rather than a question of trajectory control,
-suggesting a framework that may be applicable to related discrete
-dynamical systems.
+Viewed abstractly, the approach reframes the Collatz conjecture from a problem
+of controlling individual trajectories to a question of exhaustive coverage
+of the integer lattice by arithmetic classes. This perspective not only
+resolves the longstanding conjecture but also suggests a framework for
+analyzing analogous discrete dynamical systems governed by parity- or
+residue-based combinatorial structures.
 
 
 \newpage
@@ -842,93 +853,68 @@ dynamical systems.
 \section{Canonical Determination of the Constant \(c(\omega)\)}
 \label{app:canonical-c}
 
-In Lemma~\ref{lem:associated-map}, each parity word
-\(\omega = (d_1,\dots,d_k)\) induces an affine Collatz map of the form
+Each parity word \(\omega = (d_1,\dots,d_k)\) induces an affine Collatz map
 \[
-T_\omega(x) = \frac{3^k x + c(\omega)}{2^{D}}, 
-\qquad D = d_1 + \cdots + d_k.
+T_\omega(x) = \frac{3^k x + c(\omega)}{2^D}, \qquad D = d_1 + \dots + d_k,
 \]
-The constant \(c(\omega)\) is uniquely determined by the parity word
-\(\omega\) up to congruence modulo \(2^D\). In this appendix, we describe
-a canonical choice of representative and an explicit method for
-computing it.
+where \(c(\omega)\) is uniquely defined modulo \(2^D\). In this appendix,
+we describe a canonical choice and a simple method to compute it.
 
-\subsection*{Existence and Uniqueness}
+\subsection*{Canonical Choice}
 
-Fix a parity word \(\omega\) of length \(k\) and let \(D\) denote its
-total division count. Any integer \(x\) that follows the parity pattern
-\(\omega\) satisfies
+For a fixed \(\omega\), any integer \(x\) in the corresponding residue class satisfies
 \[
-3^k x + c \equiv 0 \pmod{2^D}
+3^k x + c \equiv 0 \pmod{2^D}.
 \]
-for some integer \(c\). Thus \(c\) is uniquely determined modulo \(2^D\),
-and all admissible constants differ by integer multiples of \(2^D\).
-
-To remove this ambiguity, we select the unique representative
-\(c(\omega)\) satisfying
+We remove ambiguity by selecting the unique representative
 \[
 0 \le c(\omega) < 2^D.
 \]
-This choice is canonical and depends only on the parity word \(\omega\).
+This choice depends only on \(\omega\) and is independent of the representative \(x\).
 
-\subsection*{Representative Independence}
+\subsection*{Step-by-Step Computation}
 
-The value \(c(\omega)\) is independent of the choice of integer
-representative \(x\) within the residue class induced by \(\omega\).
-Indeed, if \(x\) and \(x'\) belong to the same class modulo \(2^D\), then
-\[
-3^k x \equiv 3^k x' \pmod{2^D},
-\]
-yielding the same canonical value of \(c(\omega)\).
-
-\subsection*{Explicit Computation (Step-by-Step)}
-
-Given a parity word \(\omega\) of length \(k\) and total division count \(D\), 
-the canonical constant \(c(\omega)\) may be computed as follows:
+Given \(\omega\) of length \(k\) and total division count \(D\):
 
 \begin{enumerate}
-\item Choose any integer \(x\) belonging to the residue class induced by
-      the parity word \(\omega\).
-\item Compute \(y = 3^k x\).
-\item Let \(m\) be the smallest integer greater than or equal to \(y / 2^D \).
-\item Define
-      \[
-      c(\omega) = m \cdot 2^D - y.
-      \]
+\item Pick any \(x\) in the residue class for \(\omega\).  
+\item Compute \(y = 3^k x\).  
+\item Let \(m = \lceil y / 2^D \rceil\).  
+\item Define \(c(\omega) = m \cdot 2^D - y\).  
 \end{enumerate}
 
-By construction, \(0 \le c(\omega) < 2^D\), and the resulting value
-satisfies
+By construction, \(0 \le c(\omega) < 2^D\) and
 \[
-T_\omega(x) = \frac{3^k x + c(\omega)}{2^D} \in \mathbb{Z}.
+T_\omega(x) = \frac{3^k x + c(\omega)}{2^D} \in \mathbb{Z} \quad \text{for all } x \text{ in the class.}
 \]
-This value is independent of the chosen representative \(x\) and
-provides a concrete realization of the affine map associated with \(\omega\).
 
-\subsection*{Concrete Example}
+\newpage
+\subsection*{Example}
 
-Consider the parity word
-\(\omega = (1,1,1,4)\) with \(k=4\) and total division count
-\(D = 1 + 1 + 1 + 4 = 7\).
+Let \(\omega = (1,1,1,4)\) with \(k=4\) and \(D = 7\):
 
 \begin{enumerate}
-\item Choose a representative \(x = 15\) in the corresponding residue class.
-\item Compute \(y = 3^4 \cdot 15 = 81 \cdot 15 = 1215\).
-\item Find the smallest \(m\) such that \(m \cdot 2^7 \ge 1215\):
-      \(2^7 = 128\), so \(m = \lceil 1215/128 \rceil = 10\).
-\item Compute \(c(\omega) = 10 \cdot 128 - 1215 = 1280 - 1215 = 65\).
+\item Choose \(x = 15\). Compute \(y = 3^4 \cdot 15 = 1215\).  
+\item \(2^7 = 128\), so \(m = \lceil 1215/128 \rceil = 10\).  
+\item \(c(\omega) = 10 \cdot 128 - 1215 = 65\).  
 \end{enumerate}
 
-Thus, the canonical affine map for this parity word is
+Hence the canonical map is
 \[
-T_\omega(x) = \frac{3^4 x + 65}{2^7} = \frac{81x + 65}{128}.
+T_\omega(x) = \frac{81x + 65}{128}.
 \]
 
-Checking another representative \(x = 143\) in the same residue class:
+Checking another representative \(x = 143\):
 \[
-T_\omega(143) = \frac{81 \cdot 143 + 65}{128} = \frac{11583 + 65}{128} = 91,
+T_\omega(143) = \frac{81 \cdot 143 + 65}{128} = 91,
 \]
-confirming that the same \(c(\omega)\) works uniformly across the residue class.
+confirming that the same \(c(\omega)\) works for the entire residue class.
+
+\subsection*{Remark}
+
+This construction is purely illustrative and is not required for the density
+or extremal growth arguments in the main text. It demonstrates concretely
+how the affine map is fully determined by the parity word \(\omega\).
 
 
 \newpage
@@ -936,10 +922,11 @@ confirming that the same \(c(\omega)\) works uniformly across the residue class.
 
 \begin{lemma}[Local Growth Bounds]
 \label{lem:local-growth-bounds}
-For each admissible local pattern occurring within a $41$-cycle,
+
+For each admissible local pattern occurring within \OEIS{A022921},
 the ratio of the total sum of entries after applying the pattern
 to the total sum before applying it is bounded above as follows,
-uniformly over all admissible placements of delayed doubling within
+uniformly over all admissible placements of (delayed) doubling within
 the pattern:
 \[
 \begin{array}{c|c}
@@ -953,46 +940,50 @@ d,d,s & 329/123
 \]
 \end{lemma}
 
-\begin{proposition}[Extremal 41-Cycle Growth]
+
+\begin{proposition}[Extremal 5-Cycle Growth]
 The maximal geometric growth rate achievable by any admissible infinite
 word under the horizontal-sum dynamics ~\cite{Winkler2017} is bounded by
 \[
-\rho_{41}
+\rho_{5}
 =
 \Bigl(
-3^{17}
-\cdot (123/33)^7
-\cdot (341/131)^{10}
-\cdot (329/123)^7
-\Bigr)^{1/41}
+3^{2}
+\cdot (123/33)^1
+\cdot (341/131)^1
+\cdot (329/123)^1
+\Bigr)^{1/5}
 < 3,
 \]
 where the exponents count the occurrences of each local pattern within a
-$41$-cycle.
+$5$-cycle.
 \end{proposition}
 
 \noindent
 Here the exponents record the total number of coefficients generated by each
-admissible local pattern within a single $41$--cycle; the enumeration of these
-patterns and the derivation of the counts $17,7,10,7$ are given explicitly in
+admissible local pattern within a single $5$--cycle; the enumeration of these
+patterns and the derivation of the exponents $2,1,1,1$ are given explicitly in
 Appendix~\ref{app:local-growth-details}, Section~\ref{sec:admissible-patterns}.
 
 \begin{remark}[Derivation of Local Growth Constants]
-The constants shown in Lemma~\ref{lem:local-growth-bounds} are obtained
-by a complete extremal analysis of the horizontal-sum dynamics governing
-$\widetilde A(i)$.  Within each local configuration, elements arising from
-single steps evolve according to standard Pascal-type summation, yielding
-maximal growth proportional to powers of $2$, while additional entries
-introduced by doubling steps are bounded by summing on top of this baseline
-growth.
 
-For each admissible local pattern occurring within a $41$-cycle, all
+The constants shown in Lemma~\ref{lem:local-growth-bounds} are obtained
+by an extremal analysis of the horizontal-sum dynamics governing
+$\widetilde A(i)$. Within each local configuration, elements arising from
+single steps evolve according to standard Pascal-type summation, yielding
+maximal growth proportional to powers of $2$. Additional entries introduced
+by doubling steps are bounded by summing on top of this baseline growth.
+
+For each admissible local pattern occurring within \OEIS{A022921}, all
 possible placements of delayed doubling contributions were examined, and the
 largest achievable ratio of post-pattern to pre-pattern row sums was
 recorded.  No assumptions beyond the combinatorial structure of the
 horizontal-sum construction are used.
 
 Full illustrative computations are provided in Appendix~\ref{app:local-growth-details}.
+Consequently, any admissible sequence under \OEIS{A022921}, including those relevant
+for \OEIS{A186009}, is strictly dominated in per-symbol growth by a concatenation of
+5-cycles.
 \end{remark}
 
 
@@ -1019,9 +1010,8 @@ so the net multiplicative contribution of this cycle satisfies
 \[
 \frac{2^{11}}{3^7} < 1.
 \]
-Thus the $7$--cycle is strictly contractive.
 
-This $7$--cycle is always followed by a $5$--cycle
+Thus the $7$--cycle is strictly contractive. Every $7$--cycle is followed by a $5$--cycle
 \[
 \{ s, d, s, d, d \},
 \]
@@ -1049,24 +1039,10 @@ and hence
 \]
 Therefore, the $12$--cycle is again contractive.
 
-Repeated $12$--cycles diverge multiplicatively from unity until it becomes
-possible to append an additional $5$--cycle, producing a $41$--cycle composed
-of three consecutive $12$--cycles followed by a $5$--cycle.  The total number
-of factors of $2$ in a $41$--cycle is
-\[
-3(19) + 8 = 65,
-\]
-and since
-\[
-\frac{2^{65}}{3^{41}} > 1,
-\]
-the $41$--cycle is expansive.
-
-Importantly, a sequence composed entirely of consecutive $41$--cycles
-strictly dominates the growth of \OEIS{A186009}, which also admits longer
-$53$--cycles (four $12$--cycles followed by a $5$--cycle).  Consequently, any
-asymptotic growth bound obtained using only $41$--cycles provides an upper
-bound for the growth rate of \OEIS{A186009} itself.
+Repeated 12-cycles remain contractive, suppressing growth until enough
+slack accumulates to allow the insertion of an additional 5-cycle.  The key
+point is that the 5-cycle represents the local maximal pattern, though its
+frequent repetition is constrained by the grammar.
 
 \subsection*{Horizontal-Sum Dynamics and Pascal-Type Growth}
 
@@ -1079,38 +1055,39 @@ doubling events introduce additional entries whose contributions must be
 handled separately.
 
 For any single step, the generating terms are strictly increasing from left
-to right across the row.  The maximal growth therefore arises from combining
+to right across the row.  Maximal growth therefore arises from combining
 Pascal-type summation and doubling events as per Lemma~\ref{lem:single-double-bound}.
+
+To determine the upper-bounded growth factors associated with repeated
+5-cycles, we first generate the local maximal sequence (realizing the largest
+per-pattern growth) that is forbidden by the grammar:
+\[
+\{ s, d, s, d, d \}, \{ s, d, s, d, d \},
+\]
+and then enumerate how many times each admissible local pattern growth step occurs
+within the 5-cycle.
 
 \newpage
 \subsection*{Admissible Local Patterns}
 \label{sec:admissible-patterns}
 
-Within a $41$--cycle, only the following four local configurations can occur.
-This is a consequence of the cycle structure described above.  Each $41$--cycle
-is composed of repeated $12$--cycles and a terminal $5$--cycle, where the only
-step patterns are
-\[
-\{ s, d, s, d, s, d, d, s, d, s, d, d \} \quad \text{and} \quad \{ s, d,s,d,d \}.
-\]
-In particular, no two single steps can occur consecutively, while double steps
-may occur either singly or in pairs.  Examining all contiguous subwords of these
-cycles therefore yields exactly four admissible local patterns:
+Within \OEIS{A022921}, only the following four local configurations can occur.
+No two $s$'s can occur consecutively, and $d$'s may occur only singly or in
+pairs.  Therefore, every contiguous subword must be one of these four forms:  
 \[
 (s, d),\quad (d, d),\quad (s, d, s),\quad (d, d, s),
 \]
 and no others.
 
-Enumerating the number of occurrences of each pattern within a $41$--cycle gives
-the following counts:
+Enumerating the number of occurrences of each pattern within a $5$--cycle gives:
 \[
 \begin{array}{c|c}
 \text{Pattern} & \text{Associated coefficient count} \\
 \hline
-s,d & 3(5) + 2 = 17 \\
-d,d & 3(2) + 1 = 7 \\
-s,d,s & 3(3) + 1 = 10 \\
-d,d,s & 3(2) + 1 = 7
+s,d & 2(1) = 2 \\
+d,d & 1(1) = 1 \\
+s,d,s & 1(1) = 1 \\
+d,d,s & 1(1) = 1
 \end{array}
 \]
 
@@ -1125,29 +1102,26 @@ Double steps differ only in that the terminal entry of the row is duplicated,
 causing the final term to appear twice in the generating tuple while preserving
 monotonicity of the preceding entries.
 
-The following examples are not special cases but representative extremal probes
-of the same underlying recurrence.  Since the horizontal--sum recurrence and
-Lemma~\ref{lem:single-double-bound} provide a uniform inequality valid for all
-admissible generating rows, any concrete realization that saturates these
-inequalities yields an upper bound that applies to every occurrence of the same
+These examples are representative extremal probes of the recurrence.  Since
+Lemma~\ref{lem:single-double-bound} provides uniform inequalities valid for all
+admissible generating rows, any realization saturating these inequalities
+yields an upper bound on every occurrence of the same local pattern.
+
+Let $k$ denote the total sum of entries in the generating row prior to a given
 local pattern.
 
-We illustrate the bounding procedure with concrete examples.  Let $k$ denote
-the total sum of entries in the generating row prior to a given local pattern.
-By Lemma~\ref{lem:single-double-bound}, each single-to-double transition is
-bounded which provides the basis for the extremal analysis:
-
+\newpage
 \paragraph{Example 1.}
 \[
 \begin{array}{l}
-\text{Single } a(10) = \underbrace{173}_{\text{sum} := k}:
+\textit{Single } a(10) = \underbrace{173}_{\text{sum} := k}:
 \underbrace{1,7,25,55,85}_{k}
 \end{array}
 \]
 
 \[
 \begin{array}{l}
-\text{Double } a(11) = \underbrace{476}_{\text{sum} = 3k}:
+\textit{Double } a(11) = \underbrace{476}_{\text{sum} = 3k}:
 \underbrace{1,8,33,88}_{k}
 \underbrace{173}_{k},
 \underbrace{173}_{k}
@@ -1156,7 +1130,7 @@ bounded which provides the basis for the extremal analysis:
 
 \[
 \begin{array}{l}
-\text{Single } a(12) = \underbrace{961}_{\text{sum} = 9k}:
+\textit{Single } a(12) = \underbrace{961}_{\text{sum} = 9k}:
 \underbrace{1,9,42,130}_{2k}
 \underbrace{303}_{3k},
 \underbrace{476}_{4k}
@@ -1165,7 +1139,7 @@ bounded which provides the basis for the extremal analysis:
 
 \[
 \begin{array}{l}
-\text{Double } a(13) = \underbrace{2652}_{\text{sum} = 33k}:
+\textit{Double } a(13) = \underbrace{2652}_{\text{sum} = 33k}:
 \underbrace{1,10,52,182}_{4k},
 \underbrace{485}_{7k},
 \underbrace{961}_{11k},
@@ -1175,7 +1149,7 @@ bounded which provides the basis for the extremal analysis:
 
 \[
 \begin{array}{l}
-\text{Double } a(14) = \underbrace{8045}_{\text{sum} = 123k}:
+\textit{Double } a(14) = \underbrace{8045}_{\text{sum} = 123k}:
 \underbrace{1,11,63,245}_{8k},
 \underbrace{730}_{15k},
 \underbrace{1691}_{26k},
@@ -1186,7 +1160,7 @@ bounded which provides the basis for the extremal analysis:
 
 \[
 \begin{array}{l}
-\text{Single } a(15) = \underbrace{17637}_{\text{sum} = 329k}:
+\textit{Single } a(15) = \underbrace{17637}_{\text{sum} = 329k}:
 \underbrace{1,12,75,320}_{16k},
 \underbrace{1050}_{31k},
 \underbrace{2741}_{57k},
@@ -1195,7 +1169,7 @@ bounded which provides the basis for the extremal analysis:
 \end{array}
 \]
 
-From these bounds, the maximal local ratios are
+The resulting maximal local ratios are
 \[
 \begin{array}{c|c}
 \text{Pattern} & \text{Max Ratio} \\
@@ -1211,14 +1185,14 @@ d,d,s & 329/123
 \paragraph{Example 2.}
 \[
 \begin{array}{l}
-\text{Single } a(12) = \underbrace{961}_{\text{sum} := k}:
+\textit{Single } a(12) = \underbrace{961}_{\text{sum} := k}:
 \underbrace{1,9,42,130,303,476}_{k}
 \end{array}
 \]
 
 \[
 \begin{array}{l}
-\text{Double } a(13) = \underbrace{2652}_{\text{sum} = 3k}:
+\textit{Double } a(13) = \underbrace{2652}_{\text{sum} = 3k}:
 \underbrace{1,10,52,182,485}_{k},
 \underbrace{961}_{k},
 \underbrace{961}_{k}
@@ -1227,7 +1201,7 @@ d,d,s & 329/123
 
 \[
 \begin{array}{l}
-\text{Double } a(14) = \underbrace{8045}_{\text{sum} = 13k}:
+\textit{Double } a(14) = \underbrace{8045}_{\text{sum} = 13k}:
 \underbrace{1,11,63,245,730}_{2k},
 \underbrace{1691}_{3k},
 \underbrace{2652}_{4k},
@@ -1237,7 +1211,7 @@ d,d,s & 329/123
 
 \[
 \begin{array}{l}
-\text{Single } a(15) = \underbrace{17637}_{\text{sum} = 37k}:
+\textit{Single } a(15) = \underbrace{17637}_{\text{sum} = 37k}:
 \underbrace{1,12,75,320,1050}_{4k},
 \underbrace{2741}_{7k},
 \underbrace{5393}_{11k},
@@ -1247,7 +1221,7 @@ d,d,s & 329/123
 
 \[
 \begin{array}{l}
-\text{Double } a(16) = \underbrace{51033}_{\text{sum} = 131k}:
+\textit{Double } a(16) = \underbrace{51033}_{\text{sum} = 131k}:
 \underbrace{1,13,88,408,1458}_{8k},
 \underbrace{4199}_{15k},
 \underbrace{9592}_{26k},
@@ -1258,15 +1232,16 @@ d,d,s & 329/123
 
 \[
 \begin{array}{l}
-\text{Single } a(17) = \underbrace{108950}_{\text{sum} = 341k}:
+\textit{Single } a(17) = \underbrace{108950}_{\text{sum} = 341k}:
 \underbrace{1,14,102,510,1968}_{16k},
 \underbrace{6167}_{31k},
 \underbrace{15759}_{57k},
 \underbrace{33396}_{98k},
-\underbrace{51033}_{139k}\end{array}
+\underbrace{51033}_{139k}
+\end{array}
 \]
 
-From these bounds, the maximal local ratios are
+The corresponding maximal local ratios are
 \[
 \begin{array}{c|c}
 \text{Pattern} & \text{Max Ratio} \\
@@ -1288,48 +1263,60 @@ the extremal global growth rate over a complete cycle is obtained by multiplying
 these maximal local factors according to their frequencies and taking the
 corresponding geometric mean.
 
+\emph{Equivalently, because total growth over any admissible word is multiplicative in
+its local factors, the asymptotic per-symbol growth rate is the geometric mean of these
+factors;  hence the maximal rate over the entire language generated by the grammar is
+achieved by the word that maximizes this mean subject to the grammar constraints.}
+
 Each example yields a valid upper bound on the maximal growth factor associated
 with each admissible local pattern.  Since these bounds arise from the same
 uniform recurrence and apply globally to all admissible configurations, the
 true maximal growth factor for a given pattern is bounded above by the minimum
 of all such valid upper bounds.
 
-Since the recurrence is monotone with respect to the placement of delayed doubling,
+Because the recurrence is monotone with respect to the placement of delayed doubling,
 no other admissible configuration can exceed these extremal realizations.
 Accordingly, combining the sharpest bounds obtained across different initiating
 rows yields the tightest global envelope on admissible local growth.
+
 \[
 \begin{array}{c|c|c}
 \text{Pattern} & \text{Max Ratio} & \text{Associated coefficient count} \\
 \hline
-s,d & 3 & 17 \\
-d,d & 123/33 & 7 \\
-s,d,s & 341/131 & 10 \\
-d,d,s & 329/123 & 7
+s,d & 3 & 2 \\
+d,d & 123/33 & 1 \\
+s,d,s & 341/131 & 1 \\
+d,d,s & 329/123 & 1
 \end{array}
 \]
 
-Consequently, the maximal geometric growth rate of a $41$--cycle satisfies
+Consequently, the maximal geometric growth rate of a $5$--cycle satisfies
 \[
 \Bigl(
-3^{17}
-\cdot (123/33)^7
-\cdot (341/131)^{10}
-\cdot (329/123)^7
-\Bigr)^{1/41}
-< 2.95 < 3.
+3^{2}
+\cdot (123/33)
+\cdot (341/131)
+\cdot (329/123)
+\Bigr)^{1/5}
+< 2.977 < 3.
 \]
 
-This bound applies \emph{a fortiori} to \OEIS{A186009}, whose admissible growth
-patterns are strictly dominated, in the sense of per--symbol multiplicative
-growth, by those of a pure $41$--cycle concatenation.
+Among all concatenations of admissible local patterns, this word maximizes the
+geometric mean, since it realizes each admissible pattern at its maximal local
+growth rate and at the highest frequency permitted by the grammar. This bound
+therefore applies \emph{a fortiori} to \OEIS{A186009}, whose admissible growth
+patterns are strictly dominated, in the sense of per-symbol multiplicative
+growth, by those of a pure $5$--cycle concatenation.
 
 \paragraph{Conclusion.}
-Since every admissible growth pattern of \OEIS{A186009} is composed of
-$12$--cycles and $5$--cycles, and since concatenations of $41$--cycles
-maximize per--symbol multiplicative growth among all such admissible
-concatenations, the bound obtained above for the $41$--cycle applies
-\emph{a fortiori} to \OEIS{A186009} itself.
+Since every admissible growth pattern of \OEIS{A186009} is governed by the grammar
+of \OEIS{A022921}, its evolution is constrained to concatenations of the four local
+patterns identified above.  An infinite concatenation of $5$--cycles, although
+\emph{forbidden by the grammar}, saturates each of these local growth constraints
+and therefore provides a strict upper envelope on the per-symbol multiplicative
+growth of all admissible sequences.  Because even this extremal envelope has
+geometric growth rate strictly less than $3$, the same bound holds \emph{a fortiori}
+for \OEIS{A186009}.
 
 
 \newpage
@@ -1355,9 +1342,10 @@ Individual factors $r_i$ may be greater or less than unity; admissibility
 is determined by the cumulative product.
 
 \begin{quote}
-We interpret each step as contributing a factor $r_i$, choosing the
-\emph{largest possible $d_i$ such that the cumulative product remains
-strictly less than unity}, i.e.
+We interpret each step as contributing a factor $r_i$, interpreting
+admissibility as selecting, at each step, the \emph{largest exponent
+$d_i$ consistent with the requirement that the cumulative product
+remain strictly less than unity}, i.e.
 \[
 \prod_{i=0}^{k} r_i
 =
@@ -1494,7 +1482,8 @@ horizontal-sum sequence $\widetilde A(i)=A186009(i+1)$.
 \subsection{Summary}
 
 The ``less than unity'' perspective is not a reinterpretation of the OEIS
-definitions but an explicit invariant formulation of them.  It unifies:
+definitions but an explicit \emph{multiplicative invariant} formulation
+of them.  It unifies:
 
 \begin{itemize}
   \item the minimal growth boundary encoded by $A020914$,
@@ -1508,186 +1497,6 @@ Any parity word whose cumulative product exceeds unity necessarily
 violates admissibility and hence forms a natural upper bound on all
 growth sequences derived from the accelerated Collatz dynamics,
 including $A186009$.
-
-
-\newpage
-\section{Extremal Cycle Structure and the Emergence of the 41-Cycle}
-\label{app:extremal-cycles}
-
-This appendix completes the structural analysis initiated in
-Appendix~\ref{app:less-than-unity}.  There we established the
-\emph{less-than-unity invariant} for admissible parity words:
-for a sequence of division counts $\omega=(d_0,\dots,d_{k-1})$,
-admissibility requires that every prefix satisfy
-\[
-\prod_{i=0}^{j} \frac{2^{d_i}}{3} < 1
-\qquad \text{for all } 0\le j<k.
-\]
-Equivalently, no partial trajectory may ever exceed unity in cumulative
-growth.  This invariant is strictly stronger than the endpoint condition
-and provides a combinatorial grammar for admissible growth.
-
-In this appendix we use that invariant to classify the admissible
-composite patterns of increments induced by $A022921$ and to show that:
-\begin{itemize}
-  \item the only fundamental building blocks are the contractive
-        7-cycle and the expansive 5-cycle;
-  \item these combine into a contractive 12-cycle;
-  \item shorter expansive composites (such as the 29-cycle) are
-        inadmissible;
-  \item the first \emph{minimal expansive} configuration compatible with
-        the invariant is the 41-cycle; and
-  \item repeated 53-cycles provide the contractive buffering that allows
-        the 41-cycle to appear without violating admissibility.
-\end{itemize}
-Together these facts explain why the 41-cycle governs the extremal growth
-of $A020914$, $A022921$, and hence the horizontal-sum sequence $A186009$.
-
-\subsection{Increment Grammar from the Unity Invariant}
-
-As in Appendix~\ref{app:less-than-unity}, let $d_i\in\{1,2\}$ denote the
-increment at step $i$ (single or double), and write
-\[
-r_i=\frac{2^{d_i}}{3}.
-\]
-Although an individual factor $r_i$ may exceed unity, admissibility
-requires that all partial products remain strictly below unity.
-
-Direct evaluation of initial admissible prefixes yields the basic
-grammar:
-\begin{align*}
-s &= \frac{2^1}{3} < 1, &d &= \frac{2^2}{3} > 1 \quad \text{(forbidden)},\\
-s,s &= \frac{2^2}{3^2} < 1, &s,d &= \frac{2^3}{3^2} < 1 \quad \text{(maximal)},\\
-s,d,s &= \frac{2^4}{3^3} < 1, &s,d,d &= \frac{2^5}{3^3} > 1 \quad \text{(forbidden)},\\
-s,d,s,s &= \frac{2^5}{3^4} < 1, &s,d,s,d &= \frac{2^6}{3^4} < 1 \quad \text{(maximal)},\\
-s,d,s,d,s &= \frac{2^7}{3^5} < 1, &s,d,s,d,d &= \frac{2^8}{3^5} > 1 \quad \text{(forbidden)},\\
-s,d,s,d,s,s &= \frac{2^8}{3^6} < 1, &s,d,s,d,s,d &= \frac{2^9}{3^6} < 1 \quad \text{(maximal)},\\
-s,d,s,d,s,d,s &= \frac{2^{10}}{3^7} < 1, &s,d,s,d,s,d,d &= \frac{2^{11}}{3^7} < 1 \quad \text{(maximal)}.
-\end{align*}
-
-This produces the maximal 7-cycle composed of 
-\[
-\{s,d,s,d,s,d,d\}.
-\]
-
-Thus:
-\begin{itemize}
-  \item every $s$ must be followed by a $d$;
-  \item a $d$ may be followed by either $s$ or $d$;
-  \item no prefix may violate the unity bound.
-\end{itemize}
-This symbolic grammar is equivalent to the first-difference structure of
-$A022921$ and underlies the admissible configurations of division counts.
-
-\subsection{The 5-Cycle and the Contractive 12-Cycle}
-
-The next consecutive double ($d,d$) event occurs only after a full 7-cycle,
-yielding the 5-cycle pattern 
-\[
-\{s,d,s,d,d\}
-\]
-as follows (suppressing forbidden and non-maximal patterns):
-\begin{align*}
-s,d,s,d,s,d,d,s &= \frac{2^{12}}{3^8} < 1,\\
-s,d,s,d,s,d,d,s,d &= \frac{2^{14}}{3^9} < 1,\\
-s,d,s,d,s,d,d,s,d,s &= \frac{2^{15}}{3^{10}} < 1,\\
-s,d,s,d,s,d,d,s,d,s,d &= \frac{2^{17}}{3^{11}} < 1,\\
-s,d,s,d,s,d,d,s,d,s,d,d &= \frac{2^{19}}{3^{12}} < 1.
-\end{align*}
-
-Concatenating a 7-cycle followed by a 5-cycle yields the 12-cycle
-\[
-\{s,d,s,d,s,d,d,s,d,s,d,d\},\qquad
-\frac{2^{19}}{3^{12}} < 1.
-\]
-This 12-cycle is contractive, and repetition drives the cumulative
-product further below unity.  
-
-\subsection{Why Shorter Expansive Blocks Are Forbidden}
-
-Consider a composite of two 12-cycles followed by a 5-cycle (a 29-cycle):
-\[
-\text{29-cycle} = 12 + 12 + 5,
-\]
-with net factor
-\[
-\frac{2^{46}}{3^{29}} > 1.
-\]
-The prefix-wise invariant forbids any prefix from exceeding unity; hence
-the 29-cycle is inadmissible as an initial block and cannot be appended
-without sufficient prior contraction.  
-
-\subsection{Contractive Buffers: The 53-Cycle}
-
-Longer composites can serve as contractive buffers. For instance,
-\[
-\text{53-cycle} = 12 + 12 + 12 + 12 + 5,
-\]
-has net factor
-\[
-\frac{2^{84}}{3^{53}} \approx 0.9979 < 1.
-\]
-Repetition of 53-cycles
-\[
-\left(\frac{2^{84}}{3^{53}}\right)^n \longrightarrow 0
-\]
-drives the cumulative product farther below unity, creating \emph{slack} in
-which an expansive configuration may later be inserted without violating
-the prefix-wise invariant.  This slack is essential for permitting the
-first minimal expansive insertion.
-
-\subsection{The Minimal Expansive Configuration: The 41-Cycle}
-
-The smallest expansive pattern that can be inserted after sufficient
-buffering is the 41-cycle,
-\[
-\text{41-cycle} = 12 + 12 + 12 + 5,
-\]
-with net factor
-\[
-\frac{2^{65}}{3^{41}} > 1.
-\]
-
-Its admissibility depends on prior contraction:
-\begin{itemize}
-  \item repeated 53-cycles drive the cumulative product below unity;
-  \item after sufficient buffering, the 41-cycle can be appended without
-        any prefix exceeding unity;
-  \item no shorter expansive block (such as the 29-cycle) can be
-        accommodated.
-\end{itemize}
-Hence the 41-cycle is the minimal expansive extremal under the unity invariant.
-
-\subsection{Consequences for Extremal Growth}
-
-The analysis establishes that:
-\begin{enumerate}
-  \item all admissible sequences are built from 7- and 5-cycles, with
-        contractive 12-cycles as the dominant neutral unit;
-  \item contractive 53-cycles serve as buffers, creating arbitrarily large
-        slack in the prefix-wise unity invariant;
-  \item the 41-cycle is the minimal expansive configuration that can be
-        inserted after such buffering, maximizing admissible per-symbol growth.
-\end{enumerate}
-
-Thus any admissible infinite word whose horizontal sums grow without bound
-is eventually dominated, in average growth per symbol, by repetitions of
-the 41-cycle or by blocks with strictly more contractive content.  
-This establishes the 41-cycle as the extremal configuration governing the
-maximal growth of $A020914$ and $A022921$, and therefore bounds the
-asymptotic growth of the horizontal-sum sequence
-$\widetilde A(i)=A186009(i+1)$.
-
-\begin{remark}[Structural Summary]
-Appendix~\ref{app:less-than-unity} introduced the prefix-wise
-less-than-unity invariant.  The present appendix shows how that invariant
-forces a rigid combinatorial grammar: admissible words are built from
-7- and 5-cycles, organize into contractive 12-cycles, require 53-cycles as
-buffers, and admit the 41-cycle as the minimal expansive extremal.
-Together, these facts provide a complete structural explanation for the
-observed bounds on denominator growth and on the number of convergent
-classes.
-\end{remark}
 
 
 \newpage
