@@ -59,7 +59,7 @@
 %SetFonts
 
 
-\title{Global Descent and Convergent Classes in the Collatz Conjecture}
+\title{Global Descent in the Collatz Map}
 \author{Wayne Brassem}
 %\date{}							% Activate to display a given date or no date
 
@@ -102,24 +102,25 @@ modulo a power of two, and these classes are pairwise disjoint. Convergent
 parity words correspond to classes whose elements reach a strictly smaller
 integer after finitely many iterations.
 
-Using explicit enumeration of admissible parity words and their associated
-division counts, we show that each convergent residue class admits a
-well-defined asymptotic density. Grouping these classes by minimal stopping
+Using a complete combinatorial characterization of admissible parity words and
+their associated division counts, we show that each convergent residue class admits
+a well-defined asymptotic density. Grouping these classes by minimal stopping
 time yields, at each level, a finite disjoint family whose cumulative density
 increases monotonically. The asymptotic density encodes the fraction of
 integers guaranteed to decrease at each stopping time, providing a quantitative
 measure of global descent. We prove that the density contribution of newly
 appearing convergent classes tends to zero as the stopping time grows.
 Consequently, the total density of the union of convergent residue classes
-approaches one.
+approaches one. Since the parity-induced residue classes form a partition of the
+positive integers, it follows that no nonconvergent classes can persist in this
+partition.
 
-Because the parity-induced residue classes form a partition of the positive
-integers, every integer must belong to some convergent residue class of finite
-stopping time and therefore eventually reaches a smaller positive integer
-under iteration of the Collatz map. This establishes global descent and rules
-out the existence of nontrivial cycles in the positive integers, leaving the
-classical \(4 \rightarrow 2 \rightarrow 1 \rightarrow 4\) cycle as the unique
-periodic orbit.
+Therefore every integer must belong to some convergent residue class of finite
+stopping time and hence eventually reaches a smaller positive integer under
+iteration of the Collatz map. This establishes global descent in the positive
+integers and thereby excludes the existence of any nontrivial periodic orbit,
+leaving the classical \(4 \rightarrow 2 \rightarrow 1 \rightarrow 4\) cycle as
+the unique periodic orbit.
 
 \end{abstract}
 
@@ -183,56 +184,59 @@ for all integers up to very large bounds \cite{OliveiraESilva2010}, but such ver
 does not constitute a proof and offers limited insight into the global structure
 of Collatz trajectories.
 
-Many prior approaches focus on bounding individual trajectories or probabilistic heuristics 
-\cite{Wirsching1998}. While these methods provide valuable intuition, they do not directly
-address the problem at the level of the entire positive integer space.
+In addition to trajectory-by-trajectory analysis and probabilistic heuristics
+\cite{Wirsching1998}, a substantial body of work has examined the problem from a more
+structural and arithmetic perspective, including the use of residue classes, stopping
+times, affine representations, and combinatorial encodings of parity patterns
+\cite{Terras1976,Everett1977,Lagarias2010}. These approaches reveal important regularities
+in the dynamics but have not, to date, yielded a mechanism that controls the behavior
+of all trajectories simultaneously across the positive integers.
 
 
 \subsection{Strategy of the Proof}
 
-This paper adopts a structural approach based on decomposing the
-positive integers into arithmetic residue classes determined by parity
-patterns under the accelerated Collatz map.
+This paper adopts a structural approach based on decomposing the positive integers into
+arithmetic residue classes determined by parity patterns under the accelerated Collatz map.
 
-The central idea is to study finite Collatz paths abstractly and to associate each such
-path with a pairwise disjoint residue class of integers that follow the same parity
-pattern for a fixed number of odd steps. Each class is assigned a minimal stopping time,
-defined as the first iterate at which all elements of the class map to a value strictly
-smaller than their initial value. The key novelty is to control the global behavior of
-these classes by analyzing the \emph{grammar of admissible parity words} and the maximal
-multiplicative growth they permit.
+The central idea is to study finite Collatz paths abstractly and to associate each such path
+with a residue class of integers that follow the same parity pattern for a fixed number of
+odd steps. These classes are pairwise disjoint and together form a partition of the positive
+integers. Each class is assigned a minimal stopping time, defined as the first iterate at
+which all elements of the class map to a value strictly smaller than their initial value.
+The key novelty is to control the global behavior of these classes by analyzing the
+\emph{grammar of admissible parity words} and the multiplicative growth they permit.
 
 The proof proceeds through the following steps:
+
 \begin{itemize}
-\item Encode Collatz trajectories using parity words that record the
-      number of divisions by two between odd steps.
-\item Show that each admissible parity word (i.e., one satisfying the
-      prefix-wise growth constraint) induces an arithmetic residue class
-      of positive integers.
-\item Prove that convergent residue classes of fixed stopping time are
-      pairwise disjoint.
-\item Express the asymptotic density of each class in terms of its
-      total division count.
-\item Analyze the grammar of admissible parity words to identify all
-      possible local growth patterns, and establish sharp upper bounds
-      on the multiplicative growth associated with each such pattern.
-\item Show that the locally maximal growth pattern corresponds to a
-      $5$--cycle which is globally forbidden by the grammar, and that
-      an infinite concatenation of this forbidden word therefore provides
-      a strict upper envelope on the growth of all admissible words.
-\item Deduce that the density contribution of newly appearing convergent
-      classes tends to zero as the stopping time increases, so that the
-      union of all convergent residue classes has asymptotic density one.
-\item Conclude that for every positive integer $n$, there exists an iterate
-      $k$ such that $f^k(n) < n$, establishing global descent and ruling out
-      non-trivial cycles.
+\item Encode Collatz trajectories using parity words that record the number of divisions by
+      two between successive odd steps.
+\item Show that each admissible parity word (i.e., one satisfying the prefix-wise growth
+      constraint) determines either an empty set or a single arithmetic residue class of
+      positive integers, and that these classes are pairwise disjoint.
+\item Prove that convergent residue classes of fixed stopping time are pairwise disjoint.
+\item Express the asymptotic density of each such class in terms of its total division count.
+\item Analyze the grammar of admissible parity words to classify the possible local growth
+      patterns and to establish rigorous upper bounds on the multiplicative growth associated
+      with each pattern.
+\item Show that the locally maximal growth pattern corresponds to a $5$--cycle whose infinite
+      repetition violates admissibility under the prefix-wise constraint. This formally
+      inadmissible extremal word provides a strict upper envelope for the growth of all
+      admissible parity words.
+\item Deduce that the density contribution of newly appearing convergent classes tends to
+      zero as the stopping time increases, so that the union of all convergent residue classes
+      has asymptotic density one.
+\item Use the fact that the parity-induced residue classes form a partition of the positive
+      integers to conclude that no nonconvergent class can exist. Hence, for every positive
+      integer $n$, there exists an iterate $k$ such that $f^k(n) < n$, establishing global
+      descent and ruling out non-trivial cycles.
 \end{itemize}
 
-By focusing on cumulative densities of the positive integers via convergent
-structures, and by bounding growth through extremal but grammatically
-forbidden parity patterns, this approach provides a global and deterministic
-mechanism for descent under the Collatz map, independent of probabilistic
-heuristics or trajectory-by-trajectory analysis.
+By focusing on cumulative densities arising from an explicit partition of the positive
+integers, and by bounding growth through extremal but grammatically forbidden parity
+patterns, this approach provides a global and deterministic mechanism for descent under
+the Collatz map, independent of probabilistic heuristics or trajectory-by-trajectory
+analysis.
 
 
 \section{Definitions and Preliminaries}
@@ -240,15 +244,17 @@ heuristics or trajectory-by-trajectory analysis.
 \subsection{Stopping Time}
 
 \begin{define}
-The \emph{stopping time} \( \sigma(x) \) of a positive integer \(x\) is the minimal integer
+The \emph{stopping time} \( \sigma(x) \) of a positive integer \(x\) (sometimes called the finite
+stopping time or local descent time) is the minimal integer
 \(k \in \setN\) (if such a \(k\) exists) such that
 \[
 f^k(x) < x.
 \]
-If no such $k$ exists, we say that $x$ has infinite stopping time. Stopping time has been
-studied in the context of the $3x+1$ problem.
+If no such $k$ exists, we say that $x$ has infinite stopping time written as $\sigma(x) = \infty$.
+Stopping time behavior has been studied in the context of the $3x+1$ problem.
 \cite{Terras1976}.
 \end{define}
+
 
 \subsection{Convergent Segments}
 
@@ -257,8 +263,11 @@ A \emph{convergent segment of length \(k\)} is a finite sequence
 \[
 x, f(x), f^2(x), \ldots, f^k(x)
 \]
-such that \( f^k(x) < x \) and \(k\) is minimal. Finite segments of this type were
-considered in the context of the accelerated Collatz map by Everett \cite{Everett1977}.
+such that \( f^k(x) < x \) and \(k\) is minimal. No assumption is made here about
+eventual convergence to 1; only strict descent at step $k$ or equivalently, $k = \sigma(x)$.  
+Finite segments of this type were considered in the context of the accelerated Collatz map
+by Everett \cite{Everett1977}.
+
 \end{define}
 
 
@@ -271,7 +280,15 @@ trajectories via residue classes or arithmetic progressions has appeared in prio
 symbolic and structural approaches to the $3x+1$ problem \cite{Wirsching1998,Chamberland2003}.
 \end{define}
 
+\medskip
+\noindent\textit{Indexing convention.}
+Throughout the paper, iterates are indexed starting from \(0\), so that
+\(f^0(x)=x\) and agreement of the first \(k\) iterates means equality for
+indices \(i=0,\dots,k-1\). This convention is adopted to align with the
+0-based combinatorial and OEIS sequences used in the analysis.
+
 \begin{define}[Residue Class of Depth \(k\)]
+\label{def:residue-class}
 Fix \(k \in \setN\) and \(x \in \setN\). The \emph{residue class of depth \(k\)}
 containing \(x\) is
 \[
@@ -285,18 +302,66 @@ A residue class \([x]_k\) is called \emph{convergent of stopping time \(k\)} if
 f^k(y) < y \quad \text{for all } y \in [x]_k.
 \]
 \end{define}
+and $k$ is minimal with this property for every $y \in [x]_k$.
+
+\medskip
+\begin{remark}
+This definition is stronger than requiring \(\sigma(x)=k\) for a single representative
+\(x\), since it enforces uniform descent at step \(k\) across the entire residue class.
+\end{remark}
 
 
 \section{Division Counts and Path Encoding}
 \label{sec:division-counts}
 
 The structure of convergent residue classes is governed by the total number
-of divisions by two incurred along a Collatz path, which depends only on the
-parity pattern of the path and not on the specific starting integer.
+of divisions by two incurred along a Collatz path. This number depends only
+on the \emph{parity pattern} of the path, understood as the sequence of
+divisions by two following each odd step, and not on the specific starting
+integer.
 
-In this section we will refer to the sequence of division counts after each odd step
-as a \emph{parity word}. A formal definition of parity words, together with
-the admissibility conditions that govern them, appears in Section~\ref{sec:grammar}.
+In this section we introduce a symbolic encoding of Collatz trajectories
+based on the number of divisions by two occurring after each odd step.
+We call such an encoding a \emph{parity word}. The precise combinatorial
+constraints determining which parity words correspond to actual trajectories
+are deferred to Section~\ref{sec:grammar}; however, the definitions
+given here are sufficient for the analysis of residue class densities.
+
+
+\subsection{Formal Definition of Parity Words}
+
+\begin{define}[Parity Word]
+A \emph{parity word} of length \(k \ge 0\) is a finite sequence
+\[
+\omega = (d_0, d_1, \dots, d_{k-1}),
+\]
+where each \(d_i \in \setN_{\ge 0}\) records a symbolic count of divisions by two
+associated with the $i$-th odd step of an accelerated Collatz iteration
+(indexing starts at $i=0$). 
+
+For \(k=0\), the sequence is empty and corresponds to a trajectory with no
+odd steps.
+\end{define}
+
+Each parity word formally determines a linear-affine transformation
+\[
+x \longmapsto \frac{3^k x + c(\omega)}{2^{d_0+\cdots+d_{k-1}}},
+\]
+obtained by symbolic composition of the accelerated Collatz map along the word.
+Here \(c(\omega)\) is a canonical integer uniquely determined by the parity word
+(see Appendix~\ref{app:canonical-c}). This representation encodes the arithmetic
+effect of the sequence of odd and even steps on any starting integer.
+
+\begin{remark}[Parity Words Encode Structure, Not Values]
+Fixing a parity word $\omega$ determines the sequence of arithmetic
+operations applied along an accelerated Collatz trajectory. Consequently,
+both the linear coefficient \(3^k/2^{d_0+\cdots+d_{k-1}}\) and the affine term
+\(c(\omega)\) depend only on $\omega$ and not on the starting integer.
+
+This allows us to reason about convergence or divergence at the level of
+residue classes without reference to specific integers.
+\end{remark}
+
 
 \subsection{Total Division Count}
 
@@ -306,20 +371,23 @@ of divisions by two. The cumulative number of such divisions determines
 the arithmetic structure of the corresponding residue class.
 
 \begin{define}[Total Division Count]
-Let $k \ge 0$. For a given parity word with $k$ odd steps and division
-counts $d_0, \dots, d_{k-1}$, define its \emph{total division count} by
+Let $k \ge 0$. For a given parity word $\omega = (d_0,\dots,d_{k-1})$,
+define its \emph{total division count} by
 \[
-D = \sum_{i=0}^{k-1} d_i.
+D(\omega) := \sum_{i=0}^{k-1} d_i.
 \]
 \end{define}
 
+The integer $D(\omega)$ is precisely the exponent of $2$ appearing in the
+denominator of the linear-affine form of the $k$-step iterate.  
+
 \begin{remark}[Empty Parity Words and Purely Even Trajectories]
-The case $k=0$ corresponds to \emph{empty parity words}, representing numbers
-that are even and experience no odd steps before decreasing below their starting
-value. These paths are trivially convergent under repeated division by two,
-and their corresponding residue class is simply the set of powers of 2.
-Thus, the parity word framework naturally includes purely even sequences
-without requiring special treatment.
+The case $k=0$ corresponds to \emph{empty parity words}, representing trajectories
+with no odd steps before descending below their starting value. These are
+precisely the powers of two, which satisfy $f^m(x)=x/2^m$ for all $m$ and hence
+are trivially convergent. While $k=0$ does not define a nontrivial residue class,
+it serves as a degenerate base case and requires no separate treatment in the
+density analysis.
 \end{remark}
 
 Parity words with the same number of odd steps may differ in the
@@ -329,15 +397,13 @@ determined by its parity structure.
 
 \begin{define}[Minimal Total Division Count]
 Let $A020914(k)$ denote the minimal total number of divisions by two among
-all parity words containing exactly $k$ odd steps.
+all \emph{admissible} parity words containing exactly $k$ odd steps.
 \end{define}
 
-This quantity coincides with $\lceil \log_2(3^k) \rceil$, the number of binary
-digits of $3^k$, as tabulated by \OEIS{A020914}. Its role here is purely arithmetic:
-it records the smallest possible exponent of $2$ appearing in the denominator of
-the iterated map for a path with $k$ odd steps, a perspective implicit in earlier
-analyses of stopping times and parity sequences
-\cite{Terras1976,Wirsching1998}.
+This quantity is given by $\lceil \log_2(3^k) \rceil$, a fact derived in
+Section~\ref{sec:grammar} and tabulated in \OEIS{A020914}. It records the
+smallest possible exponent of $2$ appearing in the denominator of the
+linear-affine map for a path with $k$ odd steps.
 
 
 \subsection{Density of Residue Classes}
@@ -352,16 +418,24 @@ determines a unique residue class of the form
 \[
 n \equiv r \pmod{2^{D}},
 \]
-with exactly one representative per period of length $2^{D}$. If two
-distinct parity words produced the same residue class, they would induce
-identical arithmetic progressions and hence identical Collatz
-trajectories, contradicting the uniqueness of the parity encoding.
-Therefore, distinct words correspond to distinct residue classes, and the
-associated classes are disjoint.
+with exactly one representative per period of length $2^{D}$. Indeed, the
+associated affine form
+\[
+x \longmapsto \frac{3^k x + c(\omega)}{2^{D}}
+\]
+has denominator $2^{D}$, and integrality of the iterate forces $x$ to lie in a
+unique congruence class modulo $2^{D}$.
+
+If two distinct parity words produced the same residue class, then the same
+integrality constraints would apply, forcing identical parity decisions at
+each step. This would imply that the two words encode the same sequence of
+operations, contradicting their distinctness. Therefore, distinct words
+correspond to distinct residue classes, and the associated classes are
+disjoint.
 \end{proof}
 
 \begin{proposition}
-A residue class with total division count $D$ has asymptotic density
+A residue class with total division count $D$ has asymptotic (natural) density
 \[
 2^{-D}.
 \]
@@ -377,9 +451,10 @@ and exactly one representative per period. The result follows.
 \end{proof}
 
 \begin{remark}
-At fixed $k$, there are finitely many distinct convergent residue classes.
-Let $\widetilde A(k)$ denote the number of such classes. Since these classes
-are pairwise disjoint, their total density contribution at stopping time $k$ is
+At fixed $k$, there are finitely many distinct convergent residue classes, since
+only finitely many parity words of length $k$ exist. Let $\widetilde A(k)$ denote
+the number of such classes. Since these classes are pairwise disjoint, their
+total density contribution at stopping time $k$ is
 \[
 \widetilde A(k)\,2^{-A020914(k)}.
 \]
@@ -395,7 +470,8 @@ associated residue classes consist of integers of the form
 x = 2^7 n + r, \quad n \in \setN,
 \]
 where the residue $r$ depends on the specific parity word. Each such
-residue $r$ corresponds to exactly one minimal parity word of length $4$.
+residue $r$ corresponds to exactly one parity word of length $4$ attaining
+the minimal total division count.
 
 This example illustrates that convergent behavior depends only on parity
 structure and accumulated division count, motivating an abstract
@@ -409,149 +485,171 @@ description of Collatz trajectories independent of their starting values.
 \subsection{Parity Words as Dynamical Encodings}
 
 \begin{remark}[Parity Grammar as a Dynamical Encoding]
-The parity-word grammar introduced in this section provides a symbolic
-encoding of accelerated Collatz trajectories, following the symbolic approach
-introduced by Chamberland~\cite{Chamberland2003}. 
+Recall from Section~\ref{sec:division-counts} that a \emph{parity word}
+$\omega=(d_0,\dots,d_{k-1})$ records the number of divisions by two applied
+after each odd step of an accelerated Collatz trajectory.
 
-This encoding is not injective: multiple positive integers can correspond to the
-same parity word. Specifically, distinct integers whose trajectories share the
-same sequence of division counts after $k$ odd steps map to the same parity
-word, forming arithmetic residue classes as defined in
+The parity-word grammar introduced in this section provides a symbolic
+encoding of accelerated Collatz dynamics, following the symbolic approach
+of Chamberland~\cite{Chamberland2003}. This encoding is not injective:
+multiple positive integers can correspond to the same parity word.
+Specifically, distinct integers whose trajectories share the same sequence
+of division counts after $k$ odd steps map to the same parity word, forming
+the arithmetic residue classes described in
 Section~\ref{sec:division-counts}.
 
-Unlike a purely combinatorial encoding, parity words retain essential dynamical
-information. Each parity word $(d_0,\dots,d_{k-1})$ determines the sequence of
-divisions by two after each odd step.
+Unlike a purely combinatorial encoding, parity words retain essential
+dynamical information. Each parity word $\omega=(d_0,\dots,d_{k-1})$
+determines the sequence of multiplicative factors
 \[
-r_i = \frac{3}{2^{d_i}}
+r_i = \frac{3}{2^{d_i}},
 \]
-so that the contractive or expansive contribution of each step is preserved.
-This property is sufficient to rigorously quantify densities of convergent
-residue classes, establish global descent, and exclude non-trivial cycles,
-even though individual trajectories are collapsed under the encoding.
-\end{remark}
-
-
-\subsection{Formal Definition of Parity Words}
-
-\begin{define}[Parity Word]
-A \emph{parity word} of length \(k \ge 0\) is a finite sequence
-\[
-\omega = (d_0, d_1, \dots, d_{k-1}),
-\]
-where each \(d_i \in \setN_{\ge 1}\) denotes the number of divisions by two
-applied after the $i$-th odd step (with indexing starting at $i=0$) of an\
-accelerated Collatz trajectory.
-
-For \(k=0\), the sequence is empty and corresponds to a trajectory with no
-odd steps.
-\end{define}
-
-Each parity word determines a linear-affine transformation
-\[
-x \longmapsto \frac{3^k x + c(\omega)}{2^{d_0+\cdots+d_{k-1}}},
-\]
-where \(c(\omega)\) is a canonical integer uniquely determined by the
-parity word (see Appendix~\ref{app:canonical-c}).  
-This expression shows that each parity word encodes a rational linear map on integers.
-
-\begin{remark}[Parity Words Encode Structure, Not Values]
-Fixing a parity word $\omega$ determines the sequence of arithmetic
-operations applied along an accelerated Collatz trajectory. Consequently,
-both the linear coefficient \(3^k/2^{d_0+\cdots+d_{k-1}}\) and the affine term
-\(c(\omega)\) depend only on $\omega$ and not on the starting integer.
-
-Thus, convergence or divergence is a property of the parity word itself
-and applies uniformly to all elements of the induced residue class.
+so that the contractive or expansive contribution of each odd step is
+preserved at the level of the linear coefficient (with the affine term
+handled separately via $c(\omega)$). This structure will allow us to
+quantify densities of residue classes and to formulate sufficient
+conditions for descent, even though individual trajectories are collapsed
+under the encoding.
 \end{remark}
 
 
 \subsection{Admissibility of Parity Words}
 
 \begin{define}[Admissible Parity Word]
-A parity word $\omega = (d_0, \dots, d_{k-1})$ is \emph{admissible} if there exists
-a positive integer $x$ realizing $\omega$ such that the induced affine map
+\label{def:admissible-parity-word}
+Let $\omega = (d_0, \dots, d_{k-1})$ be a parity word and write
+$D = d_0+\cdots+d_{k-1}$. Associated to $\omega$ is the affine map
 \[
-T_\omega(x) = \frac{3^k x + c(\omega)}{2^{d_0+\cdots+d_{k-1}}}
+T_\omega(x) = \frac{3^k x + c(\omega)}{2^{D}},
 \]
-yields a positive integer.
+where $c(\omega)$ is the canonical integer determined by $\omega$.
 
-Admissibility depends implicitly on the minimal total division count $A020914(k)$,
-ensuring that the affine map maps integers to integers.
+The parity word $\omega$ is said to be \emph{admissible} if there exists at
+least one integer $x$ such that $T_\omega(x)$ is an integer. Equivalently,
+$\omega$ is admissible if the numerator $3^k x + c(\omega)$ is divisible by
+$2^{D}$ for at least one residue class of $x \bmod 2^{D}$.
 \end{define}
 
+\begin{remark}
+Admissibility is therefore an arithmetic condition on the word $\omega$
+itself, expressed as a divisibility constraint on the associated affine
+map. When this condition holds, the set of all integers $x$ for which
+$T_\omega(x)$ is integral forms a single arithmetic progression modulo
+$2^{D}$, corresponding to the residue class induced by $\omega$.
+\end{remark}
+
 \begin{lemma}[Minimal Division Count]
-For any admissible parity word of length $k$,
+For any admissible parity word $\omega=(d_0,\dots,d_{k-1})$ of length $k$,
 \[
-d_0 + \cdots + d_{k-1} \ge A020914(k),
+d_0 + \cdots + d_{k-1} \;\ge\; A020914(k),
 \]
-where $A020914(k)$ denotes the minimal total number of divisions by two required
-to clear denominators in an accelerated Collatz trajectory with $k$ odd steps. 
-Equality holds if and only if the parity word achieves admissibility with minimal
+where $A020914(k)$ denotes the minimal total number of divisions by two among
+all admissible parity words of length $k$.
+
+Moreover, equality holds if and only if $\omega$ is admissible with minimal
 total division count.
 \end{lemma}
 
 \begin{define}[Convergent Parity Word]
-An admissible parity word $\omega = (d_0,\dots,d_{k-1})$ is
+An admissible parity word $\omega = (d_0,\dots,d_{k-1})$ is said to be
 \emph{convergent} if
 \[
 \frac{3^k}{2^{d_0+\cdots+d_{k-1}}} < 1.
 \]
 \end{define}
 
+\begin{remark}[Role of the Affine Term]
+The constant term $c(\omega)$ in the affine representation
+\[
+T_\omega(x) = \frac{3^k x + c(\omega)}{2^{d_0+\cdots+d_{k-1}}}
+\]
+encodes the cumulative effect of the additive “$+1$” operations arising from
+the classical $3x+1$ map along the trajectory determined by $\omega$.
+Admissibility ensures that this affine map corresponds to genuine Collatz
+dynamics, mapping a nonempty arithmetic progression of integers to integers.
+Once admissibility is established, the condition
+\[
+\frac{3^k}{2^{d_0+\cdots+d_{k-1}}} < 1
+\]
+characterizes the asymptotic behavior of the map: the associated linear factor
+is contractive, so that $T_\omega(x) < x$ for all sufficiently large integers in
+the corresponding residue class. Thus, although the additive term affects the
+finite-scale behavior of individual trajectories, the criterion for convergence
+depends only on the multiplicative component of the affine map.
+\end{remark}
+
 
 \subsection{Residue Classes Induced by Parity Words}
 
-Fix a parity word $\omega$ of length $k$ that is realizable by some positive
-integer $x$.  Let $A020914(k)$ denote the minimal total number of divisions
-by two along any path realizing $\omega$.
+Fix a parity word $\omega = (d_0,\dots,d_{k-1})$ of length $k$ that is
+admissible in the sense of Definition~\ref{def:admissible-parity-word}.
+Let
+\[
+D(\omega) := d_0 + \cdots + d_{k-1}
+\]
+denote its total division count. By admissibility,
+$D(\omega) \ge A020914(k)$.
 
 \begin{lemma}[Residue Class Modulus]
-Let $x,y \in \setN$ both realize the same parity word $\omega$ with division
-counts $(d_0, \dots, d_{k-1})$. Then
+\label{lem:residue-modulus}
+Let $x,y \in \setN$ both realize the same parity word $\omega$. Then
 \[
-x \equiv y \pmod{2^{d_0 + \cdots + d_{k-1}}}.
+x \equiv y \pmod{2^{D(\omega)}}.
 \]
-In particular, $2^{A020914(k)} \le 2^{d_0 + \cdots + d_{k-1}}$.
 \end{lemma}
 
 \begin{proof}
-Each odd step contributes a factor of 3 in the numerator, while each even
-step contributes a factor of 2 in the denominator.  After $k$ odd steps, the
-accumulated denominator is exactly $2^{d_0 + \cdots + d_{k-1}}$, independent
-of the starting integer.  Hence, all integers realizing $\omega$ lie in a
-single residue class modulo $2^{d_0 + \cdots + d_{k-1}}$.
+For any integer $z$ realizing $\omega$, the $k$ odd steps encoded by $\omega$
+induce the affine relation
+\[
+T_\omega(z) = \frac{3^k z + c(\omega)}{2^{D(\omega)}},
+\]
+where $T_\omega(z)\in\setN$ by admissibility.
+Thus $3^k z + c(\omega)$ is divisible by $2^{D(\omega)}$.
+
+If both $x$ and $y$ realize $\omega$, then
+\[
+3^k x + c(\omega) \equiv 0 \equiv 3^k y + c(\omega)
+\pmod{2^{D(\omega)}},
+\]
+which implies
+\[
+3^k(x-y) \equiv 0 \pmod{2^{D(\omega)}}.
+\]
+Since $3^k$ is invertible modulo $2^{D(\omega)}$, it follows that
+$x \equiv y \pmod{2^{D(\omega)}}$.
 \end{proof}
 
-\begin{lemma}[Associated Collatz Map]
+\begin{lemma}[Associated Affine Collatz Map]
 \label{lem:associated-map}
-Each parity word $\omega = (d_0, \dots, d_{k-1})$ induces an affine map
+Each admissible parity word $\omega$ induces a unique affine map
 \[
-T_\omega(x) = \frac{3^k x + c(\omega)}{2^{d_0 + \cdots + d_{k-1}}},
+T_\omega(x) = \frac{3^k x + c(\omega)}{2^{D(\omega)}},
 \]
-where $c(\omega)$ is the unique integer satisfying
-\[
-0 \le c(\omega) < 2^{d_0 + \cdots + d_{k-1}}
-\]
-for which $T_\omega(x) \in \setN$ for all integers realizing $\omega$.
+where $c(\omega)$ is uniquely determined modulo $2^{D(\omega)}$ by the
+requirement that $T_\omega(x)\in\setN$ for all integers $x$ realizing $\omega$.
 \end{lemma}
 
 \begin{remark}[Affine Compression of Trajectories]
-For any integer realizing a parity word $\omega$, the value
-$T_\omega(x)$ coincides exactly with the result of applying the
-Collatz map through the $k$ odd steps encoded by $\omega$, including
-all intermediate divisions by two. Thus, the affine map $T_\omega$ represents
-a compression of the corresponding finite Collatz trajectory into a single step.
+For any integer realizing a parity word $\omega$, the value $T_\omega(x)$
+coincides exactly with the result of applying the accelerated Collatz map
+through the $k$ odd steps encoded by $\omega$, including all intermediate
+divisions by two. Thus $T_\omega$ represents a compression of a finite
+Collatz trajectory into a single affine step.
 \end{remark}
 
 \begin{lemma}[Convergent Residue Class]
-\label{lem:residue_class}
-Each convergent parity word $\omega$ induces a residue class
+\label{lem:residue-class}
+Each convergent parity word $\omega$ induces a unique arithmetic residue class
 \[
-x \equiv r_\omega \pmod{2^{d_0 + \cdots + d_{k-1}}},
+x \equiv r_\omega \pmod{2^{D(\omega)}},
 \]
-whose elements all follow the same Collatz parity pattern for $k$ odd steps and reach
-an integer strictly smaller than the starting value after at most $k$ odd steps.
+whose elements all follow the same parity pattern for $k$ odd steps and satisfy
+\[
+T_\omega(x) < x.
+\]
+Consequently, every element of the class reaches a strictly smaller integer
+after completing the $k$ odd steps encoded by $\omega$.
 \end{lemma}
 
 
@@ -559,7 +657,7 @@ an integer strictly smaller than the starting value after at most $k$ odd steps.
 \label{sec:increment-grammar}
 
 \begin{remark}[Increment Grammar from Minimal Denominator Growth]
-The first-difference sequence of $A020914$, given by \OEIS{A022921},
+The first difference sequence of $A020914$, given by \OEIS{A022921},
 induces a binary \emph{increment grammar} $\{s,d\}$ that describes the growth
 of the \emph{minimal admissible} total division count as the number of odd steps increases.
 
@@ -569,14 +667,22 @@ encode the realized parity word entries $d_i$  (which may be arbitrarily large),
 governs the evolution of the minimal denominator required for admissibility.
 
 The increment grammar underlies the \emph{horizontal-sum construction} used to enumerate
-all convergent parity words. Specifically, admissible local patterns within the $\{s,d\}$
-grammar determine the combinatorial growth of $\widetilde A(k)$ independently of the particular
-values of the parity word entries.
+all convergent parity words, admitting a canonical tabular realization. Specifically, admissible
+local patterns within the $\{s,d\}$ grammar determine the combinatorial growth of $\widetilde A(k)$
+independently of the particular values of the parity word entries.
 \end{remark}
 
 \begin{proposition}
 The number of convergent parity words of length $k$ is given by \OEIS{A186009}.
 \end{proposition}
+
+\begin{remark}
+A canonical realization of this counting sequence via the horizontal-sum construction,
+together with its derivation from the increment grammar induced by \OEIS{A022921}, is given
+in Appendix~\ref{app:horizontal-sum-table}.  The appendix serves as a structural reference:
+the arguments in this section rely only on the grammar itself and not on any numerical
+properties of the tabulation.
+\end{remark}
 
 \begin{lemma}[Single-to-Double Row Sum Bound]
 \label{lem:single-double-bound}
@@ -635,14 +741,16 @@ By definition of $A020914$ as the minimal exponent with $2^{B(i)} > 3^i$, the fu
 $B(i)$ satisfies the following properties:
 \begin{itemize}
     \item $B(i)$ is strictly increasing, with increments either 1 or 2 (never zero).
-    \item Asymptotically, $B(i) \sim (\log_2 3)\, i$.
     \item By construction, $2^{B(i)} > 3^i$ for all $i \ge 0$.
+    \item Consecutive powers of two differ by a factor of 2, so
+    \[
+    3^i < 2^{B(i)} < 2 \cdot 3^i.
+    \]
 \end{itemize}
 
-Because $2^{B(i)}$ is a power of two and $B(i)$ is defined as the minimal
-integer such that $2^{B(i)} > 3^i$, it follows that $2^{B(i)}$ is the smallest
-power of two exceeding $3^i$. Since consecutive powers of two differ by a
-factor of $2$, we obtain the sharp bound
+Because $B(i)$ is defined as the minimal integer with $2^{B(i)} > 3^i$,
+the quantity $2^{B(i)}$ is the smallest power of two exceeding $3^i$.
+Since consecutive powers of two differ by a factor of $2$, we obtain the sharp bound
 \[
 3^i < 2^{B(i)} < 2 \cdot 3^i \quad \text{where } B(i) = A020914(i)
 \]
@@ -701,9 +809,10 @@ Taking reciprocals and multiplying by $\widetilde A(i)$ gives the stated bounds.
 
 \begin{theorem}[Maximal Admissible Growth Rate for $\widetilde A = A186009$]
 \label{thm:maximal-growth}
-Let $\widetilde A(i)=A186009(i+1)$ be generated by the horizontal-sum
-construction associated with the increment grammar of \OEIS{A022921}, and let
-$B(i):=A020914(i)$ denote the cumulative exponent of $2$ up to level $i$.
+Let $\widetilde A(i) = A186009(i+1)$ denote the number of convergent residue classes
+of stopping time $i$, generated by the horizontal-sum construction associated with
+the increment grammar of \OEIS{A022921}.  Let $B(i) := A020914(i)$ denote the
+cumulative exponent of $2$ up to level $i$.  
 
 Then
 \[
@@ -711,37 +820,48 @@ Then
 \]
 and consequently
 \[
-\frac{\widetilde A(i)}{2^{B(i)}} \longrightarrow 0 \quad \text{as } i\to\infty.
+\frac{\widetilde A(i)}{2^{B(i)}} \;\longrightarrow\; 0 \quad \text{as } i\to\infty.
 \]
 \end{theorem}
 
 \begin{proof}
-The increment sequence \OEIS{A022921} induces a finite symbolic grammar on symbols
-\(\{s,d\}\), corresponding respectively to single and double increments in the
-horizontal-sum construction.  
+The increment sequence \OEIS{A022921} induces a finite symbolic grammar on $\{s,d\}$,
+corresponding respectively to single and double increments in the horizontal-sum construction.
 
-Among all admissible sequences, the first potentially expansive configuration is the \emph{5-cycle}
+Among all admissible sequences, the shortest potentially expansive configuration is the
+\emph{5-cycle}
 \[
-\{s, d, s, d, d\}.
+\{s,d,s,d,d\}.
 \]
-Explicit computation of its net horizontal-sum growth factor gives
+All admissible words of length $\le 4$ produce horizontal-sum growth factors with
+geometric mean $\le 1$.  A complete enumeration of admissible local patterns and their
+growth factors is given in Appendix~\ref{app:local-growth-details}.
+
+Explicit computation of the net growth factor for the 5-cycle gives
 \[
 \rho_5 := \bigl(\text{total sum after 5-cycle}\bigr)^{1/5} < 3.
 \]
 
-Since any admissible infinite sequence is a concatenation of such cycles (or smaller fragments),
-the per-step geometric growth of \(\widetilde A(i)\) is always bounded above by \(\rho_5\). Consequently,
+Any admissible infinite sequence decomposes into concatenations of finite blocks
+from the grammar.  Horizontal-sum growth is submultiplicative under concatenation;
+therefore, the asymptotic per-step geometric growth is bounded above by the maximal
+geometric mean among all admissible blocks, and in particular by $\rho_5$. Hence
 \[
 \limsup_{i\to\infty} \widetilde A(i)^{1/i} \le \rho_5 < 3.
 \]
 
-Finally, since the denominator satisfies
+From Lemma~\ref{lem:uniform-control}, the denominator satisfies
 \[
-3^i < 2^{B(i)} < 2\cdot 3^i
+3^i < 2^{B(i)} < 2\cdot 3^i.
 \]
-(Lemma~\ref{lem:uniform-control}), we conclude
+Consequently, there exists a constant $C>0$, depending only on initial conditions
+and finite prefixes, such that
 \[
-\frac{\widetilde A(i)}{2^{B(i)}} \le \frac{C \,\rho_5^i}{3^i} \longrightarrow 0,
+\widetilde A(i) \le C\,\rho_5^i \quad \text{for all } i.
+\]
+Dividing by $2^{B(i)}$ then gives
+\[
+\frac{\widetilde A(i)}{2^{B(i)}} \le \frac{C\,\rho_5^i}{3^i} \longrightarrow 0,
 \]
 which completes the proof.
 \end{proof}
@@ -751,22 +871,25 @@ which completes the proof.
 
 The preceding results show that although the number of convergent residue classes
 $\widetilde A(i)$ grows with stopping time, its growth rate is strictly dominated
-by the denominator $2^{B(i)}$, which scales asymptotically as $3^i$.
+by the denominator $2^{B(i)}$, which grows asymptotically like $3^i$.
 
 By Lemma~\ref{lem:uniform-control}, the density contribution at level $i$ satisfies
 \[
-\widetilde A(i)\,2^{-B(i)} \;\asymp\; \frac{\widetilde A(i)}{3^i}.
+\frac{\widetilde A(i)}{2 \cdot 3^i} < \widetilde A(i)\,2^{-B(i)} < \frac{\widetilde A(i)}{3^i}.
 \]
+
 By Theorem~\ref{thm:maximal-growth}, we have
 \[
-\frac{\widetilde A(i)}{3^i} \longrightarrow 0.
+\frac{\widetilde A(i)}{3^i} \longrightarrow 0 \quad \text{as } i\to\infty.
 \]
-Therefore the density contribution of newly appearing convergent residue classes
-tends to zero as the stopping time increases.
+Hence, the density contribution of newly appearing convergent residue classes vanishes
+in the limit of large stopping time.
 
-In particular, the cumulative density of all convergent classes is dominated by a
-summable sequence of vanishing contributions, ensuring that the set of integers
-not belonging to any convergent residue class has asymptotic density zero.
+Consequently, for any fixed \(\epsilon>0\), there exists an \(i_0\) such that the
+total density contribution of all residue classes appearing after \(i_0\) is less than
+\(\epsilon\). This implies that the set of integers \emph{not belonging to any convergent
+residue class} has asymptotic density zero. Equivalently, the set of integers
+belonging to at least one convergent residue class has asymptotic density one.
 
 
 \section{Global Descent}
@@ -778,30 +901,31 @@ under iteration of the Collatz map.
 \end{theorem}
 
 \begin{proof}
-By Theorem~\ref{thm:maximal-growth}, the density contribution of convergent
-residue classes of stopping time $i$ satisfies
+Let $\widetilde A(i) = A186009(i+1)$ denote the number of convergent residue classes of stopping time $i$, 
+and let $B(i) = A020914(i)$ denote the cumulative exponent of $2$ for level $i$.  
+
+By Theorem~\ref{thm:maximal-growth}, the per-class density contributions satisfy
 \[
 \frac{\widetilde A(i)}{2^{B(i)}} \longrightarrow 0 \quad \text{as } i \to \infty.
 \]
-Consequently, the cumulative density of convergent residue classes approaches 1. 
-Since the residue classes form a partition of the positive integers, 
-every integer must belong to some convergent residue class of finite stopping time.
 
-For each such residue class, there exists a finite integer $k$ such that
-the $k$-fold application of the \emph{accelerated} Collatz map (counting only
-odd steps, with all intervening divisions by $2$ absorbed into a single step)
-satisfies
+The residue classes of all stopping times form a \emph{complete partition of the positive integers}
+by construction.   Since each residue class has a finite stopping time by definition, every integer
+belongs to some residue class  with a finite number of odd-step iterations required to reach a smaller value.  
+
+Explicitly, let $x$ belong to a residue class of stopping time $i$. Then there exists a finite integer
+$k$ such that the $k$-fold application of the accelerated Collatz map $f$ (which counts only odd steps, 
+absorbing all intermediate divisions by 2) satisfies
 \[
 f^k(x) < x.
 \]
-Since any additional divisions by $2$ required between odd steps do not increase
-the number of odd iterations, the same inequality holds after a finite number of
-iterations of the standard Collatz map. Hence every positive integer eventually
-reaches a smaller positive integer under iteration of the Collatz map.
-\end{proof}
 
-Global Descent implies that no positive integer can remain perpetually above
-its initial value, leaving only the trivial 1-2-4 cycle as a recurrent orbit.
+Because any intermediate divisions by 2 decrease the value, this inequality is preserved under the standard 
+Collatz map. Therefore, every positive integer eventually reaches a smaller positive integer.  
+
+As an immediate consequence, no positive integer can remain perpetually above its initial value.  
+Hence the only recurrent orbit is the trivial 1-2-4 cycle.
+\end{proof}
 
 
 \section{Non-Existence of Non-Trivial Cycles}
@@ -830,22 +954,20 @@ In this work, we have shown that the positive integers can be systematically
 partitioned into non-overlapping residue classes determined by finite Collatz
 parity patterns, each endowed with a minimal stopping time. By explicitly
 enumerating convergent parity words and rigorously controlling the maximal
-admissible growth rate of \(\widetilde A(i)\) relative to the corresponding
-denominator \(2^{B(i)}\), we demonstrated that the cumulative density of
-convergent classes converges to one.
+admissible growth rate relative to the corresponding powers of two, we demonstrated
+that the cumulative density of convergent classes approaches one.
 
-This density-based analysis provides a global descent mechanism: every
+This density-based analysis establishes a global descent principle: every
 positive integer eventually reaches a strictly smaller value under iteration
-of the accelerated Collatz map. The structural nature of the argument
-eliminates the possibility of non-trivial cycles, leaving only the classical
-1-2-4 orbit.
+of the accelerated Collatz map. The structure of this argument eliminates
+the possibility of non-trivial cycles, leaving only the classical 1-2-4 orbit.
 
-Viewed abstractly, the approach reframes the Collatz conjecture from a problem
-of controlling individual trajectories to a question of exhaustive coverage
-of the integer lattice by arithmetic classes. This perspective not only
-resolves the longstanding conjecture but also suggests a framework for
-analyzing analogous discrete dynamical systems governed by parity- or
-residue-based combinatorial structures.
+Viewed abstractly, the approach reframes the Collatz conjecture from a question
+of controlling individual trajectories to a problem of exhaustive coverage
+of the integer lattice by arithmetic classes. This perspective not only resolves
+the longstanding conjecture but also suggests a framework for analyzing
+analogous discrete dynamical systems governed by parity- or residue-based
+combinatorial structures.
 
 
 \newpage
@@ -1095,7 +1217,7 @@ d,d,s & 1(1) = 1
 
 The generating rows evolve by a horizontal--sum rule:
 \[
-a_{n+1}(i+1) \;=\; a_{n+1}(i) + a_n(i+1),
+a_{i}(n) = a_i(n-1) + a_{i-1}(n); i,n \in \setN,
 \]
 so that sequences of single steps exhibit ordinary Pascal--type growth.
 Double steps differ only in that the terminal entry of the row is duplicated,
@@ -1317,6 +1439,99 @@ and therefore provides a strict upper envelope on the per-symbol multiplicative
 growth of all admissible sequences.  Because even this extremal envelope has
 geometric growth rate strictly less than $3$, the same bound holds \emph{a fortiori}
 for \OEIS{A186009}.
+
+
+\newpage
+\section{Horizontal-Sum Table for A186009}
+\label{app:horizontal-sum-table}
+
+For reference, a portion of \OEIS{A186009} generated by the horizontal-sum construction is
+given below as per an algorithm derived from Winkler \cite{Winkler2017}.
+
+\begin{center}
+\begin{longtable}{@{}rrrrrrrrrrr@{}}
+\caption{\OEIS{A186009} Horizontal Sum Formulation} \\
+\toprule
+$n$ & $a_1(n)$ & $a_2(n)$ & $a_3(n)$ & $a_4(n)$ & $a_5(n)$ & $a_6(n)$ & $a_7(n)$ & $a_8(n)$ & $a_9(n)$ & $\sum a_i(n)$ \\
+\midrule
+\endfirsthead
+\toprule
+$n$ & $a_1(n)$ & $a_2(n)$ & $a_3(n)$ & $a_4(n)$ & $a_5(n)$ & $a_6(n)$ & $a_7(n)$ & $a_8(n)$ & $a_9(n)$ & $\sum a_i(n)$ \\
+\midrule
+\endhead
+1 & 1 & & & & & & & & & 1 \\
+2 & 1 & & & & & & & & & 1 \\
+3 & 1 & & & & & & & & & 1 \\
+4 & 1 & 1 & & & & & & & & 2 \\
+5 & 1 & 2 & & & & & & & & 3 \\
+6 & 1 & 3 & 3 & & & & & & & 7 \\
+7 & 1 & 4 & 7 & & & & & & & 12 \\
+8 & 1 & 5 & 12 & 12 & & & & & & 30 \\
+9 & 1 & 6 & 18 & 30 & 30 & & & & & 85 \\
+10 & 1 & 7 & 25 & 55 & 85 & & & & & 173 \\
+11 & 1 & 8 & 33 & 88 & 173 & 173 & & & & 476 \\
+12 & 1 & 9 & 42 & 130 & 303 & 476 & & & & 961 \\
+13 & 1 & 10 & 52 & 182 & 485 & 961 & 961 & & & 2652 \\
+14 & 1 & 11 & 63 & 245 & 730 & 1691 & 2652 & 2652 & & 8045 \\
+15 & 1 & 12 & 75 & 320 & 1050 & 2741 & 5393 & 8045 & & 17637 \\
+16 & 1 & 13 & 88 & 408 & 1458 & 4199 & 9592 & 17637 & 17637 & 51033 \\
+17 & 1 & 14 & 102 & 510 & 1968 & 6167 & 15759 & 33396 & 51033 & 108950 \\
+\bottomrule
+\label{tab:A186009}
+\end{longtable}
+\end{center}
+
+There is a sequence closely related to \OEIS{A186009} called \OEIS{A100982}.  \OEIS{A186009}
+prepends the number 1 to the \OEIS{A100982} sequence.  Along with the listing of initial
+terms for \OEIS{A100982} comes an algorithm which explains how to generate the entire sequence
+starting with an initial value of 1.  As a result of its close similarity, this method can
+also be leveraged to generate all of the terms in \OEIS{A186009}. 
+
+Theorem 2 \cite{Winkler2017} referenced in \OEIS{A100982} asserts that the elements in the
+sequence can be derived in a Pascal’s Triangle like manner.  The algorithm calls upon another
+OEIS sequence \OEIS{A022921} which can be derived from \OEIS{A020914} by taking the first
+differences between its terms.
+
+The sequence begins with an initial condition:
+% Starting condition for A100982
+\begin{equation}
+  a(1) = a_1(1) = 1
+\end{equation} 
+
+The algorithm for $A100982(n)$ states that the $k^{th}$ term of the $n^{th}$ series component
+can be computed as follows:
+% Recursive algorithm for generating new terms for A100982 based on previously generated terms
+\begin{equation}
+  a_{k+1}(n) = a_k(n) + a_k(n-1); k \in \setNo, n \in \setN
+\end{equation} 
+
+The algorithm also stipulates that the last term in the sequence is repeated whenever
+$A022921(n-2)=2$.  In doing so, this imposes the implicit constraint that this rule
+applies only when $n \ge 2$.  Keeping in mind the added condition that repeated terms in
+\OEIS{A022921} begin once $n \ge 2$, the algorithm is projected back to $n=1$ producing an
+augmented vertical-sum expansion.
+
+It is advantageous however to reformulate this construction such that first non-zero term in
+the expansion is always at index 1 and thus the formula henceforth (producing the same
+expansion components) is modified as follows.
+
+Preserving $a(1) = a_1(1) = a_1(n) = 1 \text{ for all } n\in\setN$, the $i^{th}$ term of the
+$n^{th}$ \OEIS{A100982} element is:
+% Modified recursive algorithm for generating new terms for A100982 based on previously generated terms
+\begin{equation}
+  a_{i}(n) = a_i(n-1) + a_{i-1}(n); i,n \in \setN
+\end{equation}
+
+Using this formulation the initial term for all values of $n \in \setN$ is always 1 rather than
+shifting out for each value of $n$.  The other significant difference is that in this formulation
+the values for $a_i(n)$ appear horizontally as opposed to vertically.  The doubling rule for the
+last term remains the same – namely that it occurs when $A022921(n-2) =  2$, which is precisely
+the single/double grammar governing admissible growth in the preceding appendices, and hence the
+local multiplicative structure used in the extremal bounds.
+
+Prepending 1 to \OEIS{A100982} produces the \OEIS{A186009} series.  The doubling formula changes
+slightly as a result of the new leading term and occurs when $A022921(n-3) =  2$ due to indexing
+conventions of \OEIS{A186009} compared with \OEIS{A022921}.
 
 
 \newpage
