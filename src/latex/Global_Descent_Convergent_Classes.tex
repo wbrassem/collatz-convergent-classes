@@ -35,8 +35,9 @@
 % Hyperlinks
 \usepackage{hyperref}				% For creating internal and HTTP links
 
-% References
-\usepackage[numbers]{natbib}        % For bibliography management
+% Numbering and references
+\numberwithin{equation}{section}          % Number equations within sections
+\usepackage[numbers]{natbib}              % For bibliography management
 
 % For Tikz graphics
 \usepackage{tikz}					% Package for pgf and TikZ
@@ -59,7 +60,7 @@
 %SetFonts
 
 
-\title{Global Descent in the Collatz Map}
+\title{On the Asymptotic Density of Convergent Residue Classes in the Collatz Map}
 \author{Wayne Brassem}
 %\date{}							% Activate to display a given date or no date
 
@@ -87,40 +88,34 @@
 
 \begin{abstract}
 
-We study the accelerated Collatz map
+We investigate the iterative dynamics of the classical Collatz map
 \[
-f(x) = \begin{cases}
+g(x) = \begin{cases}
 \displaystyle
-    \phantom{3x} \frac{x}{2} & \text {if } x \text{ is even}, \\[8pt]
+    \phantom{3x} \frac{x}{2} & \text {if } x \text{ is even}, \\[4pt]
 \displaystyle
-    \frac{3x+1}{2}           & \text {if } x \text{ is odd},
+    3x+1        & \text {if } x \text{ is odd},
 \end{cases}
 \]
-and analyze integer trajectories through parity-encoded residue classes.
-For fixed length, each admissible parity word determines a residue class
-modulo a power of two, and these classes are pairwise disjoint. Convergent
-parity words correspond to classes whose elements reach a strictly smaller
-integer after finitely many iterations.
+on the positive integers by encoding trajectories as finite sequences of
+parity-determined steps. Each such sequence — a \emph{parity word} describing
+the pattern of odd and even steps along an orbit — uniquely determines a
+residue class modulo a power of two. These residue classes are disjoint, and
+those corresponding to \emph{convergent} parity words consist of integers that
+reach a strictly smaller value under finite iteration.
 
-Using a complete combinatorial characterization of admissible parity words and
-their associated division counts, we show that each convergent residue class admits
-a well-defined asymptotic density. Grouping these classes by minimal stopping
-time yields, at each level, a finite disjoint family whose cumulative density
-increases monotonically. The asymptotic density encodes the fraction of
-integers guaranteed to decrease at each stopping time, providing a quantitative
-measure of global descent. We prove that the density contribution of newly
-appearing convergent classes tends to zero as the stopping time grows.
-Consequently, the total density of the union of convergent residue classes
-approaches one. Since the parity-induced residue classes form a partition of the
-positive integers, it follows that no nonconvergent classes can persist in this
-partition.
+By developing a complete combinatorial characterization of admissible parity
+words and their associated division counts, we assign a well-defined asymptotic
+density to each convergent residue class. Organizing these classes by minimal
+stopping time yields finite disjoint families whose cumulative densities increase
+monotonically.
 
-Therefore every integer must belong to some convergent residue class of finite
-stopping time and hence eventually reaches a smaller positive integer under
-iteration of the Collatz map. This establishes global descent in the positive
-integers and thereby excludes the existence of any nontrivial periodic orbit,
-leaving the classical \(4 \rightarrow 2 \rightarrow 1 \rightarrow 4\) cycle as
-the unique periodic orbit.
+We show that the density contribution of newly appearing convergent residue
+classes vanishes as the stopping time grows, and consequently that the total
+asymptotic density of convergent residue classes approaches one. Thus,
+convergent behavior dominates the Collatz map in the sense of natural density.
+Any exceptional trajectories, should they exist, must therefore be confined to
+a set of density zero.
 
 \end{abstract}
 
@@ -203,10 +198,10 @@ with a residue class of integers that follow the same parity pattern for a fixed
 odd steps. These classes are pairwise disjoint and together form a partition of the positive
 integers. Each class is assigned a minimal stopping time, defined as the first iterate at
 which all elements of the class map to a value strictly smaller than their initial value.
-The key novelty is to control the global behavior of these classes by analyzing the
-\emph{grammar of admissible parity words} and the multiplicative growth they permit.
+The key novelty is to control the global \emph{density behavior} of these classes by
+analyzing the grammar of admissible parity words and the multiplicative growth they permit.
 
-The proof proceeds through the following steps:
+The analysis proceeds through the following steps:
 
 \begin{itemize}
 \item Encode Collatz trajectories using parity words that record the number of divisions by
@@ -224,19 +219,15 @@ The proof proceeds through the following steps:
       inadmissible extremal word provides a strict upper envelope for the growth of all
       admissible parity words.
 \item Deduce that the density contribution of newly appearing convergent classes tends to
-      zero as the stopping time increases, so that the union of all convergent residue classes
-      has asymptotic density one.
-\item Use the fact that the parity-induced residue classes form a partition of the positive
-      integers to conclude that no nonconvergent class can exist. Hence, for every positive
-      integer $n$, there exists an iterate $k$ such that $f^k(n) < n$, establishing global
-      descent and ruling out non-trivial cycles.
+      zero as the stopping time increases, so that the union of all convergent residue
+      classes has asymptotic density one.
 \end{itemize}
 
-By focusing on cumulative densities arising from an explicit partition of the positive
-integers, and by bounding growth through extremal but grammatically forbidden parity
-patterns, this approach provides a global and deterministic mechanism for descent under
-the Collatz map, independent of probabilistic heuristics or trajectory-by-trajectory
-analysis.
+Thus, within the explicit partition of the positive integers induced by parity patterns,
+almost every integer (in the sense of asymptotic density) belongs to a residue class whose
+elements decrease after finitely many iterations. The analysis does not exclude the
+possibility of exceptional trajectories lying outside these convergent classes, but shows
+that any such set must have asymptotic density zero.
 
 
 \section{Definitions and Preliminaries}
@@ -250,9 +241,8 @@ stopping time or local descent time) is the minimal integer
 \[
 f^k(x) < x.
 \]
-If no such $k$ exists, we say that $x$ has infinite stopping time written as $\sigma(x) = \infty$.
-Stopping time behavior has been studied in the context of the $3x+1$ problem.
-\cite{Terras1976}.
+If no such \(k\) exists, we write \(\sigma(x) = \infty\). Stopping time behavior has been studied
+extensively in the context of the $3x+1$ problem \cite{Terras1976}.
 \end{define}
 
 
@@ -263,11 +253,10 @@ A \emph{convergent segment of length \(k\)} is a finite sequence
 \[
 x, f(x), f^2(x), \ldots, f^k(x)
 \]
-such that \( f^k(x) < x \) and \(k\) is minimal. No assumption is made here about
-eventual convergence to 1; only strict descent at step $k$ or equivalently, $k = \sigma(x)$.  
+such that \( f^k(x) < x \) and \(k\) is minimal. No assumption is made about eventual
+convergence to 1; only strict descent at step \(k\), i.e., \(k = \sigma(x)\), is required.
 Finite segments of this type were considered in the context of the accelerated Collatz map
 by Everett \cite{Everett1977}.
-
 \end{define}
 
 
@@ -275,22 +264,21 @@ by Everett \cite{Everett1977}.
 
 \begin{define}
 Two positive integers \(x,y \in \setN\) are said to be in the same \emph{residue class of
-depth \(k\)} if their first \(k\) Collatz iterates are identical. The idea of encoding
-trajectories via residue classes or arithmetic progressions has appeared in prior works on
-symbolic and structural approaches to the $3x+1$ problem \cite{Wirsching1998,Chamberland2003}.
+depth \(k\)} if their first \(k\) Collatz iterates are identical. Encoding trajectories
+via residue classes or arithmetic progressions has appeared in prior structural approaches
+to the $3x+1$ problem \cite{Wirsching1998,Chamberland2003}.
 \end{define}
 
 \medskip
 \noindent\textit{Indexing convention.}
-Throughout the paper, iterates are indexed starting from \(0\), so that
-\(f^0(x)=x\) and agreement of the first \(k\) iterates means equality for
-indices \(i=0,\dots,k-1\). This convention is adopted to align with the
-0-based combinatorial and OEIS sequences used in the analysis.
+Iterates are indexed starting from \(0\), so that \(f^0(x)=x\) and agreement of the first
+\(k\) iterates means equality for indices \(i=0,\dots,k-1\). This convention aligns with
+the 0-based combinatorial and OEIS sequences used in the analysis.
 
 \begin{define}[Residue Class of Depth \(k\)]
 \label{def:residue-class}
-Fix \(k \in \setN\) and \(x \in \setN\). The \emph{residue class of depth \(k\)}
-containing \(x\) is
+Fix \(k \in \setN\) and \(x \in \setN\). The \emph{residue class of depth \(k\) with
+respect to \(f\)} containing \(x\) is
 \[
 [x]_k := \{ y \in \setN \mid f^i(y) = f^i(x) \text{ for } i = 0, 1, \dots, k-1 \}.
 \]
@@ -302,14 +290,12 @@ A residue class \([x]_k\) is called \emph{convergent of stopping time \(k\)} if:
 \item \( f^k(y) < y \) for all \( y \in [x]_k \), and
 \item for every \( y \in [x]_k \), no smaller integer \( j < k \) satisfies \( f^j(y) < y \).
 \end{enumerate}
+Here \(k\) is minimal with this property across the entire class.
 \end{define}
 
-and $k$ is minimal with this property for every $y \in [x]_k$.
-
-\medskip
 \begin{remark}
 This definition is stronger than requiring \(\sigma(x)=k\) for a single representative
-\(x\), since it enforces uniform descent at step \(k\) across the entire residue class.
+\(x\), since it enforces uniform descent at step \(k\) for all elements of the residue class.
 \end{remark}
 
 
@@ -346,9 +332,10 @@ odd steps.
 \end{define}
 
 Each parity word formally determines a linear-affine transformation
-\[
+\begin{equation}
+\label{eq:linear-affine-map}
 x \longmapsto \frac{3^k x + c(\omega)}{2^{d_0+\cdots+d_{k-1}}},
-\]
+\end{equation}
 obtained by symbolic composition of the accelerated Collatz map along the word.
 Here \(c(\omega)\) is a canonical integer uniquely determined by the parity word
 (see Appendix~\ref{app:canonical-c}). This representation encodes the arithmetic
@@ -362,6 +349,11 @@ both the linear coefficient \(3^k/2^{d_0+\cdots+d_{k-1}}\) and the affine term
 
 This allows us to reason about convergence or divergence at the level of
 residue classes without reference to specific integers.
+\end{remark}
+
+\begin{remark}[Residue Classes and Parity Words]
+Every parity word $\omega$ determines a unique residue class $[x]_k$ of depth $k$ under $f$, 
+consisting of all integers whose first $k$ iterates under $f$ follow the divisions encoded by $\omega$.
 \end{remark}
 
 
@@ -381,7 +373,8 @@ D(\omega) := \sum_{i=0}^{k-1} d_i.
 \end{define}
 
 The integer $D(\omega)$ is precisely the exponent of $2$ appearing in the
-denominator of the linear-affine form of the $k$-step iterate.  
+denominator of the linear-affine form of the $k$-step iterate (see
+Equation~\eqref{eq:linear-affine-map}).  
 
 \begin{remark}[Empty Parity Words and Purely Even Trajectories]
 The case $k=0$ corresponds to \emph{empty parity words}, representing trajectories
@@ -394,8 +387,9 @@ density analysis.
 
 Parity words with the same number of odd steps may differ in the
 distribution of divisions by two between steps and hence in their total
-division count. However, for each parity word the value of $D$ is uniquely
-determined by its parity structure.
+division count. However, for each parity word, its total division count
+$D(\omega)$ is uniquely determined by the sequence of divisions encoded
+in the word.
 
 \begin{define}[Minimal Total Division Count]
 Let $A020914(k)$ denote the minimal total number of divisions by two among
@@ -403,9 +397,11 @@ all \emph{admissible} parity words containing exactly $k$ odd steps.
 \end{define}
 
 This quantity is given by $\lceil \log_2(3^k) \rceil$, a fact derived in
-Section~\ref{sec:grammar} and tabulated in \OEIS{A020914}. It records the
-smallest possible exponent of $2$ appearing in the denominator of the
-linear-affine map for a path with $k$ odd steps.
+Section~\ref{sec:grammar} and tabulated in \OEIS{A020914}. Intuitively,
+each odd step multiplies the trajectory by $3$, so the cumulative divisions
+by two must at least balance this growth; hence the minimal total division
+count corresponds to the smallest exponent of $2$ that offsets the factor
+of $3^k$ in the linear-affine map for a path with $k$ odd steps.
 
 
 \subsection{Density of Residue Classes}
@@ -421,7 +417,7 @@ determines a unique residue class of the form
 n \equiv r \pmod{2^{D}},
 \]
 with exactly one representative per period of length $2^{D}$. Indeed, the
-associated affine form
+associated linear-affine form
 \[
 x \longmapsto \frac{3^k x + c(\omega)}{2^{D}}
 \]
@@ -449,7 +445,7 @@ In particular, for any class with $k$ odd steps,
 
 \begin{proof}
 Each class is an arithmetic progression with step size $2^{D}$
-and exactly one representative per period. The result follows.
+and exactly one representative per period. The result follows immediately.
 \end{proof}
 
 \begin{remark}
@@ -462,7 +458,6 @@ total density contribution at stopping time $k$ is
 \]
 \end{remark}
 
-
 \subsection{Example}
 
 For convergent segments with $k=4$ odd steps, the minimal total division
@@ -471,14 +466,14 @@ associated residue classes consist of integers of the form
 \[
 x = 2^7 n + r, \quad n \in \setN,
 \]
-where the residue $r$ depends on the specific parity word. Each such
-residue $r$ corresponds to exactly one parity word of length $4$ attaining
-the minimal total division count.
+where the residue $r$ depends on the specific parity word. Each residue $r$
+modulo $2^7$ corresponds uniquely to a parity word of length $4$ achieving
+the minimal division count, so the residue class $[x]_4$ is fully determined
+by the parity structure of the trajectory.
 
 This example illustrates that convergent behavior depends only on parity
 structure and accumulated division count, motivating an abstract
 description of Collatz trajectories independent of their starting values.
-
 
 
 \section{Grammar of Collatz Parity Words}
@@ -514,7 +509,6 @@ conditions for descent, even though individual trajectories are collapsed
 under the encoding.
 \end{remark}
 
-
 \subsection{Admissibility of Parity Words}
 
 \begin{define}[Admissible Parity Word]
@@ -546,7 +540,10 @@ For any admissible parity word $\omega=(d_0,\dots,d_{k-1})$ of length $k$,
 d_0 + \cdots + d_{k-1} \;\ge\; A020914(k),
 \]
 where $A020914(k)$ denotes the minimal total number of divisions by two among
-all admissible parity words of length $k$.
+all admissible parity words of length $k$. This quantity is given by
+\[
+A020914(k) = \lceil \log_2(3^k) \rceil.
+\]
 
 Moreover, equality holds if and only if $\omega$ is admissible with minimal
 total division count.
@@ -574,8 +571,8 @@ Once admissibility is established, the condition
 \frac{3^k}{2^{d_0+\cdots+d_{k-1}}} < 1
 \]
 characterizes the asymptotic behavior of the map: the associated linear factor
-is contractive, so that $T_\omega(x) < x$ for all sufficiently large integers in
-the corresponding residue class. Thus, although the additive term affects the
+is \emph{contractive}, so that $T_\omega(x) < x$ for all sufficiently large integers
+in the corresponding residue class. Thus, although the additive term affects the
 finite-scale behavior of individual trajectories, the criterion for convergence
 depends only on the multiplicative component of the affine map.
 \end{remark}
@@ -594,7 +591,9 @@ $D(\omega) \ge A020914(k)$.
 
 \begin{lemma}[Residue Class Modulus]
 \label{lem:residue-modulus}
-Let $x,y \in \setN$ both realize the same parity word $\omega$. Then
+Let $x,y \in \setN$ both realize the same parity word $\omega$, i.e.,
+their trajectories under $f$ exhibit the division counts encoded by $\omega$
+for the first $k$ odd steps. Then
 \[
 x \equiv y \pmod{2^{D(\omega)}}.
 \]
@@ -611,15 +610,16 @@ Thus $3^k z + c(\omega)$ is divisible by $2^{D(\omega)}$.
 
 If both $x$ and $y$ realize $\omega$, then
 \[
-3^k x + c(\omega) \equiv 0 \equiv 3^k y + c(\omega)
-\pmod{2^{D(\omega)}},
+3^k x + c(\omega) \equiv 0 \equiv 3^k y + c(\omega) \pmod{2^{D(\omega)}},
 \]
 which implies
 \[
 3^k(x-y) \equiv 0 \pmod{2^{D(\omega)}}.
 \]
 Since $3^k$ is invertible modulo $2^{D(\omega)}$, it follows that
-$x \equiv y \pmod{2^{D(\omega)}}$.
+\[
+x \equiv y \pmod{2^{D(\omega)}}.
+\]
 \end{proof}
 
 \begin{lemma}[Associated Affine Collatz Map]
@@ -629,7 +629,8 @@ Each admissible parity word $\omega$ induces a unique affine map
 T_\omega(x) = \frac{3^k x + c(\omega)}{2^{D(\omega)}},
 \]
 where $c(\omega)$ is uniquely determined modulo $2^{D(\omega)}$ by the
-requirement that $T_\omega(x)\in\setN$ for all integers $x$ realizing $\omega$.
+requirement that $T_\omega(x)\in\setN$ for all integers $x$ in the residue class
+induced by $\omega$.
 \end{lemma}
 
 \begin{remark}[Affine Compression of Trajectories]
@@ -664,8 +665,8 @@ induces a binary \emph{increment grammar} $\{s,d\}$ that describes the growth
 of the \emph{minimal admissible} total division count as the number of odd steps increases.
 
 Each symbol records whether the minimal total division count increases by one ($s$) or
-two ($d$) when passing from $k$ to $k+1$ odd steps.  Importantly, this grammar \emph{does not}
-encode the realized parity word entries $d_i$  (which may be arbitrarily large), but rather
+two ($d$) when passing from $k$ to $k+1$ odd steps. Importantly, this grammar \emph{does not}
+encode the realized parity word entries $d_i$ (which may be arbitrarily large), but rather
 governs the evolution of the minimal denominator required for admissibility.
 
 The increment grammar underlies the \emph{horizontal-sum construction} used to enumerate
@@ -681,15 +682,16 @@ The number of convergent parity words of length $k$ is given by \OEIS{A186009}.
 \begin{remark}
 A canonical realization of this counting sequence via the horizontal-sum construction,
 together with its derivation from the increment grammar induced by \OEIS{A022921}, is given
-in Appendix~\ref{app:horizontal-sum-table}.  The appendix serves as a structural reference:
+in Appendix~\ref{app:horizontal-sum-table}. The appendix serves as a structural reference:
 the arguments in this section rely only on the grammar itself and not on any numerical
 properties of the tabulation.
 \end{remark}
 
 \begin{lemma}[Single-to-Double Row Sum Bound]
 \label{lem:single-double-bound}
-Consider a row produced by a single increment step with total sum $k$.  If a double increment
-is applied immediately afterward, the resulting row has total sum at most $3k$.
+Consider a row produced by a single increment step with total sum $k$ (i.e., the sum of its
+entries in the horizontal-sum table). If a double increment is applied immediately afterward,
+the resulting row has total sum at most $3k$.
 \end{lemma}
 
 \begin{proof}
@@ -712,11 +714,11 @@ k + k + k = 3k.
 
 \begin{remark}[Controlled Maximal Growth]
 This lemma ensures that doubling steps contribute at most a controlled multiplicative
-factor to horizontal-sum growth, independent of the global cycle structure.  Consequently,
+factor to horizontal-sum growth, independent of the global cycle structure. Consequently,
 all admissible local patterns within a finite cycle admit finite maximal growth factors,
 which can be explicitly enumerated (see Appendix~\ref{app:local-growth-details}).  
-These bounds are key to establishing the vanishing density of residue classes with
-increasingly long stopping times.
+These bounds are key to establishing the vanishing density of residue classes
+associated with increasingly long stopping times.
 \end{remark}
 
 
@@ -754,7 +756,7 @@ Because $B(i)$ is defined as the minimal integer with $2^{B(i)} > 3^i$,
 the quantity $2^{B(i)}$ is the smallest power of two exceeding $3^i$.
 Since consecutive powers of two differ by a factor of $2$, we obtain the sharp bound
 \[
-3^i < 2^{B(i)} < 2 \cdot 3^i \quad \text{where } B(i) = A020914(i)
+3^i < 2^{B(i)} < 2 \cdot 3^i \quad \text{where } B(i) = A020914(i).
 \]
 
 \begin{remark}[Indexing and Effective Growth Delay]
@@ -763,9 +765,9 @@ conventions. In order to compare numerator and denominator growth on a common
 scale, we define \(\widetilde A(i) := A186009(i+1)\), so that the index \(i\)
 corresponds uniformly to stopping time (equivalently, parity-word length).
 
-While the first doubling increment in \(A020914\) occurs at index \(1\), its
-effect on \(\widetilde A\) appears after a fixed finite delay of two growth
-steps. This delay is independent of \(i\) and does not affect the asymptotic
+While the first doubling increment in $A020914$ occurs at index $1$, its
+effect on $\widetilde A$ appears after a fixed finite delay of two growth
+steps. This delay is independent of $i$ and does not affect the asymptotic
 growth comparison between numerator and denominator, which is controlled by
 the increment grammar introduced in Section~\ref{sec:increment-grammar}.
 \end{remark}
@@ -779,7 +781,9 @@ any delayed-doubling or numerator-growth arguments. Consequently, the reciprocal
 \]
 providing a uniform constant-factor bound for the density contribution at stopping time $i$.
 
-We now record this observation formally for later reference.
+We now record this observation formally, as it provides the fixed exponential scale against
+which numerator growth will be compared.
+
 \begin{lemma}[Uniform Control of Density Contributions]
 \label{lem:uniform-control}
 For all $i \ge 0$,
@@ -809,6 +813,52 @@ Taking reciprocals and multiplying by $\widetilde A(i)$ gives the stated bounds.
 
 \subsection{Growth Rate of the Number of Convergent Classes}
 
+\begin{remark}[Grammar-Enforced Suppression of Expansive Growth]
+\label{rem:grammar-suppression}
+The proof of Theorem~\ref{thm:maximal-growth} does not rely on the absence of
+locally expansive configurations. Certain increment patterns are expansive in isolation,
+but the increment grammar forbids them or requires surrounding contractive structure.
+
+\medskip
+\noindent\textbf{(1) Local expansivity versus admissibility.}
+A single double increment $\{d\}$ or the short pattern $\{s,d,d\}$ produces
+horizontal-sum growth with geometric mean exceeding $1$. However, neither pattern
+is admissible under the increment grammar induced by \OEIS{A022921}, as all admissible
+sequences must begin with $\{s\}$ and no occurrence of $\{d,d\}$ may appear without
+sufficient separating structure.
+
+\medskip
+\noindent\textbf{(2) Minimal realization of expansion.}
+The shortest admissible pattern containing a double increment $dd$ is
+the length-$5$ block
+\[
+\{s,d,s,d,d\},
+\]
+which constitutes the minimal expansive configuration. All admissible patterns
+of length $\le 4$ are contractive.
+
+\medskip
+\noindent\textbf{(3) Forced contractive buffering.}
+The grammar enforces that the expansive $5$-cycle cannot appear in isolation. 
+The minimal admissible prefix leading to a $\{d,d\}$ occurrence is the length-$7$
+block
+\[
+\{s,d,s,d,s,d,d\},
+\]
+which is contractive. Concatenating the expansive $5$-cycle with this prefix yields
+a length-$12$ block that is also contractive. Thus expansive behavior is always
+dominated by mandatory contractive buffers.
+
+\medskip
+\noindent\textbf{(4) Consequence for asymptotic growth.}
+Any admissible infinite increment sequence decomposes into finite grammar-allowed
+blocks. Horizontal-sum growth is submultiplicative under concatenation, so the
+asymptotic per-step growth rate is bounded above by the largest geometric mean
+among admissible blocks. Expansive blocks are separated by uniformly bounded
+contractive buffers, ensuring their asymptotic density in any admissible sequence
+is strictly less than one.
+\end{remark}
+
 \begin{theorem}[Maximal Admissible Growth Rate for $\widetilde A = A186009$]
 \label{thm:maximal-growth}
 Let $\widetilde A(i) = A186009(i+1)$ denote the number of convergent residue classes
@@ -816,9 +866,10 @@ of stopping time $i$, generated by the horizontal-sum construction associated wi
 the increment grammar of \OEIS{A022921}.  Let $B(i) := A020914(i)$ denote the
 cumulative exponent of $2$ up to level $i$.  
 
-Then
+Then the per-step growth of $\widetilde A(i)$ is bounded by the maximal geometric growth
+rate of a $5$--cycle (see Appendix~\ref{app:local-growth-details}, Equation~\eqref{eq:rho-5}):
 \[
-\limsup_{i\to\infty} \widetilde A(i)^{1/i} < 3,
+\limsup_{i\to\infty} \widetilde A(i)^{1/i} \le \rho_5 < 3,
 \]
 and consequently
 \[
@@ -828,7 +879,7 @@ and consequently
 
 \begin{proof}
 The increment sequence \OEIS{A022921} induces a finite symbolic grammar on $\{s,d\}$,
-corresponding respectively to single and double increments in the horizontal-sum construction.
+corresponding to single and double increments in the horizontal-sum construction.
 
 Among all admissible sequences, the shortest potentially expansive configuration is the
 \emph{5-cycle}
@@ -836,18 +887,20 @@ Among all admissible sequences, the shortest potentially expansive configuration
 \{s,d,s,d,d\}.
 \]
 All admissible words of length $\le 4$ produce horizontal-sum growth factors with
-geometric mean $\le 1$.  A complete enumeration of admissible local patterns and their
-growth factors is given in Appendix~\ref{app:local-growth-details}.
+geometric mean $\le 1$. A complete enumeration of admissible local patterns and
+their growth factors is given in Appendix~\ref{app:local-growth-details}.
 
 Explicit computation of the net growth factor for the 5-cycle gives
 \[
 \rho_5 := \bigl(\text{total sum after 5-cycle}\bigr)^{1/5} < 3.
 \]
 
-Any admissible infinite sequence decomposes into concatenations of finite blocks
-from the grammar.  Horizontal-sum growth is submultiplicative under concatenation;
-therefore, the asymptotic per-step geometric growth is bounded above by the maximal
-geometric mean among all admissible blocks, and in particular by $\rho_5$. Hence
+Any admissible infinite increment sequence decomposes into concatenations of finite
+blocks permitted by the grammar. As explained in Remark~\ref{rem:grammar-suppression},
+all locally expansive blocks are separated by mandatory contractive buffering. Horizontal-sum
+growth is submultiplicative under concatenation, so the asymptotic per-step geometric
+growth is bounded above by the maximal geometric mean among admissible blocks, which is
+attained by the $5$-cycle and denoted $\rho_5$. Hence
 \[
 \limsup_{i\to\infty} \widetilde A(i)^{1/i} \le \rho_5 < 3.
 \]
@@ -861,7 +914,7 @@ and finite prefixes, such that
 \[
 \widetilde A(i) \le C\,\rho_5^i \quad \text{for all } i.
 \]
-Dividing by $2^{B(i)}$ then gives
+Dividing by $2^{B(i)}$ gives
 \[
 \frac{\widetilde A(i)}{2^{B(i)}} \le \frac{C\,\rho_5^i}{3^i} \longrightarrow 0,
 \]
@@ -884,92 +937,80 @@ By Theorem~\ref{thm:maximal-growth}, we have
 \[
 \frac{\widetilde A(i)}{3^i} \longrightarrow 0 \quad \text{as } i\to\infty.
 \]
-Hence, the density contribution of newly appearing convergent residue classes vanishes
-in the limit of large stopping time.
+Hence, the density contribution of newly appearing convergent residue classes at stopping
+time $i$ tends to zero as $i \to \infty$.
 
 Consequently, for any fixed \(\epsilon>0\), there exists an \(i_0\) such that the
-total density contribution of all residue classes appearing after \(i_0\) is less than
-\(\epsilon\). This implies that the set of integers \emph{not belonging to any convergent
-residue class} has asymptotic density zero. Equivalently, the set of integers
-belonging to at least one convergent residue class has asymptotic density one.
+total density contribution of all convergent residue classes appearing after stopping
+time \(i_0\) is less than \(\epsilon\). In other words, the set of positive integers
+that fail to belong to any convergent residue class has asymptotic density zero.
+Equivalently, almost every positive integer lies in at least one convergent residue
+class with respect to natural density, showing that convergent behavior dominates
+the Collatz map in a measure-theoretic sense.
+
+\paragraph{Remark on growth bounds.}
+The preceding argument is purely measure-theoretic and does not rely on lower
+bounds for the growth of \(\widetilde A(i)\). Nevertheless, it is possible to
+establish a nontrivial exponential lower bound on the growth rate of
+\(\widetilde A(i)\) by comparison with the auxiliary sequence \OEIS{A047749},
+which admits a closed-form binomial representation. This comparison shows that
+the exponential growth rate of \(\widetilde A(i)\) is bounded below by
+\(\sqrt{27/4}\). The derivation of this bound is independent of the density
+argument and is developed separately in Appendix~\ref{app:A047749-lower-bound}.
 
 
-\section{Global Descent}
+\section{Global Descent in Density}
 
-\begin{theorem}[Global Descent]
-\label{thm:global-descent}
-Every positive integer eventually reaches a smaller positive integer
-under iteration of the Collatz map.
+\begin{theorem}[Asymptotic Global Descent]
+\label{thm:asymptotic-descent}
+The union of convergent residue classes has asymptotic density one. Consequently,
+almost every positive integer eventually reaches a smaller value under iteration
+of the accelerated Collatz map, in the sense of natural density.
 \end{theorem}
 
 \begin{proof}
-Let $\widetilde A(i) = A186009(i+1)$ denote the number of convergent residue classes of stopping time $i$, 
-and let $B(i) = A020914(i)$ denote the cumulative exponent of $2$ for level $i$.  
-
-By Theorem~\ref{thm:maximal-growth}, the per-class density contributions satisfy
+Let $\widetilde A(i) = A186009(i+1)$ denote the number of convergent residue classes
+of stopping time $i$, and let $B(i) = A020914(i)$ denote the cumulative exponent
+of $2$ at level $i$. By Theorem~\ref{thm:maximal-growth}, we have
 \[
 \frac{\widetilde A(i)}{2^{B(i)}} \longrightarrow 0 \quad \text{as } i \to \infty.
 \]
 
-The residue classes of all stopping times form a \emph{complete partition of the positive integers}
-by construction.   Since each residue class has a finite stopping time by definition, every integer
-belongs to some residue class  with a finite number of odd-step iterations required to reach a smaller value.  
+By construction, each residue class consists of integers that descend after finitely many
+odd-step iterations. Since the total density of all convergent residue classes approaches
+one, the set of integers not contained in any convergent residue class has asymptotic
+density zero.  
 
-Explicitly, let $x$ belong to a residue class of stopping time $i$. Then there exists a finite integer
-$k$ such that the $k$-fold application of the accelerated Collatz map $f$ (which counts only odd steps, 
-absorbing all intermediate divisions by 2) satisfies
-\[
-f^k(x) < x.
-\]
-
-Because any intermediate divisions by 2 decrease the value, this inequality is preserved under the standard 
-Collatz map. Therefore, every positive integer eventually reaches a smaller positive integer.  
-
-As an immediate consequence, no positive integer can remain perpetually above its initial value.  
-Hence the only recurrent orbit is the trivial 1-2-4 cycle.
+Thus, for almost every positive integer (in the sense of natural density), there exists
+a finite $k$ such that $f^k(x) < x$.  
 \end{proof}
 
-
-\section{Non-Existence of Non-Trivial Cycles}
-
-\begin{theorem}
-The only cycle in the positive integers under the Collatz map is
-\(4 \rightarrow 2 \rightarrow 1 \rightarrow 4\).
-\end{theorem}
-
-\begin{proof}
-By Theorem~\ref{thm:global-descent}, every positive integer eventually reaches a
-smaller positive integer under iteration of the Collatz map. Consequently, no
-positive integer can remain indefinitely above its starting value.
-
-Suppose a non-trivial cycle exists. Any integer in such a cycle would have to
-remain above itself at some step, contradicting Global Descent. Therefore, no
-non-trivial cycles exist.
-
-The only remaining recurrent orbit is the trivial 1-2-4 cycle, which is easily verified.
-\end{proof}
+\begin{remark}[Exceptional Orbits]
+This theorem does not preclude the existence of exceptional trajectories outside
+the convergent residue classes. Any such set must have asymptotic density zero, 
+so the result establishes descent in a measure-theoretic sense rather than an absolute guarantee.
+\end{remark}
 
 
 \section{Conclusion}
 
-In this work, we have shown that the positive integers can be systematically
-partitioned into non-overlapping residue classes determined by finite Collatz
-parity patterns, each endowed with a minimal stopping time. By explicitly
-enumerating convergent parity words and rigorously controlling the maximal
-admissible growth rate relative to the corresponding powers of two, we demonstrated
-that the cumulative density of convergent classes approaches one.
+In this work, we have analyzed the Collatz map through a structural decomposition
+of the positive integers into non-overlapping residue classes determined by
+finite parity patterns, each associated with a minimal stopping time. By enumerating
+convergent parity words and controlling the maximal admissible growth rate relative
+to the corresponding powers of two, we rigorously demonstrated that the cumulative
+density of convergent classes approaches one.
 
-This density-based analysis establishes a global descent principle: every
-positive integer eventually reaches a strictly smaller value under iteration
-of the accelerated Collatz map. The structure of this argument eliminates
-the possibility of non-trivial cycles, leaving only the classical 1-2-4 orbit.
+This density-based approach establishes that almost every positive integer eventually
+reaches a strictly smaller value under the accelerated Collatz map. While the argument
+does not rule out zero-density exceptional trajectories, it provides a strong
+measure-theoretic framework for understanding the typical dynamics of the map.
 
-Viewed abstractly, the approach reframes the Collatz conjecture from a question
-of controlling individual trajectories to a problem of exhaustive coverage
-of the integer lattice by arithmetic classes. This perspective not only resolves
-the longstanding conjecture but also suggests a framework for analyzing
-analogous discrete dynamical systems governed by parity- or residue-based
-combinatorial structures.
+Viewed abstractly, this perspective reframes the Collatz problem as an analysis of
+integer lattices partitioned by arithmetic residue classes, offering insight into
+how parity- and residue-based combinatorial structures govern discrete dynamical
+systems. It highlights the distinction between “almost all” and “all,” providing
+a credible, rigorous statement consistent with the density analysis.
 
 
 \newpage
@@ -977,7 +1018,7 @@ combinatorial structures.
 \section{Canonical Determination of the Constant \(c(\omega)\)}
 \label{app:canonical-c}
 
-Each parity word \(\omega = (d_1,\dots,d_k)\) induces an affine Collatz map
+Each parity word \(\omega\) induces an affine Collatz map \(T_\omega(x)\) (see Section~\ref{sec:division-counts})
 \[
 T_\omega(x) = \frac{3^k x + c(\omega)}{2^D}, \qquad D = d_1 + \dots + d_k,
 \]
@@ -1089,6 +1130,14 @@ admissible local pattern within a single $5$--cycle; the enumeration of these
 patterns and the derivation of the exponents $2,1,1,1$ are given explicitly in
 Appendix~\ref{app:local-growth-details}, Section~\ref{sec:admissible-patterns}.
 
+\begin{remark}[Connection to Theorem~\ref{thm:maximal-growth}]
+The quantity \(\rho_5\) defined above is precisely the maximal geometric growth rate
+used in Theorem~\ref{thm:maximal-growth} to bound
+\(\limsup_{i\to\infty} \widetilde A(i)^{1/i}\). This establishes that, asymptotically,
+the number of convergent residue classes grows strictly slower than the corresponding
+powers of two, ensuring vanishing density for large stopping times.
+\end{remark}
+
 \begin{remark}[Derivation and Attribution of Local Growth Constants]
 The horizontal-sum framework used to analyze $\widetilde A(i)$ is inspired by
 the Pascal-type summation approach introduced by Winkler~\cite{Winkler2017},
@@ -1129,8 +1178,7 @@ Proposition~\ref{prop:extremal-5-cycle}.
 \label{app:local-growth-details}
 
 Recall that the sequence \OEIS{A020914} has first differences given by
-\OEIS{A022921}.  This increment sequence consists of repeated blocks
-composed of \emph{single} steps ($s$) and \emph{double} steps ($d$).
+\OEIS{A022921}, consisting of repeated blocks of \emph{single} steps ($s$) and \emph{double} steps ($d$).
 
 \subsection{Cycle Structure and Net Multiplicative Effect}
 
@@ -1177,55 +1225,44 @@ and hence
 Therefore, the $12$--cycle is again contractive.
 
 Repeated 12-cycles remain contractive, suppressing growth until enough
-slack accumulates to allow the insertion of an additional 5-cycle.  The key
-point is that the 5-cycle represents the unique locally expansive pattern,
-though its frequent repetition is constrained by the grammar.
+slack accumulates to allow a 5-cycle insertion. The 5-cycle represents the
+unique locally expansive pattern, though its repetition is constrained by
+the grammar.
 
 \subsection*{Horizontal-Sum Dynamics and Pascal-Type Growth}
 
-Due to doubling events, the usual $2\times$ growth limitation of a standard
-Pascal triangle does not apply directly.  In particular, the sum of earlier
-row entries may exceed the final entry of the row.  However, single steps do
-not increase the length of the generating tuple.  As a result, growth
-starting from singles follows standard Pascal-type summation rules, while
-doubling events introduce additional entries whose contributions must be
-handled separately.
+The generating rows evolve by a horizontal-sum rule:
+\begin{equation}
+a_i(n) = a_i(n-1) + a_{i-1}(n), \quad i,n \in \mathbb{N},
+\label{eq:horizontal-sum-recurrence}
+\end{equation}
+so that sequences of single steps exhibit ordinary Pascal--type growth.
+Double steps differ in that the terminal entry is duplicated, causing the
+final term to appear twice while preserving monotonicity.
 
-For any single step, the generating terms are strictly increasing from left
-to right across the row.  Maximal growth therefore arises from combining
-Pascal-type summation and doubling events as per Lemma~\ref{lem:single-double-bound}.
-
-To determine the upper-bounded growth factors associated with repeated
-5-cycles, we first generate the local maximal sequence (realizing the largest
-per-pattern growth) that is forbidden by the grammar and therefore cannot occur in
-any admissible word, but which dominates all admissible configurations patternwise:
+For extremal 5-cycle analysis, the local maximal sequence (dominating per-pattern growth) is
 \[
 \{ s, d, s, d, d \}, \{ s, d, s, d, d \},
 \]
-and then enumerate how many times each admissible local pattern growth step occurs
-within the 5-cycle.
+enumerating occurrences of each admissible local pattern within a 5-cycle.
 
-\newpage
 \subsection*{Admissible Local Patterns}
 \label{sec:admissible-patterns}
 
-Within \OEIS{A022921}, only the following four local configurations can occur.
-No two $s$'s can occur consecutively, and $d$'s may occur only singly or in
-pairs.  Therefore, every contiguous subword must be one of these four forms:  
+Within \OEIS{A022921}, only four local configurations occur:
 \[
-(s, d),\quad (d, d),\quad (s, d, s),\quad (d, d, s),
+(s, d), \quad (d, d), \quad (s, d, s), \quad (d, d, s).
 \]
-and no others.
 
-Enumerating the number of occurrences of each pattern within a $5$--cycle gives:
+The associated coefficient counts within a 5-cycle are:
 \[
 \begin{array}{c|c}
 \text{Pattern} & \text{Associated coefficient count} \\
 \hline
-s,d & 2(1) = 2 \\
-d,d & 1(1) = 1 \\
-s,d,s & 1(1) = 1 \\
-d,d,s & 1(1) = 1
+s,d & 2 \\
+d,d & 1 \\
+s,d,s & 1 \\
+d,d,s & 1
 \end{array}
 \]
 
@@ -1248,7 +1285,6 @@ yields an upper bound on every occurrence of the same local pattern.
 Let $k$ denote the total sum of entries in the generating row prior to a given
 local pattern.
 
-\newpage
 \paragraph{Example 1.}
 \[
 \begin{array}{l}
@@ -1431,31 +1467,21 @@ d,d,s & 329/123 & 1
 Consequently, the maximal geometric growth rate of a $5$--cycle satisfies
 \[
 \Bigl(
-3^{2}
-\cdot (123/33)
-\cdot (341/131)
-\cdot (329/123)
-\Bigr)^{1/5}
-< 2.977 < 3.
+3^2 \cdot (123/33) \cdot (341/131) \cdot (329/123)
+\Bigr)^{1/5} < 3.
+\label{eq:rho-5}
 \]
 
-Among all concatenations of admissible local patterns, this word maximizes the
-geometric mean, since it realizes each admissible pattern at its maximal local
-growth rate and at the highest frequency permitted by the grammar. This bound
-therefore applies \emph{a fortiori} to \OEIS{A186009}, whose admissible growth
-patterns are strictly dominated, in the sense of per-symbol multiplicative
-growth, by those of a pure $5$--cycle concatenation.
+This bound directly feeds into Theorem~\ref{thm:maximal-growth} and ensures that
+the per-symbol growth of any admissible infinite sequence under \OEIS{A186009}
+is strictly dominated by $3$, as explained in the main text.
 
 \paragraph{Conclusion.}
-Since every admissible growth pattern of \OEIS{A186009} is governed by the grammar
-of \OEIS{A022921}, its evolution is constrained to concatenations of the four local
-patterns identified above.  An infinite concatenation of $5$--cycles, although
-\emph{forbidden by the grammar and hence never realized by any actual parity sequence},
-saturates each of these local growth constraints and therefore provides a strict upper
-envelope on the per-symbol multiplicative growth of all admissible sequences.  Because
-even this extremal envelope has geometric growth rate strictly less than $3$, the same
-bound holds \emph{a fortiori}
-for \OEIS{A186009}.
+Every admissible growth pattern of \OEIS{A186009} is constrained by the grammar
+of \OEIS{A022921}. Infinite concatenations of 5-cycles, though forbidden, saturate
+local growth constraints and provide a strict upper envelope. Equation~\eqref{eq:rho-5}
+confirms that even this extremal envelope has geometric growth rate $< 3$, ensuring
+subdominance relative to the denominator $2^{B(i)}$.
 
 
 \newpage
@@ -1467,6 +1493,7 @@ given below as per an algorithm derived from Winkler \cite{Winkler2017}.
 
 \begin{center}
 \begin{longtable}{@{}rrrrrrrrrrr@{}}
+\label{A186009} \\
 \caption{\OEIS{A186009} Horizontal Sum Formulation} \\
 \toprule
 $n$ & $a_1(n)$ & $a_2(n)$ & $a_3(n)$ & $a_4(n)$ & $a_5(n)$ & $a_6(n)$ & $a_7(n)$ & $a_8(n)$ & $a_9(n)$ & $\sum a_i(n)$ \\
@@ -1511,16 +1538,16 @@ differences between its terms.
 
 The sequence begins with an initial condition:
 % Starting condition for A100982
-\begin{equation}
-  a(1) = a_1(1) = 1
-\end{equation} 
+\[
+a(1) = a_1(1) = 1
+\]
 
 The algorithm for $A100982(n)$ states that the $k^{th}$ term of the $n^{th}$ series component
 can be computed as follows:
 % Recursive algorithm for generating new terms for A100982 based on previously generated terms
-\begin{equation}
-  a_{k+1}(n) = a_k(n) + a_k(n-1); k \in \setNo, n \in \setN
-\end{equation} 
+\[
+a_{k+1}(n) = a_k(n) + a_k(n-1); k \in \setNo, n \in \setN
+\]
 
 The algorithm also stipulates that the last term in the sequence is repeated whenever
 $A022921(n-2)=2$.  In doing so, this imposes the implicit constraint that this rule
@@ -1535,9 +1562,9 @@ components up to a reindexing of coordinates) is modified as follows.
 Preserving $a(1) = a_1(1) = a_1(n) = 1 \text{ for all } n\in\setN$, the $i^{th}$ term of the
 $n^{th}$ \OEIS{A100982} element is:
 % Modified recursive algorithm for generating new terms for A100982 based on previously generated terms
-\begin{equation}
-  a_{i}(n) = a_i(n-1) + a_{i-1}(n); i,n \in \setN
-\end{equation}
+\[
+a_{i}(n) = a_i(n-1) + a_{i-1}(n); i,n \in \setN
+\]
 
 Using this formulation the initial term for all values of $n \in \setN$ is always 1 rather than
 shifting out for each value of $n$.  The other significant difference is that in this formulation
@@ -1896,6 +1923,154 @@ they converge.
 
 This example concretely demonstrates the strict invariant property of the prefix-wise
 unity bound described in Remark~\ref{rem:prefix-invariant}.
+
+
+\newpage
+\section{Lower bound of A186009 from A047749}
+\label{app:A047749-lower-bound}
+
+The sequence \OEIS{A047749} admits a construction analogous to the horizontal-sum
+formulation of \OEIS{A186009}, with the key difference that its terminal doubling
+rule is governed by \OEIS{A000034}($n-2$) rather than \OEIS{A022921}. In particular,
+\OEIS{A047749} forbids consecutive doublings, whereas such consecutive doublings
+occur periodically in \OEIS{A186009}. This structural restriction yields a pointwise
+lower bound.
+
+As a consequence of this, there are never \emph{consecutive} doubles in \OEIS{A047749},
+whereas this occurs in \OEIS{A186009}.  Therefore,
+\begin{equation}
+\label{A186009_ge_A047749_all_n}
+A047749(n) \le A186009(n+1)\quad \text{for all } n \in \setNo
+\end{equation}
+ 
+Moreover, for $n \ge 8$ the inequality is strict:
+\begin{equation}
+\label{A186009_gt_A047749_n_ge_8}
+A047749(n) < A186009(n+1), \quad n \ge 8.
+\end{equation}
+
+The index shift accounts solely for the differing initial offsets of the two sequences.
+Table \ref{A047749} illustrates the divergence implied by the differing doubling rules;
+it is not used in the proof of inequalities.
+
+% A047749 construction as per the modified recursive A100982 algorithm
+\begin{center}
+	\afterpage{
+    \begin{longtable}{@{}rrrrrrrrrrr@{}}
+        \label{A047749} \\
+        \caption{\OEIS{A047749} Horizontal Sum Formulation} \\
+
+        \toprule
+        $n$ & $a_1(n)$ & $a_2(n)$ & $a_3(n)$ & $a_4(n)$ & $a_5(n)$ & $a_6(n)$ & $a_7(n)$ & $a_8(n)$ & $a_9(n)$ & $\sum a_i(n)$ \\
+        
+        % Horizontal sum table
+        \midrule
+         0 & 1 &    &     &     &      &      &       &        &       &      1 \\
+         1 & 1 &    &     &     &      &      &       &        &       &      1 \\
+         2 & 1 &    &     &     &      &      &       &        &       &      1 \\
+         3 & 1 &  1 &     &     &      &      &       &        &       &      2 \\
+         4 & 1 &  2 &     &     &      &      &       &        &       &      3 \\
+         5 & 1 &  3 &   3 &     &      &      &       &        &       &      7 \\
+         6 & 1 &  4 &   7 &     &      &      &       &        &       &     12 \\
+         7 & 1 &  5 &  12 &  12 &      &      &       &        &       &     30 \\
+         8 & 1 &  6 &  18 &  30 &      &      &       &        &       &     55 \\
+         9 & 1 &  7 &  25 &  55 &   55 &      &       &        &       &    143 \\
+        10 & 1 &  8 &  33 &  88 &  143 &      &       &        &       &    273 \\
+        11 & 1 &  9 &  42 & 130 &  273 &  273 &       &        &       &    728 \\
+        12 & 1 & 10 &  52 & 182 &  455 &  728 &       &        &       &   1428 \\ 
+        13 & 1 & 11 &  63 & 245 &  700 & 1428 &  1428 &        &       &   3876 \\
+        14 & 1 & 12 &  75 & 320 & 1020 & 2448 &  3876 &        &       &   7752 \\
+        15 & 1 & 13 &  88 & 408 & 1428 & 3876 &  7752 &   7752 &       &  21318 \\
+        16 & 1 & 14 & 102 & 510 & 1938 & 5814 & 13566 &  21318 &       &  43263 \\
+        17 & 1 & 15 & 117 & 627 & 2565 & 8379 & 21945 &  43263 & 43263 & 120175 \\
+        
+        \bottomrule
+    \end{longtable}
+    } % afterpage
+\end{center}
+
+Note that the indexing for \OEIS{A186009} begins at $n=1$ whereas the indexing for
+\OEIS{A047749} begins at $n=0$.  So when the indices for both series are equal then
+\OEIS{A047749} actually has one \emph{additional} term.
+
+The two sequences are identical for the first 8 terms.  Afterwards, \OEIS{A186009}
+begins to grow faster, and despite having one extra term $A047749(16) < A100982(16)$.
+The gap between the two series accelerates with increasing $n$ due to the periodic
+\emph{consecutive} doubling effect of \OEIS{A186009}.
+
+Since the sequence \OEIS{A047749} excludes the non-linear pattern irregularities
+inherent in \OEIS{A186009}, it can be probed analytically allowing for determinations
+to be made as to how this lesser sequence behaves.
+
+The even and odd integer terms of the \OEIS{A047749} sequence can each be separately
+described in closed form using the discrete binomial formulae provided below.
+
+\paragraph{Even-indexed terms of \OEIS{A047749}.}
+For $n=2m$, $m\in\setNo$,
+\[
+a(n) = \frac{1}{2m+1}\binom{3m}{m}.
+\]
+
+\paragraph{Odd-indexed terms of \OEIS{A047749}.}
+For $n=2m+1$, $m\in\setNo$,
+\[
+a(n) = \frac{1}{2m+1}\binom{3m+1}{m+1}.
+\]
+
+Expanding discrete binomial expressions for even and odd members of \OEIS{A047749}
+into smooth representations using Gamma functions.
+
+For even positive numbers, where $\Gamma(x)$ is the Gamma function:
+\[
+a(n) = \frac{1}{2m+1} \binom{3m}{m} = \frac{\Gamma(3m+1)}{\Gamma(2m+2)\Gamma(m+1)}; n = 2m, m \in \setNo
+\]
+
+For odd positive numbers, where $\Gamma(x)$ is the Gamma function:
+\[
+a(n) = \frac{1}{2m+1} \binom{3m+1}{m+1} = \frac{\Gamma(3m+2)}{\Gamma(2m+2)\Gamma(m+2)}; n = 2m+1, m \in \setNo
+\]
+
+The first logarithmic derivative of the Gamma function is given by:
+
+\[
+\psi(x) = \frac{d}{dx} \ln \Gamma(x).
+\]
+
+For even positive numbers ($n=2m$), the first derivative of the logarithm is:
+\[
+\frac{d}{dm} \ln \left( \frac{\Gamma(3m+1)}{\Gamma(2m+2)\Gamma(m+1)} \right) = 3 \psi(3m+1) - 2\psi(2m+2) - \psi(m+1)
+\]
+
+For odd positive numbers ($n=2m+1$), the first derivative of the logarithm is:
+\[
+\frac{d}{dm} \ln \left( \frac{\Gamma(3m+2)}{\Gamma(2m+2)\Gamma(m+2)} \right) = 3 \psi(3m+2) - 2\psi(2m+2) - \psi(m+2)
+\]
+
+The binomial representations inherit initial conditions analogous to those arising in the Collatz formulation.
+When you evaluate the infinite limit of both the even and odd functions, the first derivatives of the logarithm
+approach the same value:
+\[
+\lim_{m \to \infty} \lbrace 3 \psi(3m+1) - 2\psi(2m+2) - \psi(m+1) \rbrace = \ln\!\left(\frac{3^3}{2^2 \cdot 1^1}\right) \simeq 1.9095
+\]
+
+Likewise:
+\[
+\lim_{m \to \infty} \lbrace 3 \psi(3m+2) - 2\psi(2m+2) - \psi(m+2) \rbrace = \ln\!\left(\frac{3^3}{2^2 \cdot 1^1}\right) \simeq 1.9095
+\]
+
+The limit follows from the asymptotic expansion $\psi(x) = \ln(x)  + O(1/x)$.
+Thus the logarithmic growth per two terms converges to \(\ln(27/4)\), implying
+\[
+\lim_{n \to \infty} \frac{a(n+2)}{a(n)} = \frac{27}{4}.
+\]
+Consequently, the exponential growth rate per single term is bounded below by
+\[
+\sqrt{\frac{27}{4}}.
+\]
+
+To the author’s knowledge, this is the first explicit derivation of a nontrivial
+exponential lower bound on the growth rate of $\OEIS{A186009}$ obtained via comparison
+with a closed-form binomial sequence.
 
 
 \clearpage
