@@ -19,7 +19,7 @@ The official build uses `latexmk` for consistency.
 From the repository root, run:
 
 ```bash
-latexmk -pdf -interaction=nonstopmode -output-directory=build src/latex/Global_Descent_Convergent_Classes.tex
+latexmk -pdf -interaction=nonstopmode -output-directory=build src/latex/Asymptotic_Density_of_Convergent_Classes.tex
 ```
 
 ### VS Code Build Task (Alternative)
