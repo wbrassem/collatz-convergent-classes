@@ -182,22 +182,19 @@ parity word corresponds to a finite segment of a trajectory under $f$, terminati
 the first step where the iterate is strictly smaller than its starting value.  
 
 We then associate an \emph{affine map} to each parity word, which compresses the trajectory
-segment into a single linear-affine operation that is well-defined modulo a power of two
-(formal definition in Section ~\ref{sec:division-counts}). This representation captures the
-multiplicative and additive effects of the trajectory while abstracting away the starting
-integer, allowing us to reason at the level of classes rather than individual numbers.
+segment into a single linear-affine operation modulo a power of two (determined by the total
+number of divisions). This representation captures the multiplicative and additive effects 
+of the trajectory while abstracting away the starting integer, allowing reasoning at the 
+level of classes rather than individual numbers.
 
-To control the growth of the number of convergent classes, we introduce an \emph{increment
-grammar} derived from the minimal total number of divisions by two required to produce
-admissible parity words. The grammar encodes allowable patterns of growth in these minimal
-denominators and underlies a canonical \emph{horizontal-sum construction} for enumerating
-all convergent classes (in Section~\ref{sec:increment-grammar}). By comparing the growth rate
-of the number of classes with the corresponding powers of two that determine residue-class
-density, we develop a framework to rigorously argue (in Section ~\ref{sec:cumulative-density})
-that the cumulative density of convergent classes approaches one.
+To control growth, we introduce an \emph{increment grammar} derived from the minimal total 
+number of divisions by two required for admissible parity words. This grammar encodes allowable 
+patterns of growth in these denominators. It will later underpin a canonical 
+\emph{horizontal-sum construction}, which enumerates convergent classes and controls their 
+combinatorial growth.
 
-This perspective allows us to prove that almost every positive integer eventually reaches
-an iterate strictly smaller than its initial value under iteration of the accelerated map,
+This perspective allows us to show that almost every positive integer eventually reaches
+an iterate strictly smaller than its initial value under iteration of the fully accelerated map \(f\),
 in the sense of natural density. While this framework does not exclude the logical possibility
 of zero-density exceptional trajectories, it provides a strong quantitative understanding of
 typical Collatz dynamics and highlights the combinatorial and arithmetic mechanisms that
@@ -271,27 +268,22 @@ Here \([x]_k\) encodes the parity sequence; the associated parity word \(\omega\
 further records the number of divisions by two following each iterates of $f$, as formalized
 in Section~\ref{sec:division-counts}.
 
-\begin{remark}[Arithmetic structure]
-It will be shown in Section~\ref{sec:grammar} that for each admissible parity word
-\(\omega\), the associated residue class \([x]_k\) determined by its induced parity
-sequence of depth \(k\), the set \([x]_k\) is either empty or an arithmetic progression
-modulo a power of two determined by the total division count \(D(\omega)=d_0+\cdots+d_{m-1}\)
-(defined formally in Section~\ref{sec:division-counts}).
+\begin{remark}[Arithmetic structure of residue classes]
+Later (Section~\ref{sec:grammar}), we show that for admissible parity words, the residue class 
+associated to a parity sequence of depth $k$ is either empty or an arithmetic progression 
+modulo a power of two determined by the total division count $D(\omega)$. At this stage, it 
+suffices to know that $[x]_k$ encodes a parity sequence; any further arithmetic structure 
+will be derived in subsequent sections.
 \end{remark}
 
-\begin{define}[Convergent Residue Class]
-A residue class is called convergent of stopping time $k$ if it satisfies the following properties:
+\begin{define}[Convergent Residue Class, amnesiac-safe]
+A residue class $[x]_k$ is called \emph{convergent of stopping time $k$} if
 \begin{enumerate}
-\item \( f^k(y) < y \) for all \( y \in [x]_k \), and
-\item for every \( y \in [x]_k \), no smaller integer \( j < k \) satisfies \( f^j(y) < y \).
+\item $f^k(y) < y$ for all $y \in [x]_k$, and
+\item no smaller integer $j<k$ satisfies $f^j(y) < y$ for any $y \in [x]_k$.
 \end{enumerate}
-Here \(k\) is minimal with this property across the entire class.
-The uniformity of stopping time across a class is a consequence of the
-fact that all elements share the same parity sequence and hence the same
-associated parity word and affine map (Section~\ref{sec:division-counts}).
-In Section~\ref{sec:grammar}
-we prove that admissible parity words associated to convergent segments generate residue classes
-with uniform stopping time.
+Here $k$ is minimal with this property for elements in $[x]_k$.  
+Uniformity across the class follows from the fact that all elements share the same parity sequence; this will be formalized and proved in Section~\ref{sec:grammar}.
 \end{define}
 
 \begin{remark}
@@ -620,7 +612,7 @@ division count among admissible words of length $m$.
 
 \begin{define}[Convergent Parity Word]
 An admissible parity word $\omega = (d_0,\dots,d_{m-1})$ is said to be
-\emph{convergent} if
+\emph{convergent} (in the linear sense) if
 \[
 \frac{3^m}{2^{d_0+\cdots+d_{m-1}}} < 1.
 \]
@@ -800,6 +792,146 @@ associated with increasingly long stopping times.
 \end{remark}
 
 
+\section{Finite-State Linear Structure of the Horizontal-Sum Dynamics}
+\label{sec:linear-framework}
+
+This section formalizes the horizontal-sum construction as a finite-state
+positive linear dynamical system.  The purpose is to justify that the
+extremal local growth calculations of Appendix~\ref{app:local-growth-details}
+provide \emph{uniform bounds} valid for all admissible rows, not merely for
+the illustrative extremal examples.
+
+\subsection{Linear Operator Formulation}
+
+Let $v_n = (a_1(n),a_2(n),\dots,a_{k_n}(n))$ denote the generating row at
+level $n$, and let
+\[
+S_n = \sum_i a_i(n)
+\]
+be its total sum.
+
+Ignoring terminal duplication for the moment, the recurrence
+\[
+a_i(n)=a_i(n-1)+a_{i-1}(n)
+\]
+is linear with nonnegative coefficients. A single increment step therefore
+corresponds to multiplication by a linear operator $T_s$ with nonnegative
+entries.
+
+A double step duplicates the terminal entry after this linear evolution.
+This operation is also linear and can be represented by another operator
+$T_d$ whose matrix entries are again nonnegative.
+
+Hence each increment symbol $\sigma_n\in\{s,d\}$ induces a positive linear map
+\[
+v_{n+1} = T_{\sigma_n} v_n,
+\]
+and any admissible increment word corresponds to a product of matrices
+\[
+v_{n+k} = T_{\sigma_{n+k-1}}\cdots T_{\sigma_n} v_n,
+\]
+all of whose entries are nonnegative.
+
+\subsection{Monotone Extremal Propagation}
+
+\begin{lemma}[Monotone Extremal Propagation]
+\label{lem:monotone-propagation}
+Let $v,w$ be two admissible rows of equal length satisfying
+$v_i \le w_i$ for all $i$. Then for any admissible increment sequence,
+\[
+T_{\sigma_{n+k-1}}\cdots T_{\sigma_n} v
+\;\le\;
+T_{\sigma_{n+k-1}}\cdots T_{\sigma_n} w
+\quad \text{coordinatewise},
+\]
+and consequently
+\[
+\sum_i (T v)_i \le \sum_i (T w)_i.
+\]
+\end{lemma}
+
+\begin{proof}
+Each operator $T_s$ and $T_d$ has only nonnegative matrix entries. Thus
+if $v\le w$ coordinatewise, then $T_s v \le T_s w$ and $T_d v \le T_d w$.
+Induction over the length of the increment word gives the result.
+\end{proof}
+
+This lemma shows that the horizontal-sum dynamics is \emph{order-preserving}.
+Rows that maximize growth at one stage continue to dominate all others
+under every admissible future evolution.
+
+\subsection{Reduction to Local Pattern Bounds}
+
+Let $P$ be an admissible local pattern of length $k$. Define
+\[
+\alpha(P)
+= \sup_{v\neq 0}
+\frac{\sum_i (T_P v)_i}{\sum_i v_i},
+\]
+where $T_P$ denotes the operator product corresponding to $P$.
+
+\begin{remark}[Why extremal rows suffice]
+The \emph{positive cone} in $\mathbb{R}^m$ is
+\[
+\mathbb{R}^m_{\ge 0} = \{v \in \mathbb{R}^m : v_i \ge 0\}.
+\]
+The operators $T_s$ and $T_d$ are linear, homogeneous, and have only
+nonnegative entries.  Hence for any pattern $P$, the operator $T_P$ maps the
+positive cone into itself and is monotone with respect to the coordinatewise
+order.
+
+Because both numerator and denominator in the definition of $\alpha(P)$ are
+positive linear functionals, the ratio
+\[
+\frac{\sum_i (T_P v)_i}{\sum_i v_i}
+\]
+is invariant under scaling of $v$ and depends only on the direction of $v$
+in the positive cone.  For such positive linear systems, the supremum of this
+ratio is achieved (up to scaling) on extreme rays of the cone, corresponding
+to rows that concentrate mass in coordinates $j$ where the $j$-th column
+sum of $T_P$ is maximal, since
+\[
+\sum_i (T_P v)_i = \sum_j \left(\sum_i (T_P)_{ij}\right) v_j.
+\]
+
+These rows are precisely those that saturate the growth
+inequalities in Lemma~\ref{lem:single-double-bound}.
+\end{remark}
+
+By the positivity remark above and Lemma~\ref{lem:monotone-propagation},
+the supremum is attained by rows that saturate the inequalities in
+Lemma~\ref{lem:single-double-bound}. Hence the extremal examples constructed in
+Appendix~\ref{app:local-growth-details} provide valid upper bounds for
+$\alpha(P)$ for every admissible occurrence of $P$.
+
+\subsection{Maximal Growth via Grammar Cycles}
+
+Any admissible infinite increment sequence is a concatenation of
+grammar-allowed finite blocks.  By definition of $\alpha(P)$, for any row $v$,
+\[
+\sum_i (T_P v)_i \le \alpha(P)\sum_i v_i.
+\]
+Applying this inequality successively to the blocks in a concatenated
+increment word gives
+\[
+\frac{S_{n+k}}{S_n}
+\le
+\prod_{P\subset \text{word}} \alpha(P).
+\]
+
+Therefore the asymptotic per-step growth rate satisfies
+\[
+\limsup_{n\to\infty} S_n^{1/n}
+\le
+\max_{\text{admissible cycles } C}
+\left( \prod_{P\in C} \alpha(P) \right)^{1/|C|}.
+\]
+
+This reduces global growth control to the finite enumeration of local
+patterns performed in Appendix~\ref{app:local-growth-details}, leading to
+the bound $\rho_5<3$ used in Theorem~\ref{thm:maximal-growth}.
+
+
 \section{Cumulative Density of Convergent Classes}
 \label{sec:cumulative-density}
 
@@ -847,10 +979,6 @@ $B(i)$ satisfies the following properties:
 
 Because $B(i)$ is defined as the minimal integer with $2^{B(i)} > 3^i$,
 the quantity $2^{B(i)}$ is the smallest power of two exceeding $3^i$.
-Since consecutive powers of two differ by a factor of $2$, we obtain the sharp bound
-\[
-3^i < 2^{B(i)} < 2 \cdot 3^i \quad \text{where } B(i) = A020914(i).
-\]
 
 \begin{remark}[Indexing and Effective Growth Delay]
 The OEIS sequences \(A020914\) and \(A186009\) employ differing indexing
@@ -901,6 +1029,27 @@ Consecutive powers of two differ by a factor of $2$, so
 3^i < 2^{A020914(i)} < 2 \cdot 3^i.
 \]
 Taking reciprocals and multiplying by $\widetilde A(i)$ gives the stated bounds.
+\end{proof}
+
+\begin{lemma}[Disjointness of Minimal Convergent Classes]
+\label{lem:disjoint-classes}
+For each $i \ge 0$, the residue classes counted by
+\[
+\widetilde A(i) = A186009(i+1)
+\]
+correspond to congruence classes of \emph{minimal stopping time} $i$ and are pairwise disjoint.  
+Moreover, no positive integer belongs to two distinct minimal stopping-time classes.
+\end{lemma}
+
+\begin{proof}
+Each admissible parity word of length $i$ determines a residue class modulo
+$2^{B(i)}$ consisting of integers whose first descent below their initial value
+occurs precisely at step $i$. Minimality of the stopping time excludes the
+possibility that such an integer satisfies a shorter admissible parity word.
+Distinct admissible parity words of length $i$ yield distinct residue classes
+modulo $2^{B(i)}$, and therefore their associated sets of integers are disjoint.
+Since each class is realized modulo the same modulus $2^{B(i)}$, disjointness
+as congruence classes implies disjointness as subsets of $\setN$.
 \end{proof}
 
 
@@ -983,9 +1132,9 @@ All admissible words of length $\le 4$ produce horizontal-sum growth factors wit
 geometric mean $\le 1$. A complete enumeration of admissible local patterns and
 their growth factors is given in Appendix~\ref{app:local-growth-details}.
 
-Explicit computation of the net growth factor for the 5-cycle gives
+Explicit computation of the net horizontal-sum growth factor for the 5-cycle gives
 \[
-\rho_5 := \bigl(\text{total sum after 5-cycle}\bigr)^{1/5} < 3.
+\rho_5 := \bigl(\text{horizontal sum multiplier over the 5-cycle}\bigr)^{1/5} < 3.
 \]
 
 Any admissible infinite increment sequence decomposes into concatenations of finite
@@ -1030,13 +1179,51 @@ By Theorem~\ref{thm:maximal-growth}, we have
 \[
 \frac{\widetilde A(i)}{3^i} \longrightarrow 0 \quad \text{as } i\to\infty.
 \]
-Hence, the density contribution of newly appearing convergent residue classes at stopping
-time $i$ tends to zero as $i \to \infty$.
+Although the per-level density contribution already tends to zero,
+the stronger geometric bound proved in Theorem~\ref{thm:maximal-growth}
+implies summability of the contributions, which is the key fact for the
+cumulative density argument below.
 
-Consequently, for any fixed \(\epsilon>0\), there exists an \(i_0\) such that the
-total density contribution of all convergent residue classes appearing after stopping
-time \(i_0\) is less than \(\epsilon\). In other words, the set of positive integers
-that fail to belong to any convergent residue class has asymptotic density zero.
+\begin{lemma}[Summability of Density Contributions]
+\label{lem:summable-density}
+The series
+\[
+\sum_{i=0}^{\infty} \widetilde A(i)\,2^{-B(i)}
+\]
+converges.
+\end{lemma}
+
+\begin{proof}
+By Theorem~\ref{thm:maximal-growth}, there exists $C>0$ such that
+\[
+\widetilde A(i) \le C\,\rho_5^i,
+\]
+with $\rho_5<3$.  By Lemma~\ref{lem:uniform-control},
+\[
+2^{B(i)} > 3^i.
+\]
+Hence
+\[
+\widetilde A(i)\,2^{-B(i)}
+\le
+C\left(\frac{\rho_5}{3}\right)^i.
+\]
+Since $\rho_5/3<1$, the right-hand side is a geometric sequence with ratio
+less than $1$, and therefore the series converges.
+\end{proof}
+
+Because the density contributions form a convergent series
+(Lemma~\ref{lem:summable-density}), the tail of the series can be made
+arbitrarily small. Hence for any $\epsilon>0$, there exists $i_0$ such that
+\[
+\sum_{i \ge i_0} \widetilde A(i)\,2^{-B(i)} < \epsilon.
+\]
+
+In other words, the set of positive integers that fail to belong to any residue
+class of minimal stopping time has asymptotic density zero. By the descent properties
+established in Section~\ref{sec:grammar}, membership in such a class implies eventual
+decrease under the map.
+
 Equivalently, almost every positive integer lies in at least one convergent residue
 class with respect to natural density, showing that convergent behavior dominates
 the Collatz map in a measure-theoretic sense.
@@ -1054,6 +1241,101 @@ argument and is developed separately in Appendix~\ref{app:A047749-lower-bound}.
 
 \section{Global Descent in Density}
 
+\subsection{Descent Words and Partition of the Descending Set}
+
+\begin{remark}[Minimal Descent Indexing]
+Minimal descent is defined with respect to $m$, i.e., the first time
+an accelerated iterate satisfies $f^m(x) < x$.
+All residue classes $R_\omega$ in this section are indexed by $m$,
+so summations over $\mathcal{W}_{\min}$ correctly account for density.
+\end{remark}
+
+\begin{define}[Descent Word]
+An admissible parity word $\omega$ of length $m$ is called a \emph{descent word} if
+for all integers $x$ in its associated residue class $R_\omega$,
+\[
+F_\omega(x) < x.
+\]
+\end{define}
+
+\begin{define}[Minimal Descent Word]
+A descent word $\omega$ is \emph{minimal} if no proper prefix of $\omega$
+is itself a descent word.
+\end{define}
+
+\begin{lemma}[Prefix Descent Sufficiency]
+\label{lem:prefix-descent}
+If $\omega$ is a descent word and $\eta$ is any extension of $\omega$
+(i.e.\ $\eta = \omega \star \tau$ for some nonempty suffix $\tau$),
+then the residue class $R_\eta$ is a subset of $R_\omega$.
+Consequently, all integers realizing $\eta$ have already descended
+at the prefix stage $\omega$.
+
+\emph{Here, $|\omega| = m$ counts the number of odd steps in the accelerated map $f$.}
+\end{lemma}
+
+\begin{proof}
+Any integer $x$ realizing $\eta$ realizes $\omega$ during its first $|\omega| = m$
+accelerated iterations. Thus $x \in R_\omega$, so $R_\eta \subseteq R_\omega$.
+Since $\omega$ is a descent word, $F_\omega(x) < x$, and descent occurs
+before the suffix $\tau$ is applied.
+\end{proof}
+
+\begin{theorem}[Minimal Descent Partition]
+\label{thm:minimal-partition}
+Let $\mathcal{W}_{\min}$ denote the set of minimal descent words. Then:
+
+\begin{enumerate}
+\item \textbf{Uniqueness.}  
+Every integer $x$ that eventually descends (i.e., there exists a finite $m$ such
+that $f^m(x)<x$ under the accelerated map) admits a unique minimal descent word
+$\omega \in \mathcal{W}_{\min}$ such that $x \in R_\omega$.
+
+\item \textbf{Disjointness.}  
+If $\omega_1, \omega_2 \in \mathcal{W}_{\min}$ with $\omega_1 \neq \omega_2$, then
+\[
+R_{\omega_1} \cap R_{\omega_2} = \varnothing.
+\]
+
+\item \textbf{Exhaustion.}  
+The set of all integers that ever descend equals
+\[
+\bigcup_{\omega \in \mathcal{W}_{\min}} R_\omega.
+\]
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(1) For any $x$ that descends, consider the first time $m$ such that $f^m(x)<x$.
+The parity word of length $m$ realized by $x$ is a descent word, and no
+shorter prefix can be, so it is minimal.
+
+(2) If $x \in R_{\omega_1} \cap R_{\omega_2}$, then $x$ realizes both parity
+words, so their realized parity sequences agree up to the minimum of their lengths.
+Minimality forces $\omega_1 = \omega_2$.
+
+(3) Every descending integer has a minimal descent prefix by (1), and
+Lemma~\ref{lem:prefix-descent} ensures extensions produce no new elements.
+\end{proof}
+
+\begin{corollary}[No Overcounting of Density]
+\label{cor:no-overcount}
+The residue classes $R_\omega$ for $\omega \in \mathcal{W}_{\min}$ are pairwise
+disjoint. Hence
+\[
+\mu\!\left(\bigcup_{\omega\in\mathcal{W}_{\min}} R_\omega\right)
+= \sum_{\omega\in\mathcal{W}_{\min}} \mu(R_\omega),
+\]
+and extensions of descent words contribute no additional density.
+
+\emph{All minimal descent words are indexed by $m$, and any extension
+$\eta = \omega \star \tau$ does not add new integers; thus summing over
+$\mathcal{W}_{\min}$ correctly accounts for the total density.}
+\end{corollary}
+
+
+\subsection{Asymptotic Global Descent of Almost Every Integer}
+
 \begin{theorem}[Asymptotic Global Descent]
 \label{thm:asymptotic-descent}
 The union of convergent residue classes has asymptotic density one. Consequently,
@@ -1063,21 +1345,21 @@ of the accelerated Collatz map, in the sense of natural density.
 
 \begin{proof}
 Let $\widetilde A(i) = A186009(i+1)$ denote the number of convergent residue classes
-of stopping time $i$, and let $B(i) = A020914(i)$ denote the cumulative exponent
+of stopping time $i$ (accelerated map), and let $B(i) = A020914(i)$ denote the cumulative exponent
 of $2$ at level $i$. By Theorem~\ref{thm:maximal-growth}, we have
 \[
 \frac{\widetilde A(i)}{2^{B(i)}} \longrightarrow 0 \quad \text{as } i \to \infty.
 \]
 
 By construction, each residue class consists of integers that descend after finitely many
-odd-step iterations. Since the total density of all convergent residue classes approaches
+accelerated iterations. Since the total density of all convergent residue classes approaches
 one, the set of integers not contained in any convergent residue class has asymptotic
 density zero.  
 
 Therefore, for almost every positive integer $x$ (in the sense of natural density),
-there exists a finite $k$ such that
+there exists a finite $m$ such that
 \[
-f^k(x) < x,
+f^m(x) < x,
 \]
 where $f$ denotes the accelerated Collatz map.
 \end{proof}
@@ -1117,6 +1399,12 @@ finite parity patterns, each associated with a minimal stopping time. By enumera
 convergent parity words and controlling the maximal admissible growth rate relative
 to the corresponding powers of two, we rigorously demonstrated that the cumulative
 density of convergent classes approaches one.
+
+The analysis is further sharpened by showing that descent behavior admits a canonical
+minimal description: integers that eventually descend are partitioned into disjoint
+residue classes indexed by minimal descent words, and longer admissible parity patterns
+introduce no additional density. This reduces the global problem to a non-redundant
+symbolic skeleton governing all density-carrying trajectories.
 
 This density-based approach establishes that almost every positive integer eventually
 reaches a strictly smaller value under the accelerated Collatz map. While the argument
@@ -1222,7 +1510,8 @@ d,d,s & 329/123
 \end{array}
 \]
 Here $s$ denotes a single increment and $d$ a double increment in the
-horizontal-sum construction.
+horizontal-sum construction.  Note that these bounds are independent
+of the starting row and only depend on the local pattern.
 \end{lemma}
 
 \begin{proposition}[Extremal 5-Cycle Growth]
@@ -1241,8 +1530,9 @@ word under the horizontal-sum dynamics associated with \OEIS{A186009} is bounded
 \approx 2.95
 < 3,
 \]
-where the exponents count the occurrences of each local pattern within a $5$-cycle, which
-is the minimal admissible expansive block (see Remark~\ref{rem:grammar-suppression}).
+where the exponents count the occurrences of each local pattern within a $5$-cycle, which is the
+minimal admissible expansive block.  See Section~\ref{sec:admissible-patterns} for explicit enumeration:
+two occurrences of $\{s,d\}$, one of $\{d,d\}$, one of $\{s,d,s\}$, and one of $\{d,d,s\}$.
 \end{proposition}
 
 \noindent
@@ -1252,21 +1542,27 @@ patterns and the derivation of the exponents $2,1,1,1$ are given explicitly in
 Appendix~\ref{app:local-growth-details}, Section~\ref{sec:admissible-patterns}.
 
 \begin{remark}[Connection to Theorem~\ref{thm:maximal-growth}]
-The quantity \(\rho_5\) defined above is precisely the maximal geometric growth rate
-used in Theorem~\ref{thm:maximal-growth} to bound
-\(\limsup_{i\to\infty} \widetilde A(i)^{1/i}\). This establishes that, asymptotically,
-the number of convergent residue classes grows strictly slower than the corresponding
-powers of two, ensuring vanishing density for large stopping times.
+The quantity \(\rho_5\) defined above represents the maximal geometric growth factor
+per symbol for any admissible word under the horizontal-sum dynamics.  Taking the fifth
+root over one full $5$-cycle yields the maximal per-symbol growth, which directly controls 
+\(\limsup_{i\to\infty} \widetilde A(i)^{1/i}\) in Theorem~\ref{thm:maximal-growth}. 
+Because \(\rho_5 < 3\), the growth of the number of convergent residue classes is
+asymptotically strictly slower than the corresponding powers of two, guaranteeing
+that the density of integers with large stopping times vanishes.
 \end{remark}
 
 \begin{remark}[Derivation and Attribution of Local Growth Constants]
 The horizontal-sum framework used to analyze $\widetilde A(i)$ is inspired by
 the Pascal-type summation approach introduced by Winkler~\cite{Winkler2017},
 which provided the original insight that admissible Collatz parity words can
-be organized into structured combinatorial growth processes. The present work
-adapts this perspective to the specific setting of \OEIS{A022921} and
-\OEIS{A186009}, and extends it by performing an explicit extremal analysis of
-local growth configurations.
+be organized into structured combinatorial growth processes.  
+
+The present work adapts this perspective to the specific setting of
+\OEIS{A022921} and \OEIS{A186009}, with one key modification: unlike
+Winkler's vertical-sum formulation, the horizontal orientation used here is
+essential for preserving row-wise combinatorial structure, enabling precise
+extremal growth calculations. This extension allows a complete analysis of
+local growth configurations and the derivation of the uniform 5-cycle bound.
 
 The constants shown in Lemma~\ref{lem:local-growth-bounds} are obtained by
 examining the horizontal-sum dynamics governing $\widetilde A(i)$.
@@ -1350,6 +1646,53 @@ slack accumulates to allow a 5-cycle insertion. The 5-cycle represents the
 unique locally expansive pattern, though its repetition is constrained by
 the grammar.
 
+To visualize the interaction between contractive and expansive cycles,
+Figure~\ref{fig:cycle-highlight-lower} depicts the state transitions of
+\OEIS{A022921}. The red edges indicate the locally expansive 5-cycle, the
+blue edges the contractive 7-cycle, and purple edges highlight shared transitions.
+
+\begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}
+        % Bounding box
+        \useasboundingbox (0,0) -- (10.5,6.5);
+
+        % Nodes
+        \node[draw=black, line width=4, circle, minimum size=2cm] (ss) at (1,5) {\Large \textbf{s, s}};
+        \node[draw=black, line width=2, circle, minimum size=2cm] (sd1) at (5,5) {\Large \textbf{s, d}};
+        \node[draw=black, line width=2, circle, minimum size=2cm] (sd2) at (9,5) {\Large \textbf{s, d}};
+        \node[draw=black, line width=2, circle, minimum size=2cm] (sd3) at (9,1) {\Large \textbf{s, d}};
+        \node[draw=black, line width=2, circle, minimum size=2cm] (d)   at (5,1) {\Large \textbf{d}};
+
+        % Edges
+        % Contractive 7-cycle: blue
+        \draw[->, line width=2, blue] (9,4) -- (9,2);        % sd2 -> sd3
+        \draw[->, line width=2, blue] (8,1) -- (6,1);        % sd3 -> d
+
+        % Expansive 5-cycle: red
+        \draw[->, line width=2, red] (8.3,4.3) -- (5.7,1.7); % sd3 -> ss
+
+        % Shared edge (between 5 and 7): purple
+        \draw[->, line width=2, purple] (2,5) -- (4,5);       % ss -> sd1
+        \draw[->, line width=2, purple] (5,2) -- (5,4);       % d -> sd1
+        \draw[->, line width=2, purple] (6,5) -- (8,5);       % sd1 -> sd2
+
+        % Legend
+        \node at (11,6)   {\color{purple} shared edge};
+        \node at (11,5.5) {\color{red}    5-cycle};
+        \node at (11,5)   {\color{blue}   7-cycle};
+
+    \end{tikzpicture}
+    \caption{State Transition Diagram for A022921 highlighting cycles: contractive 7-cycle (blue),
+    locally expansive 5-cycle (red), shared edges (purple). Lowercase letters reflect single ($s$)
+    and double ($d$) parity steps consistent with the main text notation.}
+    \label{fig:cycle-highlight-lower}
+\end{figure}
+
+The figure highlights the locally expansive 5-cycle (red), the contractive 7-cycle (blue), 
+and the shared edges (purple), visually illustrating the grammar constraints of the 
+sequence \OEIS{A022921}.
+
 \subsection*{Horizontal-Sum Dynamics and Pascal-Type Growth}
 
 The generating rows evolve by a horizontal-sum rule:
@@ -1392,27 +1735,20 @@ d,d,s & 1
 
 \subsection{Illustrative Extremal Computations}
 
-The generating rows evolve by a horizontal--sum rule:
-\[
-a_{i}(n) = a_i(n-1) + a_{i-1}(n); i,n \in \setN,
-\]
+The generating rows evolve by a horizontal--sum rule (see Equation \ref{eq:horizontal-sum-recurrence})
 so that sequences of single steps exhibit ordinary Pascal--type growth.
 Double steps differ only in that the terminal entry of the row is duplicated,
 causing the final term to appear twice in the generating tuple while preserving
 monotonicity of the preceding entries.
-
-% These examples are representative extremal probes of the recurrence.  Since
-% Lemma~\ref{lem:single-double-bound} provides uniform inequalities valid for all
-% admissible generating rows, any realization saturating these inequalities
-% yields an upper bound on every occurrence of the same local pattern.
 
 These examples are chosen so that each step saturates the inequalities of
 Lemma~\ref{lem:single-double-bound}, thereby realizing extremal growth. Equalities
 shown below should be interpreted as extremal upper-bound realizations rather than
 identities valid for all rows.
 
-Let $S$ denote the total sum of entries in the generating row prior to a given
-local pattern.
+The following row-by-row computations illustrate how each local pattern saturates
+its maximal growth factor.  Let $S$ denote the total sum of entries in the generating
+row prior to a given local pattern.
 
 \paragraph{Example 1.}
 \[
