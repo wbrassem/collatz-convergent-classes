@@ -17,10 +17,11 @@ data/*.csv
 figures/*.pdf
 figures/*.png
 
-# Build output
-build/
-*.aux
-*.log
-*.out
-*.toc
-*.synctex.gz
+# Ignore everything in build
+build/*
+
+# Re-allow the directory itself
+!build/
+
+# Keep PDFs in build
+!build/*.pdf

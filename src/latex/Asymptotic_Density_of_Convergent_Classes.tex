@@ -16,11 +16,6 @@
 \usepackage[parfill]{parskip}		% Activate to begin paragraphs with an empty line rather than indent
 \usepackage{float}					% Float package to exert more control over graphic placement
 	
-%\usepackage{verbatim}				% Creates a verbatim environment for code / program output
-\usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
-									% TeX will automatically convert eps --> pdf in pdflatex
-\graphicspath{{./figures/}}         
-
 % Math packages
 \usepackage{amssymb}				% Mathematical symbols
 \usepackage{amsmath}				% Added for typesetting mathematical formulae
@@ -30,7 +25,6 @@
 % Table packages in addition to built in tabular
 \usepackage{booktabs}				% Adds extra commands to tabular like \toprule
 \usepackage{afterpage}				% For pagination support
-\usepackage{longtable}				% Support for longer tables
 
 % Hyperlinks
 \usepackage{hyperref}				% For creating internal and HTTP links
@@ -56,8 +50,6 @@
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{corollary}[theorem]{Corollary}
 \newtheorem*{remark}{Remark}
-
-%SetFonts
 
 
 \title{On the Asymptotic Density of Convergent Residue Classes in the Collatz Map}
@@ -202,15 +194,16 @@ govern convergence for the vast majority of integers.
 
 \paragraph{Structure of the Paper.} 
 Section~\ref{sec:definitions} introduces stopping time, convergent segments, and residue
-classes.   Section~\ref{sec:division-counts} defines parity words, total division counts,
-and their associated densities.  Section~\ref{sec:grammar} develops the parity-word grammar
-and admissibility conditions, leading to affine representations of residue classes. 
+classes. Section~\ref{sec:division-counts} defines parity words, total division counts,
+and their associated densities. Section~\ref{sec:grammar} develops the parity-word grammar
+and admissibility conditions, leading to affine representations of residue classes.
 Section~\ref{sec:increment-grammar} presents the increment grammar and horizontal-sum
-construction, which enumerates convergent classes and controls their combinatorial growth. 
-Section ~\ref{sec:cumulative-density} then applies this machinery to prove the vanishing
-density of unconvergent integers and the asymptotic global descent result.
+construction, which enumerates convergent classes and controls their combinatorial growth.
+Section~\ref{sec:cumulative-density} applies this machinery to establish vanishing density,
+while Section~\ref{sec:global-descent} completes the argument by proving global descent.
 
 
+\newpage
 \section{Definitions and Preliminaries}
 \label{sec:definitions}
 
@@ -253,7 +246,7 @@ Integers \(x\) and \(y\) are equivalent modulo depth \(k\) if the sequence of pa
 of \(f^i(x)\) and \(f^i(y)\) agree for \(i=0,\dots,k-1\). 
 In other words, they share the same parity sequence. 
 This convention aligns with
-the 0-based combinatorial and OEIS sequences used in the analysis.
+the 0-based combinatorial and \href{https://oeis.org}{OEIS} sequences used in the analysis.
 
 \begin{define}[Residue Class of Depth \(k\)]
 \label{def:residue-class}
@@ -276,14 +269,15 @@ suffices to know that $[x]_k$ encodes a parity sequence; any further arithmetic 
 will be derived in subsequent sections.
 \end{remark}
 
-\begin{define}[Convergent Residue Class, amnesiac-safe]
+\begin{define}[Convergent Residue Class]
 A residue class $[x]_k$ is called \emph{convergent of stopping time $k$} if
 \begin{enumerate}
 \item $f^k(y) < y$ for all $y \in [x]_k$, and
 \item no smaller integer $j<k$ satisfies $f^j(y) < y$ for any $y \in [x]_k$.
 \end{enumerate}
 Here $k$ is minimal with this property for elements in $[x]_k$.  
-Uniformity across the class follows from the fact that all elements share the same parity sequence; this will be formalized and proved in Section~\ref{sec:grammar}.
+Uniformity across the class follows from the fact that all elements share the same parity sequence;
+this will be formalized and proved in Section~\ref{sec:grammar}.
 \end{define}
 
 \begin{remark}
@@ -292,6 +286,7 @@ This definition is stronger than requiring \(\sigma(x)=k\) for a single represen
 \end{remark}
 
 
+\newpage
 \section{Division Counts and Path Encoding}
 \label{sec:division-counts}
 
@@ -309,10 +304,6 @@ Here $d_i$ corresponds to the division count in the transition $f^i(x) \rightarr
 Since the fully accelerated map always produces odd iterates, $3 f^i(x) + 1$ is even and hence
 $d_i \ge 1$. 
 
-\begin{lemma}[Uniform Valuation on Residue Classes]
-For integers belonging to a fixed residue class determined by a parity word, these
-division counts \(d_i\) are identical across the class.
-\end{lemma}
 
 \subsection{Formal Definition of Parity Words}
 
@@ -333,14 +324,28 @@ A \emph{parity word} of length $m \ge 0$ is a finite sequence
 \[
 \omega = (d_0, d_1, \dots, d_{m-1}),
 \]
-where each $d_j$ is a positive integer.  Admissibility constraints on which
-sequences can occur are defined in Section~\ref{sec:grammar}.
+where each $d_j$ is a positive integer representing the number of divisions
+by two applied at the $j$-th iterate of the accelerated map.  Admissibility
+constraints on which sequences can occur are defined in Section~\ref{sec:grammar}.
 
-For $m=0$, the word is empty and represents the \emph{trivial zero-step segment};
-it serves as a formal base case in the symbolic and combinatorial constructions
-but does not correspond to an odd-step event.
+For $m=0$, the word is empty and represents the \emph{trivial zero-step segment}.
 \end{define}
 
+\begin{lemma}[Uniform Valuation on Residue Classes]
+Let a residue class be determined by a parity word of length $m > 0$ with division counts
+$(d_0,\dots,d_{m-1})$.  
+Then for every integer in the class, the division counts $d_i$ are identical for
+all $0 \le i < m$.
+\end{lemma}
+
+\begin{remark}
+The parity word determining the residue class is understood to terminate at length $m$.
+No claim is made about parity symbols or division counts beyond this prefix, which lie
+outside the equivalence relation defining the class.
+\end{remark}
+
+
+\subsection{Affine Maps Associated to Parity Words}
 Each parity word formally determines an affine map of any integer $x$:
 \begin{equation}
 \label{eq:linear-affine-map-m}
@@ -363,7 +368,7 @@ residue classes without reference to specific integers.
 
 \begin{remark}[Residue Classes and Parity Words]
 Each admissible parity word $\omega$ determines a unique arithmetic progression
-modulo $2^{D(\omega)}$.
+modulo $2^{d_0+\cdots+d_{m-1}}$.
 \end{remark}
 
 
@@ -394,8 +399,9 @@ However, for each parity word, its total division count $D(\omega)$ is
 uniquely determined by the sequence of divisions encoded in the word.
 
 \begin{define}[Minimal Total Division Count]
-Let $A020914(m)$ denote the minimal total number of divisions by two among
-all \emph{admissible} parity words containing exactly $m$ iterates of $f$.
+Let $A020914(m)$ denote the term of the OEIS sequence \OEIS{A020914}, 
+which is the minimal total number of divisions by two among all
+\emph{admissible} parity words containing exactly $m$ iterates of $f$.
 \end{define}
 
 This quantity is given by $\lceil m \log_2(3) \rceil$, a fact derived in
@@ -411,39 +417,47 @@ of $3^m$ in the affine map for a path with $m$ iterates of $f$.
 
 \begin{lemma}[Disjointness of Residue Classes]
 Fix $m \ge 0$. The residue classes induced by distinct parity words
-$\omega = (d_0,\dots,d_{m-1})$ with $m$ iterates of $f$ are pairwise disjoint.
+\(\omega = (d_0,\dots,d_{m-1})\) with $m$ iterates of $f$ are pairwise disjoint.
 \end{lemma}
 
 \begin{proof}
-Let $\omega$ be a parity word with $m$ iterates of $f$ and total division count
+Let \(\omega\) be a parity word with $m$ iterates of $f$ and total division count
 \[
 D(\omega) = \sum_{j=0}^{m-1} d_j.
 \]
-It determines a affine map
+It determines an affine map
 \[
 x \longmapsto \frac{3^m x + c(\omega)}{2^{D(\omega)}}.
 \]
+
 For the $m$-th iterate of $f$ to be an integer, $x$ must satisfy the
 integrality condition
 \[
 3^m x + c(\omega) \equiv 0 \pmod{2^{D(\omega)}}.
 \]
-Since $3^m$ is odd, it is invertible modulo $2^{D(\omega)}$, and thus this
-congruence determines a unique residue class
+
+Since \(3^m\) is odd, it is coprime to \(2^{D(\omega)}\).  
+Hence it is invertible modulo \(2^{D(\omega)}\); that is, there exists an integer
+\((3^m)^{-1} \bmod 2^{D(\omega)}\) such that
+\[
+3^m \cdot (3^m)^{-1} \equiv 1 \pmod{2^{D(\omega)}}.
+\] 
+Multiplying the congruence by this inverse yields a unique residue class
 \[
 x \equiv r_\omega \pmod{2^{D(\omega)}}.
 \]
 
-If two distinct parity words $\omega \neq \omega'$ produced the same residue
-class, then their integrality conditions would define the same affine map
+Suppose two distinct parity words \(\omega \neq \omega'\) produced the same residue
+class. Then their integrality conditions would define the same affine map
 \[
 x \mapsto \frac{3^m x + c}{2^D}.
 \]
-But the symbolic composition of the accelerated map is unique: at each stage,
-the exponent $d_i$ is exactly $v_2(3f^i(x)+1)$, so the sequence of exponents is
+However, the symbolic composition of the accelerated map is unique: at each stage,
+the exponent \(d_i\) is exactly \(v_2(3 f^i(x)+1)\), so the sequence of exponents is
 uniquely determined by the successive 2-adic valuations along the trajectory,
-and hence by the parity word itself. Hence $\omega=\omega'$, a contradiction.
-Therefore distinct parity words determine distinct and disjoint residue classes.
+and hence by the parity word itself. Therefore \(\omega = \omega'\), a contradiction.
+
+Consequently, distinct parity words determine distinct and disjoint residue classes.
 \end{proof}
 
 \begin{proposition}
@@ -458,7 +472,10 @@ In particular, for classes with $m$ iterates of $f$,
 \end{proposition}
 
 \begin{proof}
-Each residue class is an arithmetic progression with modulus $2^{D(\omega)}$
+If $m=0$, then the parity word is empty and $D(\omega)=0$, so the residue class
+contains all integers and has natural density $1 = 2^0$.
+
+For $m>0$, each residue class is an arithmetic progression with modulus $2^{D(\omega)}$
 and exactly one representative per period. The natural density of such a class
 is therefore $2^{-D(\omega)}$.
 \end{proof}
@@ -539,6 +556,7 @@ word $\omega$ and its total division count $D(\omega)$, not on the specific
 starting value.
 
 
+\newpage
 \section{Grammar of Collatz Parity Words}
 \label{sec:grammar}
 
@@ -576,24 +594,24 @@ though individual trajectories are collapsed under the encoding.
 
 \begin{define}[Admissible Parity Word]
 \label{def:admissible-parity-word}
-Let $\omega = (d_0, \dots, d_{m-1})$ be a parity word and write
-$D = d_0+\cdots+d_{m-1}$. Associated to $\omega$ is the affine map
+Let \(\omega\) be a parity word with $m$ iterates of $f$ and total division count
+$D(\omega)$. Associated to $\omega$ is the affine map
 \[
-F_\omega(x) = \frac{3^m x + c(\omega)}{2^{D}},
+F_\omega(x) = \frac{3^m x + c(\omega)}{2^{D(\omega)}},
 \]
 where $c(\omega)$ is the canonical integer determined by $\omega$.
 
 The parity word $\omega$ is said to be \emph{admissible} if there exists at
 least one integer $x$ such that $F_\omega(x)$ is an integer. Equivalently,
 $\omega$ is admissible if the numerator $3^m x + c(\omega)$ is divisible by
-$2^{D}$ for at least one residue class of $x \bmod 2^{D}$.
+$2^{D(\omega)}$ for at least one residue class of $x \bmod 2^{D(\omega)}$.
 \end{define}
 
 \begin{remark}
 Admissibility is therefore an arithmetic condition on the word $\omega$
 itself, expressed as a divisibility constraint on the associated affine
 map. When this condition holds, the set of all integers $x$ for which
-$F_\omega(x)$ is integral forms a unique residue class modulo $2^{D}$,
+$F_\omega(x)$ is integral forms a unique residue class modulo $2^{D(\omega)}$,
 corresponding to the residue class induced by $\omega$.
 \end{remark}
 
@@ -638,16 +656,12 @@ on the multiplicative component of the affine map.
 \end{remark}
 
 
+\newpage
 \subsection{Residue Classes Induced by Parity Words}
 
-Fix a parity word $\omega = (d_0,\dots,d_{m-1})$ of length $m$ that is
-admissible in the sense of Definition~\ref{def:admissible-parity-word}.
-Let
-\[
-D(\omega) := d_0 + \cdots + d_{m-1}
-\]
-denote its total division count. By admissibility,
-$D(\omega) \ge A020914(m)$.
+Fix a parity word $\omega = (d_0,\dots,d_{m-1})$ of length $m$ that is admissible
+in the sense of Definition~\ref{def:admissible-parity-word}. Let $D(\omega)$
+denote its total division count. By admissibility, $D(\omega) \ge A020914(m)$.
 
 \begin{lemma}[Residue Class Modulus]
 \label{lem:residue-modulus}
@@ -663,10 +677,13 @@ x \equiv y \pmod{2^{D(\omega)}}.
 For any integer $z$ realizing $\omega$, the $m$ iterates of the accelerated map
 $f$ encoded by $\omega$ induce the affine relation
 \[
-F_\omega(z) = \frac{3^m z + c(\omega)}{2^{D(\omega)}},
+F_\omega(z) = \frac{3^m z + c(\omega)}{2^{D(\omega)}}.
 \]
-where $F_\omega(z)\in\setN$ by admissibility.
-Thus $3^m z + c(\omega)$ is divisible by $2^{D(\omega)}$.
+By admissibility, $F_\omega(z)\in\setN$ is integral. This integrality
+immediately implies that
+\[
+3^m z + c(\omega) \text{ is divisible by } 2^{D(\omega)}.
+\]
 
 If both $x$ and $y$ realize $\omega$, then
 \[
@@ -710,10 +727,8 @@ x \equiv r_\omega \pmod{2^{D(\omega)}},
 whose elements all follow the same parity pattern for $m$ iterates of the
 accelerated map $f$ and satisfy
 \[
-F_\omega(x) < x.
-\]
-for all
-\[
+F_\omega(x) < x
+\quad\text{for all}\quad
 x > \frac{c(\omega)}{2^{D(\omega)} - 3^m}.
 \]
 
@@ -721,12 +736,23 @@ Consequently, every element of the class reaches a strictly smaller integer
 after completing the $m$ iterates of the accelerated map $f$ encoded by $\omega$.
 \end{lemma}
 
+\begin{remark}[Solving the Affine Inequality]
+The bound 
+\(\displaystyle x > \frac{c(\omega)}{2^{D(\omega)} - 3^m}\)
+is obtained by solving the affine inequality \(F_\omega(x) < x\) for \(x\):
+\[
+\frac{3^m x + c(\omega)}{2^{D(\omega)}} < x \implies x > \frac{c(\omega)}{2^{D(\omega)} - 3^m}.
+\]
+This ensures that elements of the residue class indeed descend under the accelerated map.
+\end{remark}
 
+
+\newpage
 \section{Increment Grammar and Horizontal-Sum Construction}
 \label{sec:increment-grammar}
 
 \begin{remark}[Increment Grammar from Minimal Denominator Growth]
-The first difference sequence of $A020914$, given by \OEIS{A022921},
+The first difference sequence of \OEIS{A020914}, given by \OEIS{A022921},
 induces a binary \emph{increment grammar} $\{s,d\}$ that describes the growth
 of the \emph{minimal admissible} total division count as the number of odd steps increases.
 
@@ -755,9 +781,11 @@ properties of the tabulation.
 
 \begin{lemma}[Single-to-Double Row Sum Bound]
 \label{lem:single-double-bound}
-Consider a row produced by a \emph{single} increment step with total sum $S$ (i.e., the
-sum of its entries in the horizontal-sum table). If a \emph{double} increment is applied
-immediately afterward, the resulting row has total less than $3S$.
+Consider a row produced by a \emph{single} increment step with strictly positive entries 
+and total sum $S$ (i.e., the sum of its entries in the horizontal-sum table). 
+If a \emph{double} increment is applied immediately afterward, producing a row whose 
+terminal entry equals the sum of the previous row and all other entries remain strictly positive, 
+then the total sum of the resulting row is strictly less than $3S$.
 \end{lemma}
 
 \begin{proof}
@@ -765,6 +793,7 @@ By definition, the total sum of the single row equals $S$.  Under a subsequent d
 the terminal entry of the new row is formed as the sum of all entries of the preceding row,
 and the previous terminal entry is duplicated.
 
+\newpage
 Since the terminal entry of every row is the sum of the preceding row and is therefore 
 strictly positive, the interior entries constitute a proper subset of the row’s mass, and
 their total is strictly less than $S$.
@@ -792,35 +821,43 @@ associated with increasingly long stopping times.
 \end{remark}
 
 
+\newpage
 \section{Finite-State Linear Structure of the Horizontal-Sum Dynamics}
 \label{sec:linear-framework}
 
 This section formalizes the horizontal-sum construction as a finite-state
-positive linear dynamical system.  The purpose is to justify that the
-extremal local growth calculations of Appendix~\ref{app:local-growth-details}
-provide \emph{uniform bounds} valid for all admissible rows, not merely for
-the illustrative extremal examples.
+positive linear dynamical system.  The purpose is to show that the dynamics
+is order-preserving on a positive cone, so that rows realizing extremal
+local growth at any given stage continue to dominate all other admissible
+rows under every future evolution.  Consequently, the extremal local growth
+calculations of Appendix~\ref{app:local-growth-details} provide \emph{uniform
+bounds} valid for all admissible rows, not merely for illustrative examples.
+
 
 \subsection{Linear Operator Formulation}
 
 Let $v_n = (a_1(n),a_2(n),\dots,a_{k_n}(n))$ denote the generating row at
-level $n$, and let
+level $n$, where the length $k_n$ depends on the increment history.
+Let
 \[
 S_n = \sum_i a_i(n)
 \]
-be its total sum.
-
-Ignoring terminal duplication for the moment, the recurrence
+be its total sum. Ignoring terminal duplication for the moment, the recurrence
 \[
 a_i(n)=a_i(n-1)+a_{i-1}(n)
 \]
-is linear with nonnegative coefficients. A single increment step therefore
-corresponds to multiplication by a linear operator $T_s$ with nonnegative
-entries.
+(with the convention that $a_0(n)=0$) is linear with nonnegative coefficients.
 
-A double step duplicates the terminal entry after this linear evolution.
-This operation is also linear and can be represented by another operator
-$T_d$ whose matrix entries are again nonnegative.
+A single increment step therefore corresponds to multiplication by a linear
+operator $T_s$ with nonnegative entries. A double step duplicates the terminal
+entry after this linear evolution. This operation is also linear and can be
+represented by another operator $T_d$ whose matrix entries are again nonnegative.
+
+A single increment acts as a positive linear endomorphism
+$T_s^{(k)} : \mathbb{R}^{k} \to \mathbb{R}^{k}$, preserving row length, whereas
+a double increment acts as a positive linear map
+$T_d^{(k)} : \mathbb{R}^{k} \to \mathbb{R}^{k+1}$, increasing the row length by one
+via terminal duplication.
 
 Hence each increment symbol $\sigma_n\in\{s,d\}$ induces a positive linear map
 \[
@@ -831,6 +868,7 @@ and any admissible increment word corresponds to a product of matrices
 v_{n+k} = T_{\sigma_{n+k-1}}\cdots T_{\sigma_n} v_n,
 \]
 all of whose entries are nonnegative.
+
 
 \subsection{Monotone Extremal Propagation}
 
@@ -860,15 +898,21 @@ This lemma shows that the horizontal-sum dynamics is \emph{order-preserving}.
 Rows that maximize growth at one stage continue to dominate all others
 under every admissible future evolution.
 
+
 \subsection{Reduction to Local Pattern Bounds}
 
-Let $P$ be an admissible local pattern of length $k$. Define
+Let $P = (\sigma_1,\dots,\sigma_k)$ be an admissible local pattern of length $k$,
+with associated operator product
+\[
+T_P = T_{\sigma_k}\cdots T_{\sigma_1}.
+\]
+Define
 \[
 \alpha(P)
 = \sup_{v\neq 0}
-\frac{\sum_i (T_P v)_i}{\sum_i v_i},
+\frac{\sum_{i=1}^{k_P} (T_P v)_i}{\sum_{i=1}^{k_0} v_i},
 \]
-where $T_P$ denotes the operator product corresponding to $P$.
+where $k_0$ and $k_P$ are the row lengths before and after applying $T_P$, respectively.
 
 \begin{remark}[Why extremal rows suffice]
 The \emph{positive cone} in $\mathbb{R}^m$ is
@@ -880,29 +924,38 @@ nonnegative entries.  Hence for any pattern $P$, the operator $T_P$ maps the
 positive cone into itself and is monotone with respect to the coordinatewise
 order.
 
-Because both numerator and denominator in the definition of $\alpha(P)$ are
+\begin{remark}[Reduction to the simplex]
+Because both the numerator and denominator in the definition of $\alpha(P)$ are
 positive linear functionals, the ratio
 \[
 \frac{\sum_i (T_P v)_i}{\sum_i v_i}
 \]
-is invariant under scaling of $v$ and depends only on the direction of $v$
-in the positive cone.  For such positive linear systems, the supremum of this
-ratio is achieved (up to scaling) on extreme rays of the cone, corresponding
-to rows that concentrate mass in coordinates $j$ where the $j$-th column
-sum of $T_P$ is maximal, since
+is invariant under positive scaling of $v$.  Hence the supremum may be taken over
+the normalized simplex
 \[
-\sum_i (T_P v)_i = \sum_j \left(\sum_i (T_P)_{ij}\right) v_j.
+\Delta = \left\{ v \in \mathbb{R}^{k_0}_{\ge 0} : \sum_i v_i = 1 \right\},
 \]
+where $k_0$ is the length of the input row. On $\Delta$, the ratio reduces to a linear functional:
+\[
+\sum_i (T_P v)_i
+= \sum_j \left( \sum_i (T_P)_{ij} \right) v_j.
+\]
+Since $\Delta$ is a compact convex polytope, the maximum of this linear functional
+is attained at an extreme point of $\Delta$, which corresponds to a coordinate
+vector concentrating all mass in a single coordinate $j$.
 
-These rows are precisely those that saturate the growth
-inequalities in Lemma~\ref{lem:single-double-bound}.
+Thus the supremum defining $\alpha(P)$ is realized by rows supported on coordinates
+$j$ for which the column sum $\sum_i (T_P)_{ij}$ is maximal.  These rows are exactly
+those that saturate the growth inequalities of
+Lemma~\ref{lem:single-double-bound}.
 \end{remark}
 
-By the positivity remark above and Lemma~\ref{lem:monotone-propagation},
+By positivity and Lemma~\ref{lem:monotone-propagation},
 the supremum is attained by rows that saturate the inequalities in
 Lemma~\ref{lem:single-double-bound}. Hence the extremal examples constructed in
 Appendix~\ref{app:local-growth-details} provide valid upper bounds for
 $\alpha(P)$ for every admissible occurrence of $P$.
+
 
 \subsection{Maximal Growth via Grammar Cycles}
 
@@ -912,7 +965,7 @@ grammar-allowed finite blocks.  By definition of $\alpha(P)$, for any row $v$,
 \sum_i (T_P v)_i \le \alpha(P)\sum_i v_i.
 \]
 Applying this inequality successively to the blocks in a concatenated
-increment word gives
+increment word (whose total length is $k$) gives
 \[
 \frac{S_{n+k}}{S_n}
 \le
@@ -966,7 +1019,7 @@ so that the density contribution of convergent residue classes of stopping time 
 \widetilde A(i)\, 2^{-B(i)}.
 \]
 
-By definition of $A020914$ as the minimal exponent with $2^{B(i)} > 3^i$, the function
+By definition of \OEIS{A020914} as the minimal exponent with $2^{B(i)} > 3^i$, the function
 $B(i)$ satisfies the following properties:
 \begin{itemize}
     \item $B(i)$ is strictly increasing, with increments either 1 or 2 (never zero).
@@ -981,12 +1034,12 @@ Because $B(i)$ is defined as the minimal integer with $2^{B(i)} > 3^i$,
 the quantity $2^{B(i)}$ is the smallest power of two exceeding $3^i$.
 
 \begin{remark}[Indexing and Effective Growth Delay]
-The OEIS sequences \(A020914\) and \(A186009\) employ differing indexing
+The OEIS sequences \OEIS{A020914} and \OEIS{A186009} employ differing indexing
 conventions. In order to compare numerator and denominator growth on a common
 scale, we define \(\widetilde A(i) := A186009(i+1)\), so that the index \(i\)
 corresponds uniformly to stopping time (equivalently, parity-word length).
 
-While the first doubling increment in $A020914$ occurs at index $1$, its
+While the first doubling increment in \OEIS{A020914} occurs at index $1$, its
 effect on $\widetilde A$ appears after a fixed finite delay of two growth
 steps. This delay is independent of $i$ and does not affect the asymptotic
 growth comparison between numerator and denominator, which is controlled by
@@ -995,7 +1048,7 @@ the increment grammar introduced in Section~\ref{sec:increment-grammar}.
 
 \noindent
 \textbf{Constant-factor control.}
-This bound depends only on the definition of $A020914$ and does not rely on
+This bound depends only on the definition of \OEIS{A020914} and does not rely on
 any delayed-doubling or numerator-growth arguments. Consequently, the reciprocal satisfies
 \[
 2^{-B(i)} \in \left( \frac{1}{2 \cdot 3^i}, \frac{1}{3^i} \right),
@@ -1101,14 +1154,14 @@ contractive buffers, ensuring their asymptotic density in any admissible sequenc
 is strictly less than one.
 \end{remark}
 
-\begin{theorem}[Maximal Admissible Growth Rate for $\widetilde A = A186009$]
+\begin{theorem}[Maximal Admissible Growth Rate]
 \label{thm:maximal-growth}
 Let $\widetilde A(i) = A186009(i+1)$ denote the number of convergent residue classes
 of stopping time $i$, generated by the horizontal-sum construction associated with
 the increment grammar of \OEIS{A022921}.  Let $B(i) := A020914(i)$ denote the
 cumulative exponent of $2$ up to level $i$.  
 
-Then the per-step growth of $\widetilde A(i)$ is bounded by the maximal geometric growth
+The per-step growth of $\widetilde A(i)$ is bounded by the maximal geometric growth
 rate of a $5$--cycle (see Appendix~\ref{app:local-growth-details}, Equation~\eqref{eq:rho-5}):
 \[
 \limsup_{i\to\infty} \widetilde A(i)^{1/i} \le \rho_5 < 3,
@@ -1240,6 +1293,7 @@ argument and is developed separately in Appendix~\ref{app:A047749-lower-bound}.
 
 
 \section{Global Descent in Density}
+\label{sec:global-descent}
 
 \subsection{Descent Words and Partition of the Descending Set}
 
@@ -1352,9 +1406,11 @@ of $2$ at level $i$. By Theorem~\ref{thm:maximal-growth}, we have
 \]
 
 By construction, each residue class consists of integers that descend after finitely many
-accelerated iterations. Since the total density of all convergent residue classes approaches
-one, the set of integers not contained in any convergent residue class has asymptotic
-density zero.  
+accelerated iterations. Lemma~\ref{lem:summable-density} shows that the density
+contributions of convergent residue classes are summable, and hence that the cumulative
+density of all such classes converges. Since these classes partition the integers up to a
+null set, this limit must equal one. Therefore the set of integers not contained in any
+convergent residue class has asymptotic density zero.
 
 Therefore, for almost every positive integer $x$ (in the sense of natural density),
 there exists a finite $m$ such that
@@ -1371,7 +1427,7 @@ so the result establishes descent in a measure-theoretic sense rather than an ab
 \end{remark}
 
 
-\section{Consequences for Hypothetical Zero-Density Exceptional Trajectories}
+\section{Hypothetical Zero-Density Trajectories}
 
 The density result established above does not exclude the logical possibility of
 non-convergent Collatz trajectories. However, it severely restricts the form that
@@ -1391,6 +1447,7 @@ positive density, but would instead persist only as a sparse, non-propagating ph
 within the integer space.
 
 
+\newpage
 \section{Conclusion}
 
 In this work, we have analyzed the Collatz map via a structural decomposition
@@ -1426,43 +1483,43 @@ rigorous statement fully consistent with the density analysis.
 Each parity word \(\omega\) induces an affine map \(F_\omega(x)\) of length $m$
 (see Section~\ref{sec:division-counts})
 \[
-F_\omega(x) = \frac{3^m x + c(\omega)}{2^D}, \qquad D = d_0 + \dots + d_{m-1},
+F_\omega(x) = \frac{3^m x + c(\omega)}{2^{D(\omega)}}, \qquad D(\omega) = d_0 + \dots + d_{m-1},
 \]
-where \(c(\omega)\) is uniquely defined modulo \(2^D\). In this appendix,
+where \(c(\omega)\) is uniquely defined modulo \(2^{D(\omega)}\). In this appendix,
 we describe a canonical choice and a simple method to compute it.
 
 \subsection*{Canonical Choice}
 
 For a fixed \(\omega\), any integer \(x\) in the corresponding residue class satisfies
 \[
-3^m x + c \equiv 0 \pmod{2^D}.
+3^m x + c \equiv 0 \pmod{2^{D(\omega)}}.
 \]
 We remove ambiguity by selecting the unique representative
 \[
-0 \le c(\omega) < 2^D.
+0 \le c(\omega) < 2^{D(\omega)}.
 \]
 This choice depends only on \(\omega\) and is independent of the representative \(x\).
 
 \subsection*{Step-by-Step Computation}
 
-Given \(\omega\) of length \(m\) and total division count \(D\):
+Given \(\omega\) of length \(m\) and total division count \(D(\omega)\):
 
 \begin{enumerate}
 \item Choose any integer \(x\) in the residue class corresponding to \(\omega\).  
 \item Compute \(y = 3^m x\).  
-\item Let \(r = \lceil y / 2^D \rceil\) be the smallest integer such that \(r \cdot 2^D \ge y\).  
-\item Define \(c(\omega) = r \cdot 2^D - y\).  
+\item Let \(r = \lceil y / 2^{D(\omega)} \rceil\) be the smallest integer such that \(r \cdot 2^{D(\omega)} \ge y\).  
+\item Define \(c(\omega) = r \cdot 2^{D(\omega)} - y\).  
 \end{enumerate}
 
-By this construction, \(0 \le c(\omega) < 2^D\) ensuring that
+By this construction, \(0 \le c(\omega) < 2^{D(\omega)}\) ensuring that
 \[
-F_\omega(x) = \frac{3^m x + c(\omega)}{2^D} \in \mathbb{Z} \quad \text{for all } x \text{ in the class.}
+F_\omega(x) = \frac{3^m x + c(\omega)}{2^{D(\omega)}} \in \mathbb{Z} \quad \text{for all } x \text{ in the class.}
 \]
 
 \newpage
 \subsection*{Example}
 
-Let \(\omega = (1,1,1,4)\) with \(m=4\) and \(D = \sum_{i=0}^{3} d_i = 1 + 1 + 1 + 4 = 7\):
+Let \(\omega = (1,1,1,4)\) with \(m=4\) and \(D(\omega) = \sum_{i=0}^{3} d_i = 1 + 1 + 1 + 4 = 7\):
 
 \begin{enumerate}
 \item Choose \(x = 15\). Compute \(y = 3^4 \cdot 15 = 1215\).  
@@ -1487,7 +1544,7 @@ This construction is purely illustrative and is not required for the density
 or extremal growth arguments in the main text. It demonstrates concretely
 how the affine map is fully determined by the parity word \(\omega\).
 
-Since any two integers realizing the same parity word differ by a multiple of $2^D$,
+Since any two integers realizing the same parity word differ by a multiple of $2^{D(\omega)}$,
 the value of $c(\omega)$ computed by this procedure is independent of the chosen
 representative.
 
@@ -1531,7 +1588,7 @@ word under the horizontal-sum dynamics associated with \OEIS{A186009} is bounded
 \cdot (341/131)^1
 \cdot (329/123)^1
 \Bigr)^{1/5}
-\approx 2.95
+\approx 2.976
 < 3,
 \]
 where the exponents record the number of times each admissible local pattern
@@ -1552,6 +1609,7 @@ Every contractive sequence of cycles under the admissibility grammar of \OEIS{A0
 necessarily contains at least one embedded 5-cycle within either a 12-cycle (7-cycle + 5-cycle) 
 or as a standalone 5-cycle following sufficient consecutive 12-cycles. 
 
+\newpage
 In particular:
 \begin{enumerate}
     \item Purely consecutive 7-cycles cannot occur.
@@ -1731,6 +1789,7 @@ The figure highlights the locally expansive 5-cycle (red), the contractive 7-cyc
 and the shared edges (purple), visually illustrating the grammar constraints of the 
 sequence \OEIS{A022921}.
 
+\newpage
 \subsection*{Horizontal-Sum Dynamics and Pascal-Type Growth}
 
 The generating rows evolve by a horizontal-sum rule:
@@ -1853,9 +1912,9 @@ The resulting maximal local ratios are
 \begin{array}{c|c}
 \text{Pattern} & \text{Max Ratio} \\
 \hline
-s,d & 3 \\
+s,d & 3/1 \\
 d,d & 123/33 \\
-s,d,s & 3 \\
+s,d,s & 9/3 \\
 d,d,s & 329/123
 \end{array}
 \]
@@ -1880,7 +1939,7 @@ d,d,s & 329/123
 
 \[
 \begin{array}{l}
-\textit{Double } a(14) = \underbrace{8045}_{\text{sum} = 123S}:
+\textit{Double } a(14) = \underbrace{8045}_{\text{sum} = 13S}:
 \underbrace{1,11,63,245,730}_{2S},
 \underbrace{1691}_{3S},
 \underbrace{2652}_{4S},
@@ -1890,7 +1949,7 @@ d,d,s & 329/123
 
 \[
 \begin{array}{l}
-\textit{Single } a(15) = \underbrace{17637}_{\text{sum} = 329S}:
+\textit{Single } a(15) = \underbrace{17637}_{\text{sum} = 37S}:
 \underbrace{1,12,75,320,1050}_{4S},
 \underbrace{2741}_{7S},
 \underbrace{5393}_{11S},
@@ -1925,7 +1984,7 @@ The corresponding maximal local ratios are
 \begin{array}{c|c}
 \text{Pattern} & \text{Max Ratio} \\
 \hline
-s,d & 3 \\
+s,d & 3/1 \\
 d,d & 13/3 \\
 s,d,s & 341/131 \\
 d,d,s & 37/13
@@ -1974,7 +2033,7 @@ Consequently, the maximal geometric growth rate of a $5$--cycle satisfies
 \Bigl(
 3^2 \cdot (123/33) \cdot (341/131) \cdot (329/123)
 \Bigr)^{1/5} 
-\approx 2.95 < 3.
+\approx 2.976 < 3.
 \label{eq:rho-5}
 \end{equation}
 
@@ -1999,39 +2058,36 @@ given below as per an algorithm derived from Winkler \cite{Winkler2017}. This ta
 for illustration of the horizontal-sum mechanism; none of the density or growth bounds in the
 main text depend on these specific numeric values.
 
-\begin{center}
-\begin{longtable}{@{}rrrrrrrrrrr@{}}
-\label{A186009} \\
-\caption{\OEIS{A186009} Horizontal Sum Formulation} \\
+\begin{table}[htbp]
+\centering
+\caption{A186009 Horizontal Sum Formulation}
+\label{tab:A186009}
+\vspace{4pt}
+\begin{tabular}{@{}rrrrrrrrrrr@{}}
 \toprule
-$n$ & $a_1(n)$ & $a_2(n)$ & $a_3(n)$ & $a_4(n)$ & $a_5(n)$ & $a_6(n)$ & $a_7(n)$ & $a_8(n)$ & $a_9(n)$ & $\sum a_i(n)$ \\
+$n$ & $a_1(n)$ & $a_2(n)$ & $a_3(n)$ & $a_4(n)$ & $a_5(n)$ &
+$a_6(n)$ & $a_7(n)$ & $a_8(n)$ & $a_9(n)$ & $\sum a_i(n)$ \\
 \midrule
-\endfirsthead
-\toprule
-$n$ & $a_1(n)$ & $a_2(n)$ & $a_3(n)$ & $a_4(n)$ & $a_5(n)$ & $a_6(n)$ & $a_7(n)$ & $a_8(n)$ & $a_9(n)$ & $\sum a_i(n)$ \\
-\midrule
-\endhead
-1 & 1 & & & & & & & & & 1 \\
-2 & 1 & & & & & & & & & 1 \\
-3 & 1 & & & & & & & & & 1 \\
-4 & 1 & 1 & & & & & & & & 2 \\
-5 & 1 & 2 & & & & & & & & 3 \\
-6 & 1 & 3 & 3 & & & & & & & 7 \\
-7 & 1 & 4 & 7 & & & & & & & 12 \\
-8 & 1 & 5 & 12 & 12 & & & & & & 30 \\
-9 & 1 & 6 & 18 & 30 & 30 & & & & & 85 \\
-10 & 1 & 7 & 25 & 55 & 85 & & & & & 173 \\
-11 & 1 & 8 & 33 & 88 & 173 & 173 & & & & 476 \\
-12 & 1 & 9 & 42 & 130 & 303 & 476 & & & & 961 \\
-13 & 1 & 10 & 52 & 182 & 485 & 961 & 961 & & & 2652 \\
-14 & 1 & 11 & 63 & 245 & 730 & 1691 & 2652 & 2652 & & 8045 \\
-15 & 1 & 12 & 75 & 320 & 1050 & 2741 & 5393 & 8045 & & 17637 \\
+1  & 1 &   &   &   &   &   &   &   &   & 1 \\
+2  & 1 &   &   &   &   &   &   &   &   & 1 \\
+3  & 1 &   &   &   &   &   &   &   &   & 1 \\
+4  & 1 & 1 &   &   &   &   &   &   &   & 2 \\
+5  & 1 & 2 &   &   &   &   &   &   &   & 3 \\
+6  & 1 & 3 & 3 &   &   &   &   &   &   & 7 \\
+7  & 1 & 4 & 7 &   &   &   &   &   &   & 12 \\
+8  & 1 & 5 & 12 & 12 &   &   &   &   &   & 30 \\
+9  & 1 & 6 & 18 & 30 & 30 &   &   &   &   & 85 \\
+10 & 1 & 7 & 25 & 55 & 85 &   &   &   &   & 173 \\
+11 & 1 & 8 & 33 & 88 & 173 & 173 &   &   &   & 476 \\
+12 & 1 & 9 & 42 & 130 & 303 & 476 &   &   &   & 961 \\
+13 & 1 & 10 & 52 & 182 & 485 & 961 & 961 &   &   & 2652 \\
+14 & 1 & 11 & 63 & 245 & 730 & 1691 & 2652 & 2652 &   & 8045 \\
+15 & 1 & 12 & 75 & 320 & 1050 & 2741 & 5393 & 8045 &   & 17637 \\
 16 & 1 & 13 & 88 & 408 & 1458 & 4199 & 9592 & 17637 & 17637 & 51033 \\
 17 & 1 & 14 & 102 & 510 & 1968 & 6167 & 15759 & 33396 & 51033 & 108950 \\
 \bottomrule
-\label{tab:A186009}
-\end{longtable}
-\end{center}
+\end{tabular}
+\end{table}
 
 There is a sequence closely related to \OEIS{A186009} called \OEIS{A100982}.  \OEIS{A186009}
 prepends the number 1 to the \OEIS{A100982} sequence.  Along with the listing of initial
@@ -2058,7 +2114,7 @@ $A022921(n-2)=2$ (which can be derived from \OEIS{A020914} by taking the first
 differences between its terms).  In doing so, this imposes the implicit constraint that this rule
 applies only when $n \ge 2$.  Keeping in mind that repeated terms in \OEIS{A022921}
 occur only once $n \ge 2$, the recurrence is extended to $n=1$ by treating the duplication
-condition as inactive at the boundary.  This produces an augmented vertical-sum expansion.
+condition as inactive at the boundary, producing an augmented vertical-sum expansion.
 
 In rows without terminal duplication, this recurrence is exactly Pascal’s binomial rule; duplication acts
 only at the boundary and therefore preserves the monotone, binomial-type growth of interior entries.
@@ -2066,7 +2122,7 @@ This boundary-only modification is precisely why the extremal growth analysis in
 Appendix~\ref{app:local-growth-details} reduces to \emph{local pattern frequencies}
 rather than global row shape.
 
-It is advantageous, however, to reformulate this construction such that the first non-zero term in
+We reformulate this construction such that the first non-zero term in
 each row is always at index 1 and thus the formula henceforth (producing the same expansion
 components up to a reindexing of coordinates) is modified as follows.
 
@@ -2085,7 +2141,7 @@ terminal entry remains unchanged in substance – namely that it occurs when $A0
 which is precisely the single/double grammar governing admissible growth in the preceding appendices,
 and hence the local multiplicative structure used in the extremal bounds.
 
-Because $A186009$ is obtained from $A100982$ by prepending an initial row, all row indices
+Because \OEIS{A186009} is obtained from \OEIS{A100982} by prepending an initial row, all row indices
 shift by one.  Consequently the terminal-duplication condition expressed in the original
 formulation as $A022921(n-2)=2$ now becomes $A022921(n-3)=2$ in the present indexing.
 
@@ -2105,7 +2161,7 @@ inducing admissible parity words implicit in the horizontal-sum formulation.
 
 \subsection*{Prefix-Sum Formulation}
 
-Let a parity word of length $m$ be a tuple
+Let a parity word of length $m \ge 1$ be a tuple
 \[
 (d_0,d_1,\dots,d_{m-1}), \qquad d_i \in \mathbb{N},
 \]
@@ -2145,7 +2201,7 @@ where $H(i)$ must satisfy the admissibility bounds described above.
 Generation of the set of all parity words of length $m$ proceeds by iterating
 through the following steps until all admissible words have been found.
 
-Let $i=0$ as the initial boundary condition.  Begin at step \ref{step1}.
+Set $i=0$ and $H(-1)=0$ as the initial boundary condition.  Begin at step \ref{step1}.
 
 \begin{enumerate}
 
@@ -2184,7 +2240,7 @@ record the resulting parity word $(d_0,\dots,d_{m-1})$. Continue to step \ref{st
 \end{enumerate}
 
 
-\subsection*{Example: Words of Length $m=5$}
+\subsection*{Example: Parity Words of Length $m=5$}
 
 For $m=5$, the bounds are
 \[
@@ -2202,7 +2258,10 @@ Table~\ref{tab:m5-words}.
 \centering
 \caption{Admissible parity words of length $m=5$.}
 \label{tab:m5-words}
+\vspace{4pt}
 \begin{tabular}{c|ccccc}
+$i$ & $0$ & $1$ & $2$ & $3$ & $4$ \\
+$A(i+1)$ & $2$ & $4$ & $5$ & $7$ & $8$ \\ \hline
 \textbf{Word} & $d_0$ & $d_1$ & $d_2$ & $d_3$ & $d_4$ \\ \hline
 1 & 1 & 1 & 1 & 1 & 4 \\
 2 & 1 & 1 & 1 & 2 & 3 \\
@@ -2221,7 +2280,7 @@ while remaining admissible, and achieve equality at $i=m-1$.
 
 
 \newpage
-\section{A Binomial Lower Comparison for \OEIS{A186009}}
+\section{A Binomial Lower Comparison for A186009}
 \label{app:A047749-lower-bound}
 
 The sequence \OEIS{A047749} admits a horizontal-sum construction analogous to that
@@ -2299,7 +2358,7 @@ Since \OEIS{A047749} is generated by a subset of the admissible doubling events
 for \OEIS{A186009}, it provides a constructive comparison sequence with
 explicit exponential growth rate
 \[
-\sqrt{\frac{27}{4}}.
+\sqrt{\frac{27}{4}} = \frac{3\sqrt{3}}{2} \approx 2.598.
 \]
 Hence \OEIS{A186009} admits an explicit exponentially growing comparison sequence,
 and grows strictly faster once consecutive doubling regimes become active.
