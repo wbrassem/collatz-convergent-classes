@@ -1203,7 +1203,8 @@ void t_path< P >::prettyPrintPath( int max_digits ) const
 template < class P >
 P t_path< P >::connection( const P &terminus ) const
 {
-    return safe_arith<P>::sub(terminus, start_int); // always safe
+    P next_int = safe_arith<P>::mul( terminus, statics::multiplier );     // This is the 3n part of the connection - always safe
+    return safe_arith<P>::add( next_int, statics::addend );        // This is the +1 part of the connection - always safe
 }
 
 /**
