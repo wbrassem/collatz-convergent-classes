@@ -52,7 +52,7 @@
 \newtheorem*{remark}{Remark}
 
 
-\title{On the Asymptotic Density of Convergent Residue Classes in the Collatz Map}
+\title{On the Natural Density of Convergent Cylinders in the Collatz Map}
 \author{Wayne Brassem}
 %\date{}							% Activate to display a given date or no date
 
@@ -77,12 +77,12 @@
 \maketitle
 
 
-
 \begin{abstract}
 
 We study the dynamics of the semi-accelerated Collatz map
 \[
-g(x) = \begin{cases}
+g(x) =
+\begin{cases}
 \displaystyle
     \phantom{3x} \frac{x}{2} & \text {if } x \text{ is even}, \\[8pt]
 \displaystyle
@@ -92,30 +92,34 @@ g(x) = \begin{cases}
 
 For structural analysis we relate $g$ to the fully accelerated map
 \[
-f(x)=\frac{3x+1}{2^{v_2(3x+1)}}.
+f(x)=\frac{3x+1}{2^{v_2(3x+1)}},
 \]
-Here $v_2(n)$ denotes the 2-adic valuation of $n$ (largest $k$ such that $2^k \mid n$).
+where $v_2(n)$ denotes the 2-adic valuation of $n$.
 
-Our approach decomposes the positive integers into residue classes determined by
-finite parity patterns under the fully accelerated map $f$, which serves as a
-symbolic compression of trajectories of the semi-accelerated map $g$. Trajectories
-are encoded as parity words (sequences of division counts $v_2(3x+1)$), yielding
-associated affine maps that describe the finite-step action of $f$ on entire
-classes at once. This framework allows systematic enumeration of convergent residue
-classes and quantitative control of their combinatorial growth via a grammar derived
-from lower bounds on the total number of divisions by two required for admissibility.
+We encode trajectories of $f$ by finite parity words (equivalently, sequences of
+2-adic division counts), each of which induces an affine transformation describing
+the action of $f$ on entire congruence classes simultaneously. These words generate
+a hierarchical decomposition of the positive integers into residue classes, which
+we identify canonically with a family of nested dynamical cylinders.
 
-Comparing this growth with the powers of two governing residue-class densities, we
-prove that the cumulative natural density of integers belonging to residue classes
-with finite stopping time approaches one. Consequently, almost every positive integer
-eventually reaches a smaller value under iteration of the map (in the sense of natural
-density). While zero-density exceptional trajectories are not excluded, the results
-provide a measure-theoretic description of typical Collatz behavior.
+Within this framework, minimal stopping-time classes correspond to a disjoint
+partition of the integers into cylinders indexed by admissible parity words. We
+derive a symbolic grammar governing admissible word growth and use it to control
+the combinatorial expansion of these classes.
+
+Comparing this growth with the exponential scaling of cylinder measures $2^{-k}$,
+we show that the total natural density of all convergent cylinders is one. Equivalently,
+the complement of their union has natural density zero. Thus almost every positive
+integer eventually attains a strictly smaller value under iteration of $g$ (in the
+sense of natural density).
+
+While zero-density exceptional trajectories are not excluded, the result provides a
+measure-theoretic description of typical Collatz dynamics via a canonical cylinder
+decomposition of the integer lattice.
 
 \end{abstract}
+
 \newpage
-
-
 \tableofcontents
 \newpage
 
@@ -135,72 +139,75 @@ T(x) =
 \]
 on the positive integers. It asserts that every positive integer eventually reaches $1$
 under iteration of $T$. Despite its elementary formulation, the conjecture has resisted
-proof for decades \cite{Lagarias2010,Terras1976}. Extensive computational verification
-confirms convergence for all integers up to very large bounds \cite{OliveiraESilva2010},
-but such verification does not constitute a proof and offers limited insight into the
-global structure of Collatz trajectories.
+proof for decades~\cite{Lagarias2010,Terras1976}. Extensive computational verification
+confirms convergence for very large ranges~\cite{OliveiraESilva2010}, but does not
+illuminate the global structure of trajectories.
 
-A useful intermediate form is the \emph{semi-accelerated map}
+A major advance by Tao~\cite{Tao2019} showed that almost all integers, in the sense of
+logarithmic density, eventually decrease under iteration of the Collatz map. This result
+is obtained via probabilistic averaging rather than an explicit combinatorial
+decomposition of the integers.
+
+The present work develops a deterministic alternative based on a symbolic and measure-theoretic
+decomposition of the integer lattice. Rather than analyzing individual trajectories, we
+partition the positive integers into \emph{cylinders} induced by finite parity patterns
+under the fully accelerated map. These cylinders form a canonical hierarchical refinement
+of classical residue classes and serve as the fundamental objects of density analysis.
+
+We introduce two equivalent dynamical formulations of the Collatz map. The
+\emph{semi-accelerated map}
 \[
-g(x) = \begin{cases}
+g(x) =
+\begin{cases}
 \displaystyle
     \phantom{3x} \frac{x}{2} & \text {if } x \text{ is even}, \\[8pt]
 \displaystyle
     \frac{3x+1}{2}           & \text {if } x \text{ is odd}. \\
 \end{cases}
 \]
-which applies a single division by two immediately after each odd step. This map preserves
-the essential dynamics while simplifying the combinatorial structure of trajectories.
-
-For structural analysis it is convenient to work with the
-\emph{fully accelerated map}
+and the \emph{fully accelerated map}
 \[
 f(x)=\frac{3x+1}{2^{v_2(3x+1)}},
 \]
-defined on odd integers. This map removes all powers of two in a single
-iterate and satisfies
-\[
-f(x)=g^{\,v_2(3x+1)}(x),
-\]
-where the first iterate applies the odd branch and the remaining iterates are divisions
-by two. All symbolic encodings and residue-class constructions in this paper are formulated
-in terms of the fully accelerated map.
+where $v_2(n)$ denotes the 2-adic valuation. The map $f$ compresses each odd step of $g$
+into a single affine transformation and acts as the natural symbolic encoding space for
+trajectory structure.
 
-Our approach is to study the \emph{structural properties} of Collatz trajectories
-rather than individual integers. Specifically, we partition the positive integers into
-\emph{residue classes} determined by finite sequences of division counts following odd
-steps under the fully accelerated map $f$—called \emph{parity words}. Each admissible
-parity word corresponds to a finite segment of a trajectory under $f$, terminating at
-the first step where the iterate is strictly smaller than its starting value.  
+Trajectories under $f$ are encoded by finite \emph{parity words}, recording the
+2-adic division counts after each odd step. Each parity word induces an affine map
+describing the action of $f$ on an entire arithmetic progression simultaneously. These
+words define residue classes modulo powers of two, which we identify canonically with
+dynamical \emph{cylinders}.
 
-We then associate an \emph{affine map} to each parity word, which compresses the trajectory
-segment into a single linear-affine operation modulo a power of two (determined by the total
-number of divisions). This representation captures the multiplicative and additive effects 
-of the trajectory while abstracting away the starting integer, allowing reasoning at the 
-level of classes rather than individual numbers.
+This identification allows us to treat Collatz dynamics as a decomposition of the integers
+into nested cylinder families indexed by parity words. Minimal stopping-time conditions
+select a disjoint subfamily of cylinders whose measure governs the global distribution of
+convergent behavior.
 
-To control growth, we introduce an \emph{increment grammar} derived from the minimal total 
-number of divisions by two required for admissible parity words. This grammar encodes allowable 
-patterns of growth in these denominators. It will later underpin a canonical 
-\emph{horizontal-sum construction}, which enumerates convergent classes and controls their 
-combinatorial growth.
+To control the combinatorial proliferation of admissible parity words, we introduce an
+increment grammar encoding minimal 2-adic growth constraints. This grammar governs the
+structure of admissible cylinders and allows quantitative comparison between their
+combinatorial growth and their exponential measure decay.
 
-This perspective allows us to show that almost every positive integer eventually reaches
-an iterate strictly smaller than its initial value under iteration of the fully accelerated map \(f\),
-in the sense of natural density. While this framework does not exclude the logical possibility
-of zero-density exceptional trajectories, it provides a strong quantitative understanding of
-typical Collatz dynamics and highlights the combinatorial and arithmetic mechanisms that
-govern convergence for the vast majority of integers.
+Using this framework, we show that the total natural density of convergent cylinders is one.
+Equivalently, the complement of these cylinders has natural density zero. Thus almost
+every positive integer eventually attains a strictly smaller value under iteration of the
+Collatz map in the sense of natural density.
 
-\paragraph{Structure of the Paper.} 
-Section~\ref{sec:definitions} introduces stopping time, convergent segments, and residue
-classes. Section~\ref{sec:division-counts} defines parity words, total division counts,
-and their associated densities. Section~\ref{sec:grammar} develops the parity-word grammar
-and admissibility conditions, leading to affine representations of residue classes.
-Section~\ref{sec:increment-grammar} presents the increment grammar and horizontal-sum
-construction, which enumerates convergent classes and controls their combinatorial growth.
-Section~\ref{sec:cumulative-density} applies this machinery to establish vanishing density,
-while Section~\ref{sec:global-descent} completes the argument by proving global descent.
+While zero-density exceptional trajectories are not excluded, the results provide a
+structural and measure-theoretic description of typical Collatz dynamics via a canonical
+cylinder decomposition of the integers.
+
+\paragraph{Structure of the Paper.}
+\begin{itemize}
+\item Section~\ref{sec:definitions} introduces stopping time and the cylinder construction.
+\item Section~\ref{sec:division-counts} develops parity words and their affine encodings.
+\item Section~\ref{sec:grammar} establishes the increment grammar governing admissibility.
+\item Section~\ref{sec:increment-grammar} constructs the horizontal-sum enumeration of cylinders.
+\item Section~\ref{sec:linear-framework} establishes the finite-state linear structure of the horizontal-sum dynamics.
+\item Section~\ref{sec:cumulative-density} proves that the density of non-convergent integers vanishes.
+\item Section~\ref{sec:global-descent} completes the argument by establishing global descent in natural density.
+\end{itemize}
 
 
 \newpage
@@ -637,22 +644,35 @@ An admissible parity word $\omega = (d_0,\dots,d_{m-1})$ is said to be
 \end{define}
 
 \begin{remark}[Role of the Affine Term]
-The constant term $c(\omega)$ in the affine representation
+The constant $c(\omega)$ in the affine representation
 \[
-F_\omega(x) = \frac{3^m x + c(\omega)}{2^{d_0+\cdots+d_{m-1}}}
+F_\omega(x) = \frac{3^m x + c(\omega)}{2^{D(\omega)}}
 \]
-encodes the cumulative effect of the additive term inherited from the classical
-$3x+1$ map along the trajectory determined by $\omega$. Admissibility ensures
-that this affine map corresponds to genuine Collatz dynamics, mapping a nonempty
-arithmetic progression of integers to integers. Once admissibility is established,
-the condition
+encodes the cumulative contribution of the additive term in the classical
+$3x+1$ map along the trajectory determined by $\omega$.
+
+By the canonical choice of Appendix~\ref{app:canonical-c}, $c(\omega)$ satisfies
 \[
-\frac{3^m}{2^{d_0+\cdots+d_{m-1}}} < 1
+0 \le c(\omega) < 2^{D(\omega)},
 \]
-characterizes the asymptotic behavior of the map: the associated linear factor
-is \emph{contractive}. Thus, although the additive term affects the finite-scale
-behavior of individual trajectories, the criterion for convergence depends only
-on the multiplicative component of the affine map.
+and hence
+\[
+0 \le \frac{c(\omega)}{2^{D(\omega)}} < 1.
+\]
+
+Thus $F_\omega$ can be written in the form
+\[
+F_\omega(x) = \left(\frac{3^m}{2^{D(\omega)}}\right)x + \varepsilon_\omega,
+\quad 0 \le \varepsilon_\omega < 1.
+\]
+
+Thus the affine term contributes a uniformly bounded offset,
+while the multiplicative factor governs the asymptotic behavior of the map.
+In particular, the condition
+\[
+\frac{3^m}{2^{D(\omega)}} < 1
+\]
+ensures that $F_\omega(x) < x$ for all sufficiently large $x$.
 \end{remark}
 
 
@@ -716,6 +736,80 @@ coincides exactly with the result of applying the accelerated Collatz map
 through the $m$ iterates of the accelerated map $f$ encoded by $\omega$,
 including all intermediate divisions by two. Thus $F_\omega$ represents a
 compression of a finite Collatz trajectory into a single affine step.
+\end{remark}
+
+
+\subsection{Cylinder Structure and Bijection}
+\label{sec:cylinders}
+
+\begin{theorem}[Cylinder Representation of Parity Words]
+\label{thm:cylinder}
+Let $\omega$ be an admissible parity word of length $m$ with total division count $D(\omega)$.
+
+Then there exists a unique residue class
+\[
+r_\omega \pmod{2^{D(\omega)}}
+\]
+such that
+\[
+x \text{ realizes } \omega \iff x \equiv r_\omega \pmod{2^{D(\omega)}}.
+\]
+
+Equivalently, the set of all integers realizing $\omega$ is
+\[
+C_\omega = \{ r_\omega + k \cdot 2^{D(\omega)} : k \in \mathbb{N}_0 \}.
+\]
+
+In particular, $C_\omega$ is infinite and has density $2^{-D(\omega)}$
+within $\mathbb{N}$.
+\end{theorem}
+
+\begin{proof}
+From the affine representation,
+\[
+F_\omega(x) = \frac{3^m x + c(\omega)}{2^{D(\omega)}},
+\]
+integrality is equivalent to
+\[
+3^m x + c(\omega) \equiv 0 \pmod{2^{D(\omega)}}.
+\]
+
+Since $3^m$ is odd, it is invertible modulo $2^{D(\omega)}$, yielding
+\[
+x \equiv -c(\omega) \cdot (3^m)^{-1} \pmod{2^{D(\omega)}}.
+\]
+
+This determines a unique residue class.
+
+Conversely, any $x$ in this class satisfies the integrality condition,
+and therefore realizes the parity word $\omega$.
+
+Thus admissible parity words are in one-to-one correspondence with the residue
+classes they induce.
+\end{proof}
+
+\begin{remark}[Non-emptiness is constructive]
+The residue representative $r_\omega$ can be computed explicitly via
+\[
+r_\omega \equiv -c(\omega)\cdot (3^m)^{-1} \pmod{2^{D(\omega)}},
+\]
+which provides a direct construction of integers realizing $\omega$.
+\end{remark}
+
+\begin{remark}[Uniform Spacing of Realizations]
+\label{rem:spacing}
+All integers realizing a parity word $\omega$ are separated by exactly
+\[
+2^{D(\omega)}.
+\]
+This explains the regular spacing observed in computational data and
+the repetition of parity words across intervals of length $3 \cdot 2^n$.
+\end{remark}
+
+\begin{remark}[Enumeration of Admissible Words]
+The number of distinct admissible parity words with fixed total division
+count corresponds to \OEIS{A186009}. Each such word defines a distinct
+cylinder of density $2^{-D(\omega)}$, and these cylinders are disjoint.
 \end{remark}
 
 \begin{lemma}[Convergent Residue Class]
@@ -991,7 +1085,7 @@ the bound $\rho_5<3$ used in Theorem~\ref{thm:maximal-growth}.
 
 \begin{remark}[Roadmap]
 In this section we combine the constructions developed in Sections~\ref{sec:grammar}
-and~\ref{sec:increment-grammar} to analyze the asymptotic density of convergent residue
+and~\ref{sec:increment-grammar} to analyze the natural density of convergent residue
 classes. First, we record the number of admissible residue classes of stopping time
 \(i\) via the sequence \(\widetilde A(i) = A186009(i+1)\) and the associated minimal
 denominator growth \(B(i) = A020914(i)\). Then, using uniform bounds on \(2^{B(i)}\)
@@ -1000,6 +1094,19 @@ that the per-step growth of \(\widetilde A(i)\) is strictly dominated by the den
 Finally, this establishes that the density contribution of newly appearing convergent
 residue classes vanishes as \(i\to\infty\), implying that almost every positive integer
 belongs to at least one convergent residue class.
+\end{remark}
+
+\begin{remark}[Cylindrical Interpretation of Density]
+By Theorem~\ref{thm:cylinder}, each admissible parity word $\omega$
+corresponds to a cylinder
+\[
+C_\omega = \{x \equiv r_\omega \pmod{2^{D(\omega)}}\}
+\]
+of natural density $2^{-D(\omega)}$.
+
+Thus the cumulative density analysis in this section may be interpreted
+as the study of a disjoint family of cylinders, whose total measure is
+given by the sum of their individual densities.
 \end{remark}
 
 
@@ -1015,7 +1122,15 @@ Let
 \[
 B(i) := A020914(i),
 \]
-so that the density contribution of convergent residue classes of stopping time $i$ is
+
+Thus the density contribution of convergent residue classes of stopping time $i$
+is the total measure of the corresponding cylinders:
+\[
+\sum_{\omega:\,|\omega|=i} 2^{-D(\omega)}.
+\]
+
+For minimal stopping time classes, all such words satisfy
+$D(\omega)=B(i)$, and hence this reduces to
 \[
 \widetilde A(i)\, 2^{-B(i)}.
 \]
@@ -1092,7 +1207,13 @@ For each $i \ge 0$, the residue classes counted by
 \widetilde A(i) = A186009(i+1)
 \]
 correspond to congruence classes of \emph{minimal stopping time} $i$ and are pairwise disjoint.  
-Moreover, no positive integer belongs to two distinct minimal stopping-time classes.
+
+Distinct admissible parity words of length $i$ yield distinct cylinders
+modulo $2^{B(i)}$ (Theorem~\ref{thm:cylinder}). Since these cylinders are
+disjoint residue classes, their associated sets of integers are disjoint.
+
+Minimality of the stopping time ensures that no integer in such a cylinder
+belongs to a cylinder of shorter length, completing the argument.
 \end{lemma}
 
 \begin{proof}
@@ -1266,6 +1387,13 @@ Since $\rho_5/3<1$, the right-hand side is a geometric sequence with ratio
 less than $1$, and therefore the series converges.
 \end{proof}
 
+\begin{lemma}[Full Density from Summable Complement]
+\label{lem:full-density}
+If a disjoint family of sets has total measure given by a convergent series,
+then the complement of their union has density zero. Consequently, the union
+has natural density one.
+\end{lemma}
+
 Because the density contributions form a convergent series
 (Lemma~\ref{lem:summable-density}), the tail of the series can be made
 arbitrarily small. Hence for any $\epsilon>0$, there exists $i_0$ such that
@@ -1273,14 +1401,23 @@ arbitrarily small. Hence for any $\epsilon>0$, there exists $i_0$ such that
 \sum_{i \ge i_0} \widetilde A(i)\,2^{-B(i)} < \epsilon.
 \]
 
-In other words, the set of positive integers that fail to belong to any residue
-class of minimal stopping time has asymptotic density zero. By the descent properties
-established in Section~\ref{sec:grammar}, membership in such a class implies eventual
-decrease under the map.
+In other words, the set of positive integers that fail to belong to any convergent cylinder
+has natural density zero. By the descent properties established in Section~\ref{sec:grammar},
+membership in such a class implies eventual decrease under the map.
 
-Equivalently, almost every positive integer lies in at least one convergent residue
-class with respect to natural density, showing that convergent behavior dominates
-the Collatz map in a measure-theoretic sense.
+Thus the family of convergent cylinders forms a disjoint collection whose
+total measure is
+\[
+\sum_{i=0}^{\infty} \widetilde A(i)\,2^{-B(i)} < \infty.
+\]
+
+By Lemma~\ref{lem:summable-density}, the total measure of the disjoint
+family of convergent cylinders is finite. Applying
+Lemma~\ref{lem:full-density}, it follows that the complement
+— the set of integers that do not lie in any convergent cylinder —
+has natural density zero.
+
+Equivalently, the union of all convergent cylinders has density one.
 
 \paragraph{Remark on growth bounds.}
 The preceding argument is purely measure-theoretic and does not rely on lower
@@ -1298,16 +1435,21 @@ argument and is developed separately in Appendix~\ref{app:A047749-lower-bound}.
 
 \subsection{Descent Words and Partition of the Descending Set}
 
+\begin{remark}[Cylindrical identification]
+We identify each residue class \(R_\omega\) with its corresponding cylinder \(C_\omega\), i.e.
+\(C_\omega := R_\omega\).
+\end{remark}
+
 \begin{remark}[Minimal Descent Indexing]
 Minimal descent is defined with respect to $m$, i.e., the first time
-an accelerated iterate satisfies $f^m(x) < x$.
-All residue classes $R_\omega$ in this section are indexed by $m$,
-so summations over $\mathcal{W}_{\min}$ correctly account for density.
+an accelerated iterate satisfies $f^m(x) < x$. All cylinders $C_\omega$ in
+this section are indexed by $m$, so summations over $\mathcal{W}_{\min}$
+correctly account for density.
 \end{remark}
 
 \begin{define}[Descent Word]
 An admissible parity word $\omega$ of length $m$ is called a \emph{descent word} if
-for all integers $x$ in its associated residue class $R_\omega$,
+for all integers $x$ in its associated cylinder $C_\omega$,
 \[
 F_\omega(x) < x.
 \]
@@ -1322,7 +1464,7 @@ is itself a descent word.
 \label{lem:prefix-descent}
 If $\omega$ is a descent word and $\eta$ is any extension of $\omega$
 (i.e.\ $\eta = \omega \star \tau$ for some nonempty suffix $\tau$),
-then the residue class $R_\eta$ is a subset of $R_\omega$.
+then the cylinder $C_\eta$ is a subset of $C_\omega$.
 Consequently, all integers realizing $\eta$ have already descended
 at the prefix stage $\omega$.
 
@@ -1331,7 +1473,7 @@ at the prefix stage $\omega$.
 
 \begin{proof}
 Any integer $x$ realizing $\eta$ realizes $\omega$ during its first $|\omega| = m$
-accelerated iterations. Thus $x \in R_\omega$, so $R_\eta \subseteq R_\omega$.
+accelerated iterations. Thus $x \in C_\omega$, so $C_\eta \subseteq C_\omega$.
 Since $\omega$ is a descent word, $F_\omega(x) < x$, and descent occurs
 before the suffix $\tau$ is applied.
 \end{proof}
@@ -1344,18 +1486,18 @@ Let $\mathcal{W}_{\min}$ denote the set of minimal descent words. Then:
 \item \textbf{Uniqueness.}  
 Every integer $x$ that eventually descends (i.e., there exists a finite $m$ such
 that $f^m(x)<x$ under the accelerated map) admits a unique minimal descent word
-$\omega \in \mathcal{W}_{\min}$ such that $x \in R_\omega$.
+$\omega \in \mathcal{W}_{\min}$ such that $x \in C_\omega$.
 
 \item \textbf{Disjointness.}  
 If $\omega_1, \omega_2 \in \mathcal{W}_{\min}$ with $\omega_1 \neq \omega_2$, then
 \[
-R_{\omega_1} \cap R_{\omega_2} = \varnothing.
+C_{\omega_1} \cap C_{\omega_2} = \varnothing.
 \]
 
 \item \textbf{Exhaustion.}  
 The set of all integers that ever descend equals
 \[
-\bigcup_{\omega \in \mathcal{W}_{\min}} R_\omega.
+\bigcup_{\omega \in \mathcal{W}_{\min}} C_\omega.
 \]
 \end{enumerate}
 \end{theorem}
@@ -1365,7 +1507,7 @@ The set of all integers that ever descend equals
 The parity word of length $m$ realized by $x$ is a descent word, and no
 shorter prefix can be, so it is minimal.
 
-(2) If $x \in R_{\omega_1} \cap R_{\omega_2}$, then $x$ realizes both parity
+(2) If $x \in C_{\omega_1} \cap C_{\omega_2}$, then $x$ realizes both parity
 words, so their realized parity sequences agree up to the minimum of their lengths.
 Minimality forces $\omega_1 = \omega_2$.
 
@@ -1375,11 +1517,11 @@ Lemma~\ref{lem:prefix-descent} ensures extensions produce no new elements.
 
 \begin{corollary}[No Overcounting of Density]
 \label{cor:no-overcount}
-The residue classes $R_\omega$ for $\omega \in \mathcal{W}_{\min}$ are pairwise
+The residue classes $C_\omega$ for $\omega \in \mathcal{W}_{\min}$ are pairwise
 disjoint. Hence
 \[
-\mu\!\left(\bigcup_{\omega\in\mathcal{W}_{\min}} R_\omega\right)
-= \sum_{\omega\in\mathcal{W}_{\min}} \mu(R_\omega),
+\mu\!\left(\bigcup_{\omega\in\mathcal{W}_{\min}} C_\omega\right)
+= \sum_{\omega\in\mathcal{W}_{\min}} \mu(C_\omega),
 \]
 and extensions of descent words contribute no additional density.
 
@@ -1389,11 +1531,11 @@ $\mathcal{W}_{\min}$ correctly accounts for the total density.}
 \end{corollary}
 
 
-\subsection{Asymptotic Global Descent of Almost Every Integer}
+\subsection{Natural Global Descent of Almost Every Integer}
 
-\begin{theorem}[Asymptotic Global Descent]
-\label{thm:asymptotic-descent}
-The union of convergent residue classes has asymptotic density one. Consequently,
+\begin{theorem}[Natural Global Descent]
+\label{thm:natural-descent}
+The union of all convergent cylinders has natural density one. Consequently,
 almost every positive integer eventually reaches a smaller value under iteration
 of the accelerated Collatz map, in the sense of natural density.
 \end{theorem}
@@ -1406,24 +1548,22 @@ of $2$ at level $i$. By Theorem~\ref{thm:maximal-growth}, we have
 \frac{\widetilde A(i)}{2^{B(i)}} \longrightarrow 0 \quad \text{as } i \to \infty.
 \]
 
-By construction, each residue class consists of integers that descend after finitely many
-accelerated iterations. Lemma~\ref{lem:summable-density} shows that the density
-contributions of convergent residue classes are summable, and hence that the cumulative
-density of all such classes converges. Since these classes partition the integers up to a
-null set, this limit must equal one. Therefore the set of integers not contained in any
-convergent residue class has asymptotic density zero.
+By Section~\ref{sec:cumulative-density}, the union of all convergent
+cylinders has natural density one. Equivalently, the set of integers
+that do not lie in any convergent cylinder has density zero.
 
-Therefore, for almost every positive integer $x$ (in the sense of natural density),
-there exists a finite $m$ such that
+Each convergent cylinder consists entirely of integers that admit a finite
+descent time under the accelerated map.. Therefore, for almost every
+positive integer $x$ (in the sense of natural density), there exists a
+finite $m$ such that
 \[
-f^m(x) < x,
+f^m(x) < x.
 \]
-where $f$ denotes the accelerated Collatz map.
 \end{proof}
 
 \begin{remark}[Exceptional Orbits]
 This theorem does not preclude the existence of exceptional trajectories outside
-the convergent residue classes. Any such set must have asymptotic density zero, 
+the convergent residue classes. Any such set must have natural density zero, 
 so the result establishes descent in a measure-theoretic sense rather than an absolute guarantee.
 \end{remark}
 
@@ -1433,36 +1573,37 @@ so the result establishes descent in a measure-theoretic sense rather than an ab
 The density result established above does not exclude the logical possibility of
 non-convergent Collatz trajectories. However, it severely restricts the form that
 any such trajectory could take. In particular, any exceptional set must lie entirely
-outside the union of convergent residue classes whose cumulative asymptotic density
-approaches one, confining any hypothetical exception to a set of asymptotic density zero.
+outside the union of convergent cylinders whose cumulative natural density
+approaches one, confining any hypothetical exception to a set of natural density zero.
 
-Consequently, an exceptional trajectory could not belong to any of the residue-class
+Consequently, an exceptional trajectory could not belong to any cylinder
 families constructed in the preceding sections, nor arise from the structured parity
-patterns that generate those classes. Any trajectory avoiding all convergent residue
-classes would also avoid all patterns admissible under the increment grammar, highlighting
-the structural rigidity imposed by the combinatorial framework.
+patterns that generate those classes. Any trajectory avoiding all convergent cylinders
+would lie outside all density-generating patterns admitted by the increment grammar,
+and hence outside the symbolic structures responsible for positive-density behavior.
 
-In this sense, any hypothetical exception would be \emph{dynamically isolated}: it would
-not be supported by a scalable arithmetic structure or by a residue-class hierarchy of
-positive density, but would instead persist only as a sparse, non-propagating phenomenon
-within the integer space.
+In this sense, any hypothetical exception would be \emph{dynamically isolated within
+a set of zero natural density}.  It would not be supported by a scalable arithmetic
+structure or by a cylinder hierarchy of positive density, but would instead persist
+only as a sparse, non-propagating phenomenon within the integer space.
 
 
 \newpage
 \section{Conclusion}
 
-In this work, we have analyzed the Collatz map via a structural decomposition
-of the positive integers into non-overlapping residue classes determined by
-finite parity patterns, each associated with a minimal stopping time. By enumerating
-convergent parity words and controlling the maximal admissible growth rate relative
-to the corresponding powers of two, we rigorously demonstrated that the cumulative
-density of convergent classes approaches one.
+In this work, we analyzed the Collatz map via a decomposition of the positive integers
+into disjoint cylinders determined by finite parity words. Each cylinder corresponds to
+a minimal stopping-time structure, and its density is determined by the associated
+exponent growth function $B(i)$. By enumerating admissible parity words and comparing
+their combinatorial growth against powers of two, we showed that the cumulative density
+of all convergent classes is one. Equivalently, the complement of the union of these
+cylinders has natural density zero.
 
 The analysis is further sharpened by showing that descent behavior admits a canonical
 minimal description: integers that eventually descend are partitioned into disjoint
-residue classes indexed by minimal descent words, and longer admissible parity patterns
-introduce no additional density. This reduces the global problem to a non-redundant
-symbolic skeleton governing all density-carrying trajectories.
+cylinders indexed by minimal descent words, and longer admissible parity patterns
+introduce no additional density. This reduces the global analysis to a non-redundant
+symbolic decomposition of all positive-density trajectories.
 
 This density-based approach establishes that almost every positive integer eventually
 reaches a strictly smaller value under the accelerated Collatz map. While the argument
@@ -1470,8 +1611,8 @@ does not preclude zero-density exceptional trajectories, it provides a strong
 measure-theoretic framework for understanding the typical dynamics of the map.
 
 Viewed abstractly, this perspective reframes the Collatz problem as an analysis of
-integer lattices partitioned by arithmetic residue classes, highlighting how parity-
-and residue-based combinatorial structures govern discrete dynamical systems. It
+integer lattices partitioned by arithmetic cylinders, highlighting how parity-
+and cylinder-based combinatorial structures govern discrete dynamical systems. It
 emphasizes the distinction between “almost all” and “all,” yielding a credible,
 rigorous statement fully consistent with the density analysis.
 
@@ -1489,7 +1630,7 @@ F_\omega(x) = \frac{3^m x + c(\omega)}{2^{D(\omega)}}, \qquad D(\omega) = d_0 + 
 where \(c(\omega)\) is uniquely defined modulo \(2^{D(\omega)}\). In this appendix,
 we describe a canonical choice and a simple method to compute it.
 
-\subsection*{Canonical Choice}
+\subsection{Canonical Choice}
 
 For a fixed \(\omega\), any integer \(x\) in the corresponding residue class satisfies
 \[
@@ -1501,7 +1642,7 @@ We remove ambiguity by selecting the unique representative
 \]
 This choice depends only on \(\omega\) and is independent of the representative \(x\).
 
-\subsection*{Step-by-Step Computation}
+\subsection{Step-by-Step Computation}
 
 Given \(\omega\) of length \(m\) and total division count \(D(\omega)\):
 
@@ -1518,7 +1659,7 @@ F_\omega(x) = \frac{3^m x + c(\omega)}{2^{D(\omega)}} \in \mathbb{Z} \quad \text
 \]
 
 \newpage
-\subsection*{Example}
+\subsection{Example}
 
 Let \(\omega = (1,1,1,4)\) with \(m=4\) and \(D(\omega) = \sum_{i=0}^{3} d_i = 1 + 1 + 1 + 4 = 7\):
 
@@ -1548,6 +1689,106 @@ how the affine map is fully determined by the parity word \(\omega\).
 Since any two integers realizing the same parity word differ by a multiple of $2^{D(\omega)}$,
 the value of $c(\omega)$ computed by this procedure is independent of the chosen
 representative.
+
+
+\newpage
+\section{Reconstruction of Integers from a Parity Word}
+\label{app:reconstruction}
+
+\subsection{Inverse Cylinder Construction}
+
+Let $\omega = (d_0,\dots,d_{m-1})$ be an admissible parity word with total division count
+\[
+D(\omega) = \sum_{i=0}^{m-1} d_i.
+\]
+
+From Section~\ref{sec:grammar}, $\omega$ induces the affine map
+\[
+F_\omega(x) = \frac{3^m x + c(\omega)}{2^{D(\omega)}}.
+\]
+
+Admissibility implies the congruence condition
+\[
+3^m x + c(\omega) \equiv 0 \pmod{2^{D(\omega)}}.
+\]
+
+Since $3^m$ is invertible modulo $2^{D(\omega)}$, this yields the unique residue class
+\[
+x \equiv -c(\omega)\,(3^m)^{-1} \pmod{2^{D(\omega)}}.
+\]
+
+\subsection{Canonical Parametrization of the Cylinder}
+
+Let $r_\omega$ denote the canonical representative of this residue class in
+$\{0,1,\dots,2^{D(\omega)}-1\}$. Then all integers realizing $\omega$ are given by
+\[
+x(k) = r_\omega + k\cdot 2^{D(\omega)}, \quad k \in \mathbb{N}_0.
+\]
+
+\subsection{Affine Reconstruction Form}
+
+Applying $F_\omega$ to $x(k)$ yields
+\[
+F_\omega(x(k))
+= \frac{3^m (r_\omega + k2^{D(\omega)}) + c(\omega)}{2^{D(\omega)}}.
+\]
+
+Expanding,
+\[
+F_\omega(x(k))
+= k\cdot 3^m + \frac{3^m r_\omega + c(\omega)}{2^{D(\omega)}}.
+\]
+
+Define the constant
+\[
+K_\omega := \frac{3^m r_\omega + c(\omega)}{2^{D(\omega)}}.
+\]
+
+Then the affine form becomes
+\[
+F_\omega(x(k)) = k\cdot 3^m + K_\omega.
+\]
+
+\subsection{Interpretation}
+
+Thus each parity word induces a bijection between:
+\begin{itemize}
+\item integers in a residue class $x(k)$, and
+\item affine images of the form $k\cdot 3^m + K_\omega$.
+\end{itemize}
+
+This provides a complete inverse description of the parity-word cylinder.
+
+\subsection{Example}
+Solving the congruence
+\[
+3^4 x + 65 \equiv 0 \pmod{128}
+\]
+gives
+\[
+81x + 65 \equiv 0 \pmod{128}.
+\]
+
+Reducing $81 \equiv -47 \pmod{128}$, we obtain
+\[
+-47x + 65 \equiv 0 \pmod{128}
+\quad \Longrightarrow \quad
+47x \equiv 65 \pmod{128}.
+\]
+
+Since $47$ is invertible modulo $128$, with
+\[
+47^{-1} \equiv 79 \pmod{128},
+\]
+we multiply both sides to obtain
+\[
+x \equiv 79 \cdot 65 \equiv 15 \pmod{128}.
+\]
+
+Thus the parity word $\omega = (1,1,1,4)$ generates the residue class
+\[
+x = 15 + 128k, \quad k \in \mathbb{N}_0.
+\]
 
 
 \newpage
@@ -1920,7 +2161,6 @@ d,d,s & 329/123
 \end{array}
 \]
 
-% \newpage
 \paragraph{Example 2.}
 \[
 \begin{array}{l}
