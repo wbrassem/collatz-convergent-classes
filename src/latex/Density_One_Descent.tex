@@ -187,7 +187,7 @@ cylinder decomposition of the integers.
 
 \paragraph{Structure of the Paper.}
 \begin{itemize}
-\item Section~\ref{sec:definitions} introduces stopping time and the cylinder construction.
+\item Section~\ref{sec:definitions} introduces stopping time and residue class construction.
 \item Section~\ref{sec:division-counts} develops parity words and their affine encodings.
 \item Section~\ref{sec:grammar} establishes the increment grammar governing admissibility.
 \item Section~\ref{sec:increment-grammar} constructs the horizontal-sum enumeration of cylinders.
@@ -809,7 +809,6 @@ ensures that $F_\omega(x) < x$ for all sufficiently large $x$.
 \end{remark}
 
 
-\newpage
 \subsection{Residue Classes Induced by Parity Words}
 
 Fix a parity word $\omega = (d_0,\dots,d_{m-1})$ of length $m$ that is admissible
@@ -973,6 +972,13 @@ is obtained by solving the affine inequality \(F_\omega(x) < x\) for \(x\):
 \]
 This ensures that elements of the residue class indeed descend under the accelerated map.
 \end{remark}
+
+\begin{proposition}[Cylinder Density]
+For any admissible word $\omega$,
+\[
+\mu(C_\omega) = 2^{-D(\omega)}.
+\]
+\end{proposition}
 
 
 \newpage
@@ -1217,17 +1223,19 @@ residue classes vanishes as \(i\to\infty\), implying that almost every positive 
 belongs to at least one convergent residue class.
 \end{remark}
 
-\begin{remark}[Cylindrical Interpretation of Density]
+\begin{remark}[Cylinders as Measure Representatives]
 By Theorem~\ref{thm:cylinder}, each admissible parity word $\omega$
-corresponds to a cylinder
+corresponds to a residue class (cylinder)
 \[
 C_\omega = \{x \equiv r_\omega \pmod{2^{D(\omega)}}\}
 \]
 of natural density $2^{-D(\omega)}$.
 
-Thus the cumulative density analysis in this section may be interpreted
-as the study of a disjoint family of cylinders, whose total measure is
-given by the sum of their individual densities.
+In this section, cylinders serve only as a convenient representation
+of subsets of $\mathbb{N}$ with explicitly computable density.
+All structural and dynamical properties are determined by the
+admissible parity words and the increment grammar; cylinders
+enter only in the final measure-theoretic accounting.
 \end{remark}
 
 
@@ -1249,6 +1257,8 @@ is the total measure of the corresponding cylinders:
 \[
 \sum_{\omega:\,|\omega|=i} 2^{-D(\omega)}.
 \]
+That is, density is computed by summing the measures of the
+cylinders corresponding to admissible words of length $i$.
 
 For minimal stopping time classes, all such words satisfy
 $D(\omega)=B(i)$, and hence this reduces to
@@ -1495,11 +1505,18 @@ Since $\rho_5/3<1$, the right-hand side is a geometric sequence with ratio
 less than $1$, and therefore the series converges.
 \end{proof}
 
-\begin{lemma}[Full Density from Summable Complement]
+\begin{lemma}[Vanishing Tail Implies Full Density]
 \label{lem:full-density}
-If a disjoint family of sets has total measure given by a convergent series,
-then the complement of their union has density zero. Consequently, the union
-has natural density one.
+Let $\{E_i\}$ be a disjoint family of subsets of $\mathbb{N}$
+arising from minimal stopping-time classes, and suppose
+\[
+\sum_{i=0}^\infty \mu(E_i) < \infty.
+\]
+If the tail sums satisfy
+\[
+\lim_{N\to\infty} \sum_{i\ge N} \mu(E_i) = 0,
+\]
+then the complement of $\bigcup_i E_i$ has natural density zero.
 \end{lemma}
 
 Because the density contributions form a convergent series
@@ -1509,12 +1526,15 @@ arbitrarily small. Hence for any $\epsilon>0$, there exists $i_0$ such that
 \sum_{i \ge i_0} \widetilde A(i)\,2^{-B(i)} < \epsilon.
 \]
 
+Thus the hypotheses of Lemma~\ref{lem:full-density} are satisfied, and the complement
+of the union of convergent cylinders has natural density zero.
+
 In other words, the set of positive integers that fail to belong to any convergent cylinder
 has natural density zero. By the descent properties established in Section~\ref{sec:grammar},
 membership in such a class implies eventual decrease under the map.
 
 Thus the family of convergent cylinders forms a disjoint collection whose
-total measure is
+total measure is finite:
 \[
 \sum_{i=0}^{\infty} \widetilde A(i)\,2^{-B(i)} < \infty.
 \]
@@ -1537,11 +1557,38 @@ the exponential growth rate of \(\widetilde A(i)\) is bounded below by
 \(\sqrt{27/4}\). The derivation of this bound is independent of the density
 argument and is developed separately in Appendix~\ref{app:A047749-lower-bound}.
 
+We now reinterpret this full-density result in terms of descent dynamics.
 
+
+\newpage
 \section{Global Descent in Density}
 \label{sec:global-descent}
 
+We now translate the density-one result of Section~\ref{sec:cumulative-density}
+into a dynamical statement about descent under the accelerated Collatz map.
+
 \subsection{Descent Words and Partition of the Descending Set}
+
+\begin{theorem}[Natural Global Descent]
+\label{thm:natural-descent}
+The union of all convergent cylinders has natural density one. Each convergent
+cylinder consists entirely of integers that admit a finite descent time under
+the accelerated Collatz map. Consequently, almost every positive integer
+eventually reaches a smaller value under iteration of the accelerated Collatz
+map, in the sense of natural density.
+\end{theorem}
+
+\begin{proof}
+By Section~\ref{sec:cumulative-density}, the complement of the union of all
+convergent cylinders has natural density zero.
+
+Each convergent cylinder consists entirely of integers that admit a finite
+descent time under the accelerated map. Therefore, for almost every positive
+integer $x$ (in the sense of natural density), there exists a finite $m$ such that
+\[
+f^m(x) < x.
+\]
+\end{proof}
 
 \begin{remark}[Cylindrical identification]
 We identify each residue class \(R_\omega\) with its corresponding cylinder \(C_\omega\), i.e.
@@ -1640,34 +1687,6 @@ $\mathcal{W}_{\min}$ correctly accounts for the total density.}
 
 
 \subsection{Natural Global Descent of Almost Every Integer}
-
-\begin{theorem}[Natural Global Descent]
-\label{thm:natural-descent}
-The union of all convergent cylinders has natural density one. Consequently,
-almost every positive integer eventually reaches a smaller value under iteration
-of the accelerated Collatz map, in the sense of natural density.
-\end{theorem}
-
-\begin{proof}
-Let $\widetilde A(i) = A186009(i+1)$ denote the number of convergent residue classes
-of stopping time $i$ (accelerated map), and let $B(i) = A020914(i)$ denote the cumulative exponent
-of $2$ at level $i$. By Theorem~\ref{thm:maximal-growth}, we have
-\[
-\frac{\widetilde A(i)}{2^{B(i)}} \longrightarrow 0 \quad \text{as } i \to \infty.
-\]
-
-By Section~\ref{sec:cumulative-density}, the union of all convergent
-cylinders has natural density one. Equivalently, the set of integers
-that do not lie in any convergent cylinder has density zero.
-
-Each convergent cylinder consists entirely of integers that admit a finite
-descent time under the accelerated map.. Therefore, for almost every
-positive integer $x$ (in the sense of natural density), there exists a
-finite $m$ such that
-\[
-f^m(x) < x.
-\]
-\end{proof}
 
 \begin{remark}[Exceptional Orbits]
 This theorem does not preclude the existence of exceptional trajectories outside
