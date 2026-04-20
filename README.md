@@ -19,7 +19,7 @@ The official build uses `latexmk` for consistency.
 From the repository root, run:
 
 ```bash
-latexmk -pdf -interaction=nonstopmode -output-directory=build src/latex/Density_One_Descent.tex
+latexmk -pdf -interaction=nonstopmode -output-directory=build src/latex/Collatz_Density_One_Descent.tex
 ```
 
 ### VS Code Build Task (Alternative)
