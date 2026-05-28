@@ -587,22 +587,6 @@ If the realization sets of $\omega$ and $\omega'$ intersect, then one word
 is a prefix of the other.
 \end{lemma}
 
-% \begin{proof}
-% Every integer \(x\) determines a unique infinite valuation sequence
-% \[
-% (v_2(3x+1),\, v_2(3f(x)+1),\, v_2(3f^2(x)+1),\dots).
-% \]
-
-% If
-% \[
-% x \in C_\omega \cap C_{\omega'},
-% \]
-% then both \(\omega\) and \(\omega'\) must agree with the initial segment
-% of this valuation sequence.
-
-% Therefore the two words cannot diverge at any position before the shorter
-% word terminates. Hence one word is a prefix of the other.
-% \end{proof}
 \begin{proof}
 Every integer \(x\) determines a unique infinite valuation sequence
 \[
@@ -1064,65 +1048,118 @@ increments create new admissible branching directions within the forest.
 \label{sec:symbolic-growth}
 % ============================================================
 
-The admissible division words form a forest of rooted prefix trees
-(Section~\ref{sec:cylinders-structure}), indexed by admissible
-cylinders. Each node corresponds to a unique admissible division
-word, while depth corresponds to word length.
+The symbolic dynamics naturally separate into two interacting
+structures:
 
-We now study the combinatorial growth of this admissible forest.
+\begin{enumerate}
+\item the \emph{survivor forest}, consisting of cylinders whose
+prefix trajectories remain strictly below the Beatty contraction
+boundary, and
+
+\item the \emph{first-passage forest}, consisting of cylinders that
+reach the contraction boundary for the first time at a specified depth.
+\end{enumerate}
+
+The survivor forest evolves by successive refinement of admissible
+prefixes, while the first-passage forest records the first entry of
+surviving trajectories into the contractive regime.
+
+Throughout this section, we study the combinatorial growth of the
+first-passage forest.
+
 Let
 \[
 N(m)
 \]
-denote the total number of admissible division words of length \(m\),
-equivalently the total number of nodes at depth \(m\) across all
-trees in the forest. By construction,
+denote the number of first-passage division words of length \(m\),
+equivalently the number of contractive cylinders created at depth
+\(m\). By the first-passage characterization of admissible words,
 \[
 N(m)=A186009(m+1).
 \]
 
 % ------------------------------------------------------------
+\subsection{Survivor refinement and first-passage decomposition}
+
+For each depth \(m\), let
+\[
+S_m
+\]
+denote the set of integers whose symbolic trajectories remain
+admissible through depth \(m\), equivalently, whose prefix sums
+remain strictly below the Beatty boundary at all intermediate depths.
+Thus
+\[
+S_{m+1}\subseteq S_m.
+\]
+
+\begin{remark}
+The symbolic dynamics therefore define a filtration of the odd
+integers by nested survivor sets together with successive escape
+layers:
+\[
+S_1 \supseteq S_2 \supseteq S_3 \supseteq \cdots.
+\]
+
+At each depth, surviving cylinders either:
+\begin{itemize}
+\item refine into deeper survivor cylinders, or
+\item exit into the first-passage forest.
+\end{itemize}
+\end{remark}
+
+% ------------------------------------------------------------
 \subsection{Cylinder concatenation principle}
 
-Admissible words concatenate only when their associated cylinders are compatible. More 
-precisely, if $\omega$ and $\eta$ are admissible words of lengths $m$ and $n$, then any
-admissible extension corresponding to a word of length $m+n$ must lie in
+Surviving symbolic branches concatenate only when their associated
+cylinders are compatible.
+
+More precisely, let \(\omega\) and \(\eta\) be surviving division
+words of lengths \(m\) and \(n\). Any surviving extension of total
+length \(m+n\) must lie in
 \[
 C_\omega \cap f^{-m}(C_\eta),
 \]
-where $f^{-m}$ denotes the backward symbolic shift induced by the valuation dynamics.
-By the prefix nesting property of cylinders, this intersection is either empty or a
-single refined cylinder determined by a unique admissible extension of $\omega$.  Thus
-concatenation produces at most finitely many admissible extensions, with uniform branching
-control independent of depth.
+where \(f^{-m}\) denotes the backward symbolic shift induced by the
+valuation dynamics.
+
+By the prefix-nesting property of cylinders, this intersection is
+either empty or a single refined cylinder determined by a unique
+surviving extension of \(\omega\).
+
+Consequently, refinement of survivor cylinders produces only finitely
+many admissible continuations, with branching uniformly controlled
+independently of depth.
 
 % ------------------------------------------------------------
 \subsection{Submultiplicative growth}
 
 \begin{lemma}[Submultiplicative Growth]
-There exists $C>0$ such that
+There exists \(C>0\) such that
 \[
 N(m+n)\le C\,N(m)N(n).
 \]
 \end{lemma}
 
 \begin{proof}
-Each admissible word of length $m+n$ determines uniquely:
+Each first-passage word of length \(m+n\) determines uniquely:
 \begin{itemize}
-\item a prefix of length $m$, and
-\item a compatible extension of length $n$.
+\item a surviving prefix of length \(m\), and
+\item a compatible continuation of length \(n\) leading to first passage.
 \end{itemize}
 
-By the cylinder structure, every prefix corresponds to a residue class modulo
-$2^{D(\omega)}$, and extensions are determined by refinement of this class under
-additional Beatty constraints.
+By the cylinder structure, every surviving prefix corresponds to a
+residue class modulo \(2^{D(\omega)}\), and subsequent continuations
+arise only through compatible refinements of this class.
 
-Since each cylinder splits into only finitely many admissible refinements
-(controlled by the jump/propagation structure of $B(n)$), the number of extensions
-per prefix is uniformly bounded.
+The jump/propagation structure of the Beatty boundary \(B(n)\)
+permits only finitely many admissible refinements at each stage.
+Hence the number of compatible continuations per surviving cylinder
+is uniformly bounded independently of depth.
 
-Thus the number of length-$m+n$ words is at most a constant times the product
-of counts at levels $m$ and $n$.
+Therefore the total number of first-passage words of length \(m+n\)
+is bounded by a constant multiple of the product of the counts at
+lengths \(m\) and \(n\).
 \end{proof}
 
 % ------------------------------------------------------------
@@ -1139,12 +1176,384 @@ is finite.
 \end{theorem}
 
 \begin{proof}
-Follows immediately from submultiplicativity via Fekete-type arguments.
+The result follows from submultiplicativity via standard
+Fekete-type arguments.
 \end{proof}
+
+% ------------------------------------------------------------
+\subsection{Entropy versus dyadic contraction}
+
+The quantity \(N(m)\) measures the combinatorial complexity of the
+first-passage forest at depth \(m\), while each first-passage
+cylinder carries dyadic density approximately
+\[
+2^{-D(\omega)}.
+\]
+
+For minimally contractive cylinders,
+\[
+D(\omega)\approx m\log_2 3,
+\]
+so a typical cylinder has density approximately
+\[
+3^{-m}.
+\]
+
+Thus the asymptotic behaviour of the symbolic dynamics is governed
+by the competition between:
+\begin{itemize}
+\item exponential branching growth in the number of surviving
+symbolic trajectories, and
+\item exponential dyadic contraction in cylinder density.
+\end{itemize}
+
+The spectral quantity \(\lambda\) measures the effective entropy
+production of the survivor forest. If this symbolic growth is
+dominated by dyadic contraction, then the total surviving density
+necessarily collapses under successive refinement.
+
+% ============================================================
+\section{Measure-Theoretic Collapse of the Surviving Forest}
+\label{sec:measure-collapse}
+% ============================================================
+
+The admissible forest constructed in the previous sections naturally
+induces a nested family of measurable subsets of the odd integers.
+These sets encode the integers whose symbolic trajectories remain
+admissible to increasing depths.
+
+The central question is whether the total density of surviving
+admissible cylinders persists indefinitely, or collapses under repeated
+refinement.
+
+% ------------------------------------------------------------
+\subsection{Surviving cylinder sets}
+
+\begin{definition}[Depth-$m$ surviving set]
+Let
+\[
+S_m
+:=
+\bigcup_{|\omega|=m} C_\omega,
+\]
+where the union ranges over all admissible division words of length \(m\).
+\end{definition}
+
+\begin{remark}
+The set \(S_m\) consists of all integers whose symbolic trajectory
+remains admissible through depth \(m\). Since admissible cylinders
+refine under word extension,
+\[
+S_{m+1}\subseteq S_m.
+\]
+Thus the surviving sets form a nested decreasing sequence.
+\end{remark}
+
+\subsection{First-passage layers}
+
+\begin{definition}[First-passage layer]
+Define the first-passage layer at depth \(m\) by
+\[
+F_m := S_m \setminus S_{m+1}.
+\]
+\end{definition}
+
+\begin{remark}
+The set \(F_m\) consists of integers whose symbolic trajectories
+remain admissible through depth \(m\), but fail admissibility
+at the next refinement step.
+\end{remark}
+
+\begin{lemma}[Disjoint survival decomposition]
+For every \(m\ge1\),
+\[
+S_m = F_m \sqcup S_{m+1},
+\]
+where \(\sqcup\) denotes disjoint union.
+\end{lemma}
+
+\begin{proof}
+By definition,
+\[
+F_m = S_m \setminus S_{m+1}.
+\]
+Hence every element of \(S_m\) either:
+\begin{itemize}
+\item survives to depth \(m+1\), or
+\item exits the survivor forest at depth \(m\).
+\end{itemize}
+
+These two possibilities are mutually exclusive, giving the disjoint decomposition.
+\end{proof}
+
+\begin{remark}[Conservation of symbolic mass]
+The decomposition
+\[
+S_m = F_m \sqcup S_{m+1}
+\]
+shows that symbolic refinement conserves total mass: cylinders are not
+destroyed under refinement, but redistributed between deeper survivor
+cylinders and first-passage escape cylinders.
+\end{remark}
+
+\begin{corollary}[Global first-passage decomposition]
+\label{cor:global-decomposition}
+The initial survivor set admits the disjoint decomposition
+\[
+S_1
+=
+\left(\bigsqcup_{m\ge1} F_m\right)
+\sqcup
+S_\infty,
+\]
+where
+\[
+S_\infty
+=
+\bigcap_{m\ge1} S_m
+\]
+is the infinite surviving set.
+\end{corollary}
+
+\begin{proof}
+Iterating the decomposition
+\[
+S_m = F_m \sqcup S_{m+1}
+\]
+gives
+\[
+S_1
+=
+F_1 \sqcup F_2 \sqcup \cdots \sqcup F_m \sqcup S_{m+1}.
+\]
+
+Passing to the limit \(m\to\infty\) yields
+\[
+S_1
+=
+\left(\bigsqcup_{m\ge1}F_m\right)
+\sqcup
+S_\infty.
+\qedhere
+\]
+\end{proof}
+
+\begin{remark}[Symbolic conservation law]
+The global decomposition shows that every surviving trajectory
+either:
+\begin{itemize}
+\item eventually exits into a first-passage layer, or
+\item survives indefinitely in \(S_\infty\).
+\end{itemize}
+
+No symbolic mass is lost or duplicated under refinement; it is
+partitioned disjointly between finite first-passage escape layers
+and the infinite surviving set.
+\end{remark}
+
+% ------------------------------------------------------------
+\subsection{Cylinder measure}
+
+\begin{definition}[Natural dyadic measure]
+Let \(C_\omega\) be a cylinder determined by a residue class modulo
+\(2^{D(\omega)}\). Define its measure by
+\[
+\mu(C_\omega)
+=
+2^{-D(\omega)}.
+\]
+\end{definition}
+
+\begin{remark}
+Since each admissible cylinder corresponds to a single residue class
+modulo \(2^{D(\omega)}\), its canonical dyadic weight is proportional
+to \(2^{-D(\omega)}\). Up to normalization of the odd integers, this
+coincides with the dyadic scaling above.
+\end{remark}
+
+\begin{lemma}[Disjointness at fixed depth]
+Distinct admissible cylinders of equal depth are disjoint.
+\end{lemma}
+
+\begin{proof}
+This follows from the prefix-nesting property established in
+Section~\ref{sec:cylinders-structure}.
+\end{proof}
+
+\begin{corollary}[Measure decomposition]
+For every \(m\),
+\[
+\mu(S_m)
+=
+\sum_{|\omega|=m}2^{-D(\omega)}.
+\]
+\end{corollary}
+
+\begin{remark}[Conservation under symbolic refinement]
+The first-passage decomposition partitions the initial surviving
+set into disjoint escape layers together with the infinite
+surviving set.
+
+Thus dyadic mass is neither created nor lost under refinement:
+it is redistributed between progressively finer symbolic layers.
+\end{remark}
+
+% ------------------------------------------------------------
+\subsection{Nested survival structure}
+
+\begin{definition}[Infinite surviving set]
+Define the infinite surviving set by
+\[
+S_\infty
+:=
+\bigcap_{m=1}^{\infty} S_m.
+\]
+\end{definition}
+
+\begin{remark}
+The set \(S_\infty\) consists of integers whose symbolic trajectories
+remain admissible at every depth, equivalently, integers which never
+exit the admissible forest under successive refinement.
+\end{remark}
+
+\begin{theorem}[Continuity of measure under nested refinement]
+\label{thm:nested-measure}
+Since
+\[
+S_{m+1}\subseteq S_m,
+\]
+the measures satisfy
+\[
+\mu(S_\infty)
+=
+\lim_{m\to\infty}\mu(S_m).
+\]
+\end{theorem}
+
+\begin{proof}
+This is the standard continuity property of measure for nested
+decreasing measurable sets.
+\end{proof}
+
+% ------------------------------------------------------------
+\subsection{Entropy versus dyadic contraction}
+
+The surviving mass at depth \(m\) is governed by two competing effects:
+
+\begin{enumerate}
+\item combinatorial growth in the number of admissible cylinders,
+\item dyadic decay in the measure of each cylinder.
+\end{enumerate}
+
+If \(N(m)\) denotes the number of admissible words of length \(m\),
+then formally
+\[
+\mu(S_m)
+=
+\sum_{|\omega|=m}2^{-D(\omega)}.
+\]
+
+For minimally contractive admissible words,
+\[
+D(\omega)\approx m\log_2 3,
+\]
+so individual cylinders have typical size
+\[
+2^{-D(\omega)}
+\approx
+3^{-m}.
+\]
+
+Meanwhile the number of admissible cylinders grows exponentially at rate
+\[
+\lambda
+=
+\limsup_{m\to\infty}N(m)^{1/m}.
+\]
+
+Consequently the surviving mass heuristically satisfies
+\[
+\mu(S_m)
+\approx
+\left(\frac{\lambda}{3}\right)^m.
+\]
+
+% ------------------------------------------------------------
+\subsection{Spectral collapse criterion}
+
+\begin{theorem}[Heuristic spectral collapse criterion]
+\label{thm:spectral-collapse}
+If
+\[
+\lambda < 3,
+\]
+then
+\[
+\mu(S_m)\to0.
+\]
+Consequently,
+\[
+\mu(S_\infty)=0.
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+The exponential growth of admissible cylinders is dominated by the
+dyadic decay of cylinder measure. Formally,
+\[
+\mu(S_m)
+=
+\sum_{|\omega|=m}2^{-D(\omega)}
+\lesssim
+N(m)\cdot 3^{-m}.
+\]
+
+If
+\[
+N(m)\lesssim \lambda^m
+\]
+with \(\lambda<3\), then
+\[
+\mu(S_m)\lesssim \left(\frac{\lambda}{3}\right)^m,
+\]
+which converges exponentially to zero.
+The conclusion follows from
+Theorem~\ref{thm:nested-measure}.
+\end{proof}
+
+\begin{remark}
+The remaining task is therefore reduced to obtaining sufficiently sharp
+spectral bounds on the admissible grammar to establish
+\[
+\lambda<3.
+\]
+
+This transforms the global density problem into a symbolic growth
+problem on the admissible forest.
+\end{remark}
+
+% ------------------------------------------------------------
+\subsection{Interpretation}
+
+The admissible forest therefore behaves as a symbolic filtration of the
+odd integers. Increasing depth imposes increasingly restrictive dyadic
+constraints, refining the integers into thinner admissible cylinders.
+
+The balance between:
+\begin{itemize}
+\item symbolic branching entropy, and
+\item dyadic cylinder contraction
+\end{itemize}
+determines whether positive density can survive indefinitely.
+
+If dyadic contraction dominates symbolic growth, then the total
+surviving density collapses to zero, leaving only a null exceptional
+set of eternally surviving trajectories.
 
 % ============================================================
 \section{Beatty Structure and Tower Decomposition of the Denominator}
 \label{sec:beatty-towers}
+% ============================================================
 
 The admissible grammar is controlled by the threshold sequence
 \[
