@@ -14,6 +14,8 @@
 \usepackage{mathalpha}
 
 % Tables
+\usepackage{array}
+\usepackage{siunitx}
 \usepackage{booktabs}
 \usepackage{afterpage}
 
@@ -38,6 +40,7 @@
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
 \newtheorem{example}[theorem]{Example}
 
 \theoremstyle{remark}
@@ -52,6 +55,7 @@
 \NewDocumentCommand{\setN}{}{\mathbb{N}}
 \NewDocumentCommand{\setZ}{}{\mathbb{Z}}
 \NewDocumentCommand{\setQ}{}{\mathbb{Q}}
+\newcommand{\chead}[1]{\multicolumn{1}{c}{#1}}
 
 % Document commands which provide hyperlinks to OEIS sequences referenced herein
 \NewDocumentCommand{\OEIS}{m}{\href{https://oeis.org/#1}{#1}}
@@ -616,7 +620,7 @@ Equal lengths force equality of the words.
 \label{sec:cylinders-structure}
 % ============================================================
 
-The admissible division-word grammar is naturally organized by
+The admissible division-word grammar is organized by
 2-adic residue classes. Rather than forming a single global tree,
 the system decomposes into a \emph{forest of prefix trees}, each
 rooted at a distinct residue class determined by the affine encoding.
@@ -860,8 +864,8 @@ of the chosen root.
 
 
 % ============================================================
-\section{Jump-Induced Admissible Grammar Expansion}
-\label{sec:jump-expansion}
+\section{Induced Admissible Grammar Expansion}
+\label{sec:induced-grammar-expansion}
 % ============================================================
 
 The prefix-tree structure of admissible cylinders induces a corresponding
@@ -1052,11 +1056,11 @@ The symbolic dynamics naturally separate into two interacting
 structures:
 
 \begin{enumerate}
-\item the \emph{survivor forest}, consisting of cylinders whose
+\item The \emph{survivor forest}, consisting of those cylinders whose
 prefix trajectories remain strictly below the Beatty contraction
 boundary, and
 
-\item the \emph{first-passage forest}, consisting of cylinders that
+\item The \emph{first-passage forest}, consisting of those cylinders that
 reach the contraction boundary for the first time at a specified depth.
 \end{enumerate}
 
@@ -1065,9 +1069,7 @@ prefixes, while the first-passage forest records the first entry of
 surviving trajectories into the contractive regime.
 
 Throughout this section, we study the combinatorial growth of the
-first-passage forest.
-
-Let
+first-passage forest.  Let
 \[
 N(m)
 \]
@@ -1079,7 +1081,7 @@ N(m)=A186009(m+1).
 \]
 
 % ------------------------------------------------------------
-\subsection{Survivor refinement and first-passage decomposition}
+\subsection{Survivor nesting and first-passage decomposition}
 
 For each depth \(m\), let
 \[
@@ -1213,7 +1215,7 @@ dominated by dyadic contraction, then the total surviving density
 necessarily collapses under successive refinement.
 
 % ============================================================
-\section{Measure-Theoretic Collapse of the Surviving Forest}
+\section{Measure Collapse of the Surviving Forest}
 \label{sec:measure-collapse}
 % ============================================================
 
@@ -1551,10 +1553,10 @@ surviving density collapses to zero, leaving only a null exceptional
 set of eternally surviving trajectories.
 
 % ============================================================
-\section{Extremal Growth via Sturmian Return Words}
+\section{Extremal Growth Sturmian Return Words}
 % ============================================================
 
-\subsection{Sturmian Structure of the Dyadic Threshold Sequence}
+\subsection{Dyadic Threshold Sequence Sturmian Structure}
 
 Let
 \[
@@ -1779,8 +1781,8 @@ periodic concatenation of $C_5$. Evaluating the local constants yields
 \end{proof}
 
 % ------------------------------------------------------------
-
 \subsection{Interpretation}
+% ------------------------------------------------------------
 
 The admissible grammar is therefore governed by a Sturmian shift with two
 primitive return words. Although both return words occur in all admissible
@@ -1791,6 +1793,917 @@ concatenations of these primitives and do not introduce new extremal growth.
 
 Consequently, the asymptotic growth is bounded by the 5-cycle envelope,
 which is itself strictly subcritical relative to 3.
+
+% ============================================================
+\section{Strumian Return Word Lags and Beatty Tower Structure}
+\label{sec:sturmian-return-lags}
+% ============================================================
+
+% Summary
+The numerator is the grammar evaluated at a two-step forward iterate of the
+Sturmian return map, while the denominator encodes the dyadic resolution at
+the current iterate. The resulting ratio measures a lagged mismatch between
+successive return-word partitions and dyadic cylinders.
+
+\begin{definition}[Induced Return-Time Function]
+Let $\mathcal{C}$ denote the collection of contractive residue classes.
+
+For a residue class $x$, define the induced return time
+
+\[
+\tau(x)
+=
+\min\{m\ge1:\ T^{m}(x)\in\mathcal{C}\},
+\]
+
+where $T$ denotes the Collatz map.
+
+For each $n\ge1$, let
+
+\[
+R(n)
+=
+\#\{x:\tau(x)=n\},
+\]
+
+the number of residue classes whose first return to the contractive
+grammar occurs after exactly $n$ steps.
+
+\end{definition}
+
+The denominator determines the dyadic resolution scale. The numerator
+counts the newly generated contractive cylinders at that scale.
+
+Both quantities are governed by the same Sturmian return-word hierarchy,
+with the numerator depending on a two-step delayed iterate of the same
+underlying coding. Consequently the ratio reflects the interaction of
+two observables generated by a common uniquely ergodic dynamical system.
+
+\begin{remark}[Observed Plateau Phenomenon]
+\label{rem:plateau}
+
+Extensive computations up to $n=80\,000$ indicate that the number of
+consecutive contributions required to span a dyadic interval stabilizes
+at approximately $12$--$13$ terms.
+
+Occurrences of $14$ terms are rare and appear only in the form
+\[
+12,\;14,\;12,
+\]
+suggesting that they arise from residual overlap between adjacent
+dyadic intervals rather than from a distinct asymptotic regime.
+
+Since both the numerator and denominator are generated by the same
+Sturmian return-word structure, it is natural to conjecture the
+existence of a limiting cocycle exponent
+\[
+\gamma_\infty,
+\]
+governing the asymptotic contraction rate of the ratio. If such a
+limit exists, the observed plateau would represent an invariant of the
+underlying dynamical system rather than a finite computational artifact.
+\end{remark}
+
+\begin{conjecture}[Plateau Stability and Dyadic Coverage]
+\label{conj:plateau}
+
+Let
+
+\[
+m_n
+=
+\frac{A186009(n+1)}
+     {2^{A020914(n)}}
+\]
+
+denote the mass contributed by the newly generated contractive
+cylinders at level \(n\).
+
+Assume there exists a limiting averaged growth exponent
+\(\gamma_\infty\) obtained from return-word averages along the
+Sturmian hierarchy, i.e.
+
+\[
+\gamma_\infty
+=
+\lim_{L\to\infty}
+\frac{1}{L}
+\log\!\left(
+\frac{m_{n+L}}{m_n}
+\right),
+\]
+
+where \(L\) ranges over convergent-denominator tower lengths.
+
+Then there exists a finite constant \(K\) such that for all
+sufficiently large dyadic levels \(r\), the collection of consecutive
+masses
+
+\[
+m_n,m_{n+1},\ldots,m_{n+K}
+\]
+
+associated with that dyadic scale spans the entire interval
+
+\[
+(2^{-(r+1)},\,2^{-r}],
+\]
+
+up to endpoints.
+
+Consequently, if the contractive cylinders form a lossless,
+non-overlapping partition of the covered space, then the cumulative
+covered measure converges to
+
+\[
+\sum_{r=0}^{\infty} 2^{-r}
+=
+1.
+\]
+
+\end{conjecture}
+
+\begin{remark}[Heuristic Origin of the Plateau]
+\label{rem:plateau-heuristic}
+
+The empirical plateau phenomenon appears to arise from the fact that
+both the numerator and denominator of
+
+\[
+m_n
+=
+\frac{A186009(n+1)}
+     {2^{A020914(n)}}
+\]
+
+are governed by the same Sturmian return-word structure.
+
+The denominator growth is controlled directly by the Beatty sequence
+\(A020914\), while the numerator growth is governed by the same
+sequence through the lagged doubling rule appearing in the Pascal-tuple
+construction.
+
+As a consequence, tower lengths corresponding to continued-fraction
+convergents of \(\log_2 3\)
+
+\[
+5,\ 12,\ 41,\ 53,\ 306,\ 665,\ 15601,\ldots
+\]
+
+produce increasingly accurate return-word averages. Away from tower
+transitions these averages appear nearly constant, yielding an
+effective exponential decay rate
+
+\[
+m_{n+L}
+\approx
+e^{\gamma_\infty L} m_n.
+\]
+
+Empirically this induces a nearly fixed halving time of approximately
+12--13 terms. In rare situations residual overlap between adjacent
+dyadic intervals produces an apparent 14-term excursion, but these
+events do not appear to alter the underlying plateau.
+
+At present this mechanism remains heuristic. A proof would likely
+follow from establishing existence of the limiting return-word average
+\(\gamma_\infty\) together with quantitative control of fluctuations
+near convergent-denominator tower transitions.
+\end{remark}
+
+
+% ============================================================
+\section{Limiting Cocycle Growth Rate Existence}
+\label{sec:limiting-cocycle-growth}
+% ============================================================
+
+\subsection{Origins of the A186009 Cocycle Towers}
+\label{subsec:cocycle-origins}
+
+The cocycle tower structure observed throughout this work is not an ad hoc
+construction. Rather, it arises naturally from the continued-fraction
+decomposition of the irrational number $\log_2(3)$.
+
+\[
+[1;1,1,2,2,3,1,5,2,23,2,2,1,\ldots].
+\]
+
+Let $a_n$ denote the partial quotients of this continued fraction.
+The associated tower lengths are generated by the standard convergent
+recurrence
+\[
+C_n = a_n C_{n-1} + C_{n-2},
+\]
+
+with initial values
+\[
+C_0 = 0,
+\qquad
+C_1 = 1.
+\]
+
+The first cocycle towers generated by this recurrence are shown in
+Table~\ref{tab:cocycle-towers}.
+\begin{table}[h]
+\centering
+\caption{Cocycle towers generated by the continued-fraction expansion of $\log_2(3)$.}
+\label{tab:cocycle-towers}
+\begin{tabular}{c c l l}
+\hline
+Cocycle & Quotient & Recurrence & Interpretation \\
+\hline
+
+$C_0$       & 1  & -- & A186009 single \\
+
+$C_1$       & 1  & -- & A186009 double \\
+
+$C_2$       & 1  & $C_0 + 1 C_1$ & Single + Double \\
+
+$C_5$       & 2  & $2 C_2 + C_1$ & Expansive 5-cycle \\
+
+$C_{12}$    & 2  & $C_2 + 2 C_5$ & Contractive tower \\
+
+$C_{41}$    & 3  & $3 C_{12} + C_5$ & Expansive tower \\
+
+$C_{53}$    & 1  & $C_{12} + 1 C_{41}$ & Contractive tower \\
+
+$C_{306}$   & 5  & $5C_{53} + C_{41}$ & Expansive tower \\
+
+$C_{665}$   & 2  & $C_{53} + 2 C_{306}$ & Contractive tower \\
+
+$C_{15601}$ & 23 & $23 C_{665} + C_{306}$ & Expansive tower \\
+
+$C_{31867}$ & 2  & $C_{665} + 2 C_{15601}$ & Contractive tower \\
+
+$C_{79335}$ & 2  & $2 C_{31867} + C_{15601}$ & Expansive tower \\
+
+$C_{111202}$ & 1 & $C_{31867} + 1 C_{79335}$ & Contractive tower \\
+
+\hline
+\end{tabular}
+\end{table}
+
+The resulting tower sequence begins
+
+\[
+{0,1,2,5,12,41,53,306,665,15601,31867,79335,111202,\ldots}.
+\]
+
+These towers naturally separate into two families according to whether
+their associated induced growth remains below or above the limiting
+Sturmian slope.
+
+\[
+\text{Contractive cocycles: } {0,2,12,53,665,31867,111202,\ldots},
+\]
+
+\[
+\text{Expansive cocycles: } {1,5,41,306,15601,79335,\ldots}.
+\]
+
+The alternating appearance of contractive and expansive towers reflects
+the alternation of lower and upper convergents in the continued-fraction
+approximation of $\log_2(3)$.
+
+Consequently, all cocycles appearing in the subsequent analysis are
+structurally compelled by the arithmetic of the Sturmian slope itself.
+They are not introduced as auxiliary constructions, but arise inevitably
+from the convergent hierarchy associated with $\log_2(3)$.
+
+\subsection{Origins of Cocycle Tower Growth Rates}
+\label{subsec:cocycle-growth-rates}
+
+The numerical experiments of the preceding sections suggest that the growth of
+the numerator sequence $A186009(n)$ is governed by a limiting logarithmic
+growth rate.
+
+For a contractive tower length $L$, define
+
+\[
+\gamma_L = \frac{\log A186009(L)}{L}.
+\]
+
+Empirically, the sequence of tower values
+
+\[
+L \in {2,12,53,665,31867,111202,\ldots}
+\]
+
+produces a monotone increasing family of estimates
+
+\[
+0.34657, 0.74940, 0.93689, 1.02946, 1.04316, 1.04348, \ldots
+\]
+
+whose successive increments decrease rapidly.
+
+This behavior is consistent with the existence of a limiting exponent
+
+\[
+\gamma_\infty = \lim_{L\to\infty}\gamma_L,
+\]
+
+where the limit is taken over contractive tower lengths.
+
+The significance of the tower lengths is that they correspond to the
+best Sturmian approximations generated by the continued-fraction expansion
+of $\log_2(3)$. As the tower length increases, the corresponding cocycle
+becomes a progressively more faithful representation of the underlying
+Sturmian grammar, and the observed growth rates stabilize.
+
+More generally, for a cocycle of fixed length $c$, define
+
+\[
+\gamma_c(T) = \frac{ \log A186009(T+c) - \log A186009(T) }{c},
+\]
+
+evaluated at tower points $T$ for which the cocycle is admissible.
+
+Computations indicate that every fixed cocycle length possesses its own
+limiting exponent
+
+\[
+\gamma_c^\ast = \lim_{T\to\infty} \gamma_c(T),
+\]
+
+and that longer cocycles yield values increasingly close to
+$\gamma_\infty$.
+
+The contractive cocycles therefore appear to form an increasing family
+
+\[
+\gamma_2^\ast
+<
+\gamma_{12}^\ast
+<
+\gamma_{53}^\ast
+<
+\gamma_{665}^\ast
+<
+\cdots
+<
+\gamma_\infty.
+\]
+
+Although the existence of these limits remains conjectural, the observed
+behavior is precisely what one expects from successive refinements of a
+Sturmian return-word system.
+
+The crucial structural observation is that every admissible trajectory may
+be decomposed into a concatenation of cocycles. If a trajectory consists of
+segments of lengths
+\[
+c_1,c_2,\ldots,c_k,
+\]
+
+then its average logarithmic growth rate is
+\[
+\Gamma = \frac{\sum_{i=1}^{k} c_i \gamma_{c_i}}{\sum_{i=1}^{k} c_i},
+\]
+
+which is a weighted average of the constituent cocycle growth rates.
+
+Consequently, the growth rate of any admissible trajectory is controlled by
+the growth rates of the cocycles from which it is assembled.
+
+This becomes significant when combined with the exhaustive analysis of
+grammar-forbidden expansive $5$-cycle concatenations. Those calculations
+show that even an infinite concatenation of maximal expansive behavior grows
+more slowly than the corresponding dyadic denominator. Since such
+concatenations lie outside the admissible Sturmian grammar, every admissible
+trajectory must exhibit growth no greater than this already-bounded case.
+
+Thus the Sturmian grammar imposes a global constraint on numerator growth.
+Successive refinements of the return-word structure do not permit arbitrarily
+large increases in the average logarithmic growth rate; instead they produce
+progressively tighter bounds.
+
+This suggests the following conjectural picture.
+
+\begin{conjecture}[Limiting Cocycle Exponent]
+The Sturmian return-word grammar admits a limiting logarithmic growth rate
+$\gamma_\infty$ satisfying
+
+\[
+\gamma_c^\ast < \gamma_\infty
+\]
+
+for every finite contractive cocycle length $c$.
+
+Furthermore, every admissible trajectory possesses an average logarithmic
+growth rate bounded above by $\gamma_\infty$.
+\end{conjecture}
+
+Under this interpretation, the observed $12$--$13$ term plateau is not an
+isolated numerical phenomenon but rather a consequence of the bounded
+cocycle growth imposed by the Sturmian grammar. Once the average growth rate
+is constrained below the dyadic denominator, successive dyadic intervals are
+filled by a finite number of cocycle contributions, producing the persistent
+plateau observed throughout the computations.
+
+
+% ============================================================
+\section{Dyadic Plateau Emergence}
+\label{sec:dyadic-plateau-emergence}
+% ============================================================
+
+The existence of the asymptotic cocycle growth rate $\lambda_\infty$ (whether
+as an ordinary limit or a $\limsup$) has important consequences for the
+structure of the convergent forest. Since the denominator is governed by
+the Sturmian sequence generated by $\log_2(3)$, successive tower points
+provide increasingly accurate approximations to the ideal growth ratio $3^n$.
+At each tower, the minimal exponent $k$ satisfying $2^k>3^n$ becomes increasingly
+faithful to the true Sturmian slope.
+
+Table~\ref{tab:tower-fidelity} illustrates this phenomenon.
+
+\begin{table}[h]
+\centering
+\caption{Fidelity of the relation between powers of $2$ and powers of $3$ at the continued-fraction towers of $\log_2(3)$.}
+\label{tab:tower-fidelity}
+\begin{tabular}{r l l l}
+\hline
+Tower & $2^k$ & $3^n$ & $2^k/3^n$\\
+\hline
+2      & $8$ & $9$ & $0.88888889$\\
+12     & $5.24288\times10^5$ & $5.31441\times10^5$ & $0.98654037$\\
+53     & $\cdots$ & $\cdots$ & $0.99791405$\\
+665    & $\cdots$ & $\cdots$ & $0.99999274$\\
+31867  & $\cdots$ & $\cdots$ & $0.99995635$\\
+111202 & $\cdots$ & $\cdots$ & $0.99999640$\\
+\hline
+\end{tabular}
+\end{table}
+
+The average exponential growth rate of the numerator is defined by
+
+\[
+\lambda_n
+=
+\frac{\log A186009(n+1)}{n}.
+\]
+
+Consequently, the average multiplicative growth factor of the numerator is
+
+\[
+e^{\lambda_n}.
+\]
+
+At tower points the denominator grows arbitrarily close to the ideal factor $3$,
+so the relative mass retained from one residue class to the next is asymptotically
+
+\[
+r(n)
+=
+\frac{e^{\lambda_n}}{3}.
+\]
+
+Since $e^{\lambda_n}<3$, we have
+
+\[
+0<r(n)<1,
+\]
+
+and the available mass decreases geometrically as additional residue classes are accumulated.
+
+This naturally suggests defining a characteristic covering length. Let $P(n)$ denote
+the number of successive residue classes required for the available mass to decrease
+by one half, corresponding to the next dyadic interval. Thus $P(n)$ satisfies
+
+\[
+r(n)^{P(n)}
+=
+\frac12.
+\]
+
+Solving for $P(n)$ gives
+
+\[
+P(n)
+=
+\frac{\log(1/2)}
+{\log(r(n))}
+=
+\frac{\log(1/2)}
+{\log\!\left(e^{\lambda_n}/3\right)}.
+\]
+
+The quantity $P(n)$ therefore represents the characteristic dyadic covering length
+induced by the average cocycle growth rate.  Empirically, $P(n)$ evolves through the values
+
+\[
+0.92,\;
+1.98,\;
+4.29,\;
+10.02,\;
+12.50,\;
+12.57,\;
+\ldots
+\]
+
+at the successive contractive towers
+
+\[
+2,\;
+12,\;
+53,\;
+665,\;
+31867,\;
+111202,
+\]
+
+respectively.
+
+These values converge toward the experimentally observed plateau requiring
+approximately $12$--$13$ consecutive residue classes to span a new dyadic
+bracket. This agreement suggests that the plateau is not an independent temporal
+phenomenon, but rather a direct manifestation of the asymptotic cocycle growth rate.
+
+At present this relationship should be regarded as a heuristic consequence of
+the limiting cocycle dynamics. Nevertheless, it provides the first quantitative
+connection between the asymptotic growth rate $\lambda_\infty$ and the observed
+stabilization of dyadic coverage.
+
+% ------------------------------------------------------------
+\subsection{Dyadic Interval Growth Pressure}
+% ------------------------------------------------------------
+
+The characteristic covering length $P(n)$ introduced in the previous section is
+not the same quantity as the number of terms actually required to span the next
+dyadic interval. Rather, $P(n)$ represents the covering length that would be
+expected if the average compound growth rate of the numerator remained fixed at
+its current value.
+
+The actual dyadic covering length evolves dynamically. Early in the sequence the
+average growth rate of $A186009(n)$ is still developing, while the denominator is
+already governed by the Sturmian sequence induced by $\log_2(3)$. Consequently,
+the number of terms required to span each successive dyadic interval initially
+exceeds the covering length predicted by $P(n)$. This mismatch creates a persistent
+\emph{growth pressure}: additional terms must be accumulated before sufficient mass
+exists to cover the next dyadic bracket.
+
+This phenomenon is visible immediately.
+
+The first dyadic interval, representing the even integers, consists of the single contribution
+
+\[
+\frac12.
+\]
+
+Likewise, the second interval is represented by
+
+\[
+\frac14.
+\]
+
+In both cases the numerator has experienced no growth, $\lambda=0$, and a single term is sufficient to span the required dyadic mass.
+
+The first imbalance occurs when the denominator undergoes its initial Sturmian doubling before the numerator experiences its first tuple-doubling event. The denominator therefore advances from $2^2$ to $2^4$, while the numerator remains equal to $1$. The resulting contribution
+
+\[
+\frac1{16}
+\]
+
+is insufficient to cover the next dyadic interval of size $1/8$.
+
+At the following step the numerator finally doubles, producing the contribution
+
+\[
+\frac2{32}.
+\]
+
+Together,
+
+\[
+\frac1{16}+\frac2{32}
+=
+\frac18,
+\]
+
+and the required dyadic mass is recovered. The covering length has therefore increased from one term to two terms.
+
+The same mechanism repeats. The denominator again outpaces the current average numerator growth, producing the successive contributions
+
+\[
+\frac3{128},
+\qquad
+\frac7{256},
+\]
+
+whose combined mass still falls short of the next dyadic interval of size $1/16$. Only after adding the subsequent contribution
+
+\[
+\frac{12}{1024}
+\]
+
+is the interval completed. The covering length therefore increases once more, from two terms to three.
+
+This process continues throughout the early portion of the sequence. Because the average compound growth rate
+
+\[
+\lambda_n
+=
+\frac{\log A186009(n+1)}{n}
+\]
+
+is itself increasing, the equilibrium covering length $P(n)$ also increases. However, $P(n)$ consistently remains below the actual covering length, so upward pressure persists and additional terms continue to accumulate.
+
+Eventually the situation begins to change. Around the contractive tower at $n=53$, the average numerator growth has increased sufficiently that the covering process briefly requires fewer terms than expected. The observed covering lengths begin to fluctuate,
+
+\[
+1,\,
+1,\,
+2,\,
+3,\,
+4,\,
+5,\,
+6,\,
+7,\,
+8,\,
+9,\,
+8,\,
+9,\,
+10,\,
+9,\,
+10,\,
+10,\,
+11,\,
+10,\,
+\ldots,
+\]
+
+rather than increasing monotonically. The system has entered a transitional regime in which the increasing numerator growth begins to offset the fixed Sturmian denominator growth.
+
+This transition becomes even more pronounced at the larger contractive towers. At $n=665$,
+
+\[
+\lambda_{665}=1.02946,
+\qquad
+P(665)=10.0235,
+\]
+
+already placing the equilibrium covering length close to the experimentally observed value of approximately twelve terms.
+
+At the much larger towers,
+
+\[
+\lambda_{31867}=1.043155,
+\qquad
+P(31867)=12.4988,
+\]
+
+and
+
+\[
+\lambda_{111202}=1.043479,
+\qquad
+P(111202)=12.5722,
+\]
+
+the equilibrium covering length lies remarkably close to the empirical covering requirement of approximately $12$--$13$ terms per dyadic interval.
+
+This suggests the following interpretation. The increasing average cocycle growth rate continuously raises the equilibrium covering length $P(n)$, while the actual covering length attempts to follow it. Initially the equilibrium lies below the observed covering length, producing persistent upward pressure and requiring additional terms. As $\lambda_n$ approaches its asymptotic value, however, the equilibrium and observed covering lengths come into balance. The upward pressure disappears, and the covering process settles into the experimentally observed plateau of approximately twelve to thirteen terms per dyadic interval.
+
+
+Defining $\lambda_{\Delta} = \frac{\lambda_{H} - \lambda_{L}}{H-L}$, we can interpret the plateau as a manifestation of the limiting cocycle growth rate. As the average growth rate of the numerator approaches its asymptotic value, the number of terms required to span each dyadic interval stabilizes, reflecting the balance between numerator growth and denominator expansion.
+
+Defining $P_{\Delta}(n) = \frac{\log(1/2)}{\log(e^{\lambda_{\Delta}}/3)}$, we can interpret the plateau as a manifestation of the limiting cocycle growth rate. As the average growth rate of the numerator approaches its asymptotic value, the number of terms required to span each dyadic interval stabilizes, reflecting the balance between numerator growth and denominator expansion.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Covering Terms of Cocycle Towers.}
+\label{tab:cocycle-tower-growth}
+\begin{tabular}{
+S[table-format=6.0]
+S[table-format=6.0]
+S[table-format=6.6]
+S[table-format=6.6]
+S[table-format=1.6]
+S[table-format=2.5]
+c
+}
+\hline
+\chead{Low} &
+\chead{High} &
+\chead{$\lambda_L$} &
+\chead{$\lambda_H$} &
+\chead{$\lambda_\Delta$} &
+\chead{$P_\Delta$} &
+\chead{Range} \\
+\hline
+% Start: 0 (2-cycle)
+% Source: 0.00000000, 0.69314718, 1.94591015, 3.40119738
+   0 &     2 &  0.000000 &  0.693147 & 0.346574 &  0.92169 & 1-2 \\
+% Start: 2 (2-cycles in 5-cycle)
+% Source: 0.00000000, 0.69314718, 1.94591015, 3.40119738
+   2 &     4 &  0.693147 &  1.945910 & 0.626382 &  1.46781 & 2-3 \\
+   4 &     6 &  1.945910 &  3.401197 & 0.727644 &  1.86848 & 3 \\
+\hline
+% Start: 12 - 5 = 7 (2-cycles in 5-cycle)
+% Source: 4.44265126, 6.16541785, 7.88306865
+   7 &     9 &  4.442651 &  6.165418 & 0.861384 &  2.92185 & 4 \\
+   9 &    11 &  6.165418 &  7.883069 & 0.858826 &  2.89068 & 4-5 \\
+\hline
+% Start: 12 (12-cycles in 41-cycle)
+% Source: 8.99280606, 20.52510354, 32.44410124, 44.52830918
+  12 &    24 &  8.992806 & 20.525104 & 0.961025 &  5.03787 & 5-7 \\
+  24 &    36 & 20.525104 & 32.444101 & 0.993250 &  6.57869 & 7-8 \\
+  36 &    48 & 32.444101 & 44.528309 & 1.007017 &  7.56753 & 8-9 \\
+\hline
+% Start: 53 (53-cycles in 665-cycle)
+% Source: 49.65527437, 103.93979383, 158.64602485, 213.52648258, 268.50276979, 323.53980107
+  53 &   106 &  49.655274 & 103.93979 & 1.024236 &  9.31948 & 9-11 \\
+ 106 &   159 & 103.93979  & 158.64602 & 1.032193 & 10.43594 & 10-11 \\
+ 159 &   212 & 158.64602  & 213.52648 & 1.035480 & 10.97935 & 11-12 \\
+ 212 &   265 & 213.52648  & 268.50277 & 1.037288 & 11.30307 & 11-12 \\
+ 265 &   318 & 268.50277  & 323.53980 & 1.038435 & 11.51833 & 11-12 \\
+\hline
+% Start: 665 - 306 = 359 (53-cycles in 306-cycle)
+% Source: 366.16141709, 421.26620748, 476.39514338, 531.54339744, 586.70728063, 641.88404414
+ 359 &   412 & 366.16142 & 421.26621 & 1.039713 & 11.76835 & 11-12 \\
+ 412 &   465 & 421.26621 & 476.39514 & 1.040168 & 11.86006 & 12 \\
+ 465 &   518 & 476.39514 & 531.54340 & 1.040533 & 11.93454 & 11-12 \\
+ 518 &   571 & 531.54340 & 586.70728 & 1.040828 & 11.99541 & 12 \\
+ 571 &   624 & 586.70728 & 641.88404 & 1.041071 & 12.04607 & 12-13 \\
+\hline
+% Start: 665 (665-cycles in 31867-cycle)
+% Source: 684.59165006, 1377.56879391, 2070.97672338
+ 665 &  1330 &  684.59165 & 1377.5688 & 1.042071 & 12.25911 & 12-13 \\
+1330 &  1995 & 1377.5688  & 2070.9767 & 1.042719 & 12.40115 & 12-13 \\
+% Start: 31867 - 15601 = 16266 (665-cycles in 15601-cycle)
+% Source: 16961.51372325, 17655.46940823
+16266 & 16931 & 16961.514 & 17655.469 & 1.043541 & 12.58664 & 12-14 \\
+\hline
+% Start: 31867 (31867-cycles in 111202-cycle)
+% Source: 33242.22061159, 66498.62784578, 99755.46658808, 116036.95542876, 149294.02439621
+ 31867 &  63734 &  33242.221 &  66498.628 & 1.043600 & 12.59990 & 12-14 \\
+ 63734 &  95601 &  66498.628 &  99755.467 & 1.043614 & 12.60301 & 12-14 \\
+111202 & 143069 & 116036.96  & 149294.02  & 1.043621 & 12.60474 & - \\
+
+\hline
+\end{tabular}
+\end{table}
+
+% ------------------------------------------------------------
+\subsection{Bounded Covering Length and Perpetual Dyadic Coverage}
+\label{subsec:bounded-covering-length}
+% ------------------------------------------------------------
+
+The empirical dyadic plateau suggests that the number of terms required to
+cover each successive dyadic interval eventually stabilizes near a constant
+value. However, for the purposes of the proof spine, convergence to a fixed
+constant is unnecessary. Uniform boundedness is sufficient.
+
+Recall that the average cocycle growth rate over an interval $(L,H)$ is defined by
+
+\[
+\lambda_{\Delta} = \frac{\lambda_H - \lambda_L}{H-L}.
+\]
+
+The most expansive admissible trajectory is given by the infinite concatenation
+of grammar-forbidden expansive (5)-cycles. Earlier arguments established that
+this trajectory grows strictly slower than the denominator and satisfies
+
+\[
+\left(\frac{30597}{131}\right)^{1/5} < 3.
+\]
+
+Consequently,
+
+\[
+e^{\lambda_{\Delta}} \le \left(\frac{30597}{131}\right)^{1/5} < 3,
+\]
+
+and therefore
+
+\[
+\lambda_{\Delta} < \ln(3).
+\]
+
+The importance of this inequality is not the precise value obtained, but rather
+the existence of a strict margin below the Sturmian denominator growth rate.
+
+Defining the characteristic covering length
+
+\[
+P_{\Delta} = \frac{\ln(1/2)}{\ln\left(e^{\lambda_{\Delta}}/3\right)},
+\]
+
+we observe that
+
+\[
+0 < \frac{e^{\lambda_{\Delta}}}{3} < 1.
+\]
+
+Since the denominator of the expression above is therefore strictly negative
+and bounded away from zero, it follows immediately that
+
+\[
+0 < P_{\Delta} < \infty.
+\]
+
+Thus the number of terms required to reduce the residual mass by one half is
+always finite.  Importantly, the argument does not require the existence of
+
+\[
+\lim_{n\to\infty} P_{\Delta}(n),
+\]
+
+nor does it require monotonicity of $(P_{\Delta}(n))$. The sequence may converge,
+oscillate, or fluctuate indefinitely. The only requirement is the existence of a
+finite upper bound
+
+\[
+\limsup_{n\to\infty} P_{\Delta}(n) < \infty.
+\]
+
+This boundedness alone guarantees that no dyadic interval can require an infinite
+number of new terms for coverage.
+
+Once a dyadic interval has been covered, the subsequent interval differs only by
+an overall scaling factor of $(1/2)$. The underlying growth mechanism remains
+unchanged, and the same bounded covering argument applies recursively to all
+subsequent intervals.
+
+Consequently, finite covering of one dyadic interval implies finite covering of
+every subsequent dyadic interval. Since the process can be repeated indefinitely,
+the dyadic decomposition remains perpetually coverable.
+
+The existence of a bounded covering length therefore provides the structural
+explanation for the observed plateau. Whether $(P_{\Delta}(n))$ converges to a
+single constant or merely remains bounded is immaterial to the argument. The
+proof requires only that the covering process never escapes to infinity.
+
+% ------------------------------------------------------------
+\subsection{Perpetual Dyadic Coverage and Natural Density}
+\label{subsec:perpetual-dyadic-coverage}
+% ------------------------------------------------------------
+
+The significance of bounded cocycle growth extends beyond the existence of a
+limiting average growth rate. It implies that the process of constructing dyadic
+covers never fundamentally changes as the scale increases.  Let
+
+\[
+P_\Delta(n) = \frac{\ln(1/2)}
+{\ln\left(e^{\lambda_\Delta(n)}/3\right)}
+\]
+
+denote the characteristic covering length associated with a cocycle interval.
+Since the average cocycle growth rate satisfies
+
+\[
+\lambda_\Delta(n) < \ln(3),
+\]
+
+the average denominator growth over a cocycle interval remains strictly larger
+than the numerator growth and therefore
+
+\[
+P_\Delta(n) < \infty
+\]
+
+for every admissible interval.
+
+The existence of a finite covering length is the essential observation. Regardless
+of whether \(P_\Delta(n)\) converges to a single value, oscillates within a bounded
+range, or merely admits a finite lim sup, every dyadic interval requires only
+finitely many admissible residue classes in order to achieve coverage.
+
+Moreover, once a dyadic interval has been covered, no fundamentally new structure
+enters the system. The subsequent interval differs only by an additional factor
+of (1/2) in mass and is governed by the same Sturmian denominator and the same
+admissible cocycle grammar. The covering problem therefore reproduces itself
+recursively at each successive scale.
+
+Consequently the dyadic covering procedure may be iterated indefinitely. The sequence
+of covered masses becomes
+
+\[
+\frac{1}{2}, \qquad
+\frac{1}{4}, \qquad
+\frac{1}{8}, \qquad
+\frac{1}{16}, \qquad
+\frac{1}{32}, \qquad
+\frac{1}{64}, \qquad
+\ldots
+\]
+
+and therefore the cumulative covered density approaches
+
+\[
+\sum_{k=1}^{\infty}2^{-k}=1.
+\]
+
+Since admissible parity classes occupy disjoint residue classes, the densities
+contributed by individual trees add without overlap. Thus the collection of all
+convergent trees forms a forest whose total natural density is $1$.
+
+In this interpretation the dyadic plateau is not merely an empirical feature of
+the data. It is the manifestation of a stable covering regime in which finite
+admissible cocycle collections repeatedly generate complete dyadic coverage at
+every subsequent scale.
+
 
 % ============================================================
 \section{Beatty Structure and Tower Decomposition of the Denominator}
@@ -3069,6 +3982,7 @@ per-symbol growth rate. Thus $C_5^\infty$ provides a universal extremal
 comparison process.
 
 \begin{proposition}[Extremal Envelope]
+\label{prop:extremal-envelope}
 Let $\lambda$ denote the exponential growth rate of admissible
 configurations. Then
 \[
@@ -3226,7 +4140,7 @@ identities valid for all rows.
 
 The following row-by-row computations realize extremal growth for the admissible
 local patterns and together determine the sharpest uniform bounds used in
-Lemma~\ref{lem:local-growth-bounds}.  Each example illustrates how a local pattern
+Proposition ~\ref{prop:extremal-envelope}.  Each example illustrates how a local pattern
 can saturate its maximal growth factor under the horizontal-sum dynamics.  Let $S$
 denote the total sum of entries in the generating row prior to a given local pattern.
 
