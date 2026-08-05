@@ -26,10 +26,6 @@
 \numberwithin{equation}{section}
 \usepackage[numbers]{natbib}
 
-% TikZ (optional for later)
-\usepackage{tikz}
-\usetikzlibrary{shapes,arrows,chains}
-
 % Theorem environments
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}[section]
@@ -46,15 +42,16 @@
 \theoremstyle{remark}
 \newtheorem*{remark}{Remark}
 
-\title{Dyadic Brackets and Density-One Descent in the Collatz Map}
+\title{A Symbolic--Affine Framework for Density-One Descent in the Accelerated Collatz Map}
 \author{Wayne Brassem}
 
 \begin{document}
 
 % Custom commands
-\NewDocumentCommand{\setN}{}{\mathbb{N}}
-\NewDocumentCommand{\setZ}{}{\mathbb{Z}}
-\NewDocumentCommand{\setQ}{}{\mathbb{Q}}
+\NewDocumentCommand{\setN}{}{\mathbb{N}}				% Set of positive integers, excluding 0
+\NewDocumentCommand{\setNo}{}{\mathbb{N}_0}				% Set of positive integers, including 0
+\NewDocumentCommand{\setZ}{}{\mathbb{Z}}				% Set of all integers, excluding zero
+\NewDocumentCommand{\setQ}{}{\mathbb{Q}}				% Set of all rational numbers
 \newcommand{\chead}[1]{\multicolumn{1}{c}{#1}}
 
 % Document commands which provide hyperlinks to OEIS sequences referenced herein
@@ -64,48 +61,35 @@
 
 \begin{abstract}
 
-We study the Collatz map via the fully accelerated transformation
+We study the Collatz map through the fully accelerated transformation
 \[
-f(x)=\frac{3x+1}{2^{v_2(3x+1)}}.
+f(x)=\frac{3x+1}{2^{v_2(3x+1)}},
 \]
-which maps odd integers to odd integers by removing all powers of two
-generated at each odd step.
+acting on the odd positive integers.
 
-Finite trajectories are encoded by \emph{division words}, recording
-the sequence of 2-adic valuations encountered along an orbit. Each
-division word induces an exact affine transformation together with
-an associated congruence condition on admissible initial values. This
-yields a symbolic--affine framework in which admissible words correspond
-to residue classes modulo powers of two.
+Finite accelerated trajectories are encoded by \emph{division words},
+which record the sequence of 2-adic valuations encountered along an orbit.
+Each admissible division word determines a canonical affine transformation
+together with a unique congruence class modulo a power of two, yielding a
+symbolic--affine representation of accelerated Collatz dynamics.
 
-These residue classes organize naturally into a forest of nested
-cylinders.  Contractive division words define first-passage cylinders
-that remove positive measure from the residual set, while non-contractive
-extensions form a shrinking survivor forest.
+The admissible division words form a constrained symbolic language whose
+admissibility is governed by the Beatty threshold sequence associated with
+\(\log_2 3\). This Beatty grammar admits a canonical Sturmian return-word
+decomposition determined by the continued-fraction expansion of \(\log_2 3\).
+The resulting return blocks yield a spectral bound
+\[
+\lambda<3
+\]
+for the exponential growth rate of admissible symbolic configurations.
+Comparing this spectral bound with the exponential dyadic refinement of the
+associated congruence cylinders shows that symbolic proliferation is strictly
+dominated by dyadic contraction
 
-The symbolic growth of admissible division words is governed by an
-induced grammar whose combinatorial expansion is controlled by Sturmian
-return words associated with the continued-fraction expansion of $\log_2(3)$.
-We show that the resulting cocycle growth remains strictly subcritical:
-the number of admissible words grows like $\rho^m$ with $\rho<3$, while the
-associated congruence moduli grow at a rate comparable to powers of $3$ and
-therefore refine more rapidly than symbolic proliferation can compensate.
-
-This creates a competition between symbolic growth and arithmetic refinement
-that forces exponential sparsification of the surviving forest. Furthermore,
-the number of contractive cylinders required to cover successive dyadic
-scales remains bounded, producing a stable dyadic covering mechanism whose
-cumulative contribution approaches full measure.
-
-As a consequence, the set of integers that fail to admit an eventual
-descent prefix has natural density zero. Equivalently, the set of integers
-that eventually decrease under iteration of the Collatz map possesses
-natural density one.
-
-This work does not exclude the existence of exceptional trajectories. Rather,
-it shows that any such exceptions must lie within a residual survivor set of
-density zero and cannot arise from any scalable arithmetic structure generated
-by the affine grammar.
+Consequently, the set of positive integers admitting an eventual descent
+under the accelerated Collatz map has natural density one. The argument
+does not exclude the existence of exceptional trajectories, but shows that
+any such exceptions must belong to a residual set of natural density zero.
 
 \end{abstract}
 
@@ -134,14 +118,14 @@ proof for decades~\cite{Lagarias2010,Terras1976}. Extensive computational verifi
 confirms convergence for very large ranges~\cite{OliveiraESilva2010}, but does not
 reveal the global structure governing trajectory behavior.
 
-A major advance by Tao~\cite{Tao2019} established that almost all integers
-eventually attain values smaller than their initial value under iteration
-of the Collatz map in the sense of logarithmic density.
+Recently, a major advance by Tao~\cite{Tao2019} established that almost all integers
+eventually attain values smaller than their initial value under iteration of the Collatz
+map in the sense of logarithmic density.
 
 The present work develops a deterministic, arithmetic framework for analyzing typical
-Collatz behavior based on a symbolic–affine encoding of trajectories. Using this approach,
-we encode the dynamics symbolically rather than studying individual trajectories with
-the fully accelerated map
+Collatz behavior based on a symbolic--affine encoding of trajectories. Rather than
+studying individual trajectories directly, we encode the fully accelerated dynamics
+symbolically using the map
 \[
 f(x)=\frac{3x+1}{2^{v_2(3x+1)}},
 \]
@@ -151,76 +135,68 @@ transformation.
 Each trajectory under $f$ is represented by a finite \emph{division word}, recording the
 number of factors of $2$ removed (the 2-adic valuation) at each iterate. These words admit
 an exact affine representation obtained by symbolic composition of the accelerated map:
-each division word induces a map of the form
+each division word, \(\omega\), induces a map of the form
 \[
 F_\omega(x) = \frac{3^m x + c(\omega)}{2^{D(\omega)}},
 \]
 and determines a corresponding congruence class modulo $2^{D(\omega)}$. Thus division words
-determine canonical arithmetic \emph{constraint classes} (residue classes) in the integers,
-once realizability is imposed.
+determine canonical arithmetic \emph{residue classes} in the integers, once realizability
+is imposed.
 
-This correspondence allows the dynamics to be studied at the level of residue classes
+Division words are \emph{admissible} if they arise from actual trajectories under the
+accelerated map. Admissibility is governed by the Beatty~\cite{Graham1994} threshold sequence
+\[
+B(n) = \lfloor n \log_2 3 \rfloor + 1
+\]
+whose increment sequence is a Sturmian~\cite{Lothaire2002} word. Consequently the admissible
+symbolic grammar inherits the combinatorial constraints of an irrational rotation rather than
+arising from an ad hoc combinatorial construction.  This connection places the admissibility
+problem within the well-developed theory of Beatty sequences and Sturmian symbolic dynamics.
+
+Congruence classes allow the dynamics to be studied at the level of residue classes
 rather than individual orbits. Convergent division words—those for which the associated
 affine map is contractive—identify families of integers that decrease after a fixed
 number of steps. The global problem is thereby reduced to understanding how these
-families are distributed and how their densities accumulate.
+families are distributed and how their associated densities accumulate.
 
-Two competing effects govern this distribution. On one hand, the number of admissible
-convergent division words grows exponentially with length. On the other hand, each word
-imposes a congruence constraint whose modulus grows exponentially with the total 2-adic
-valuation. Using structural constraints on admissible division words, encoded by an
-increment grammar, we show that the combinatorial growth rate is strictly subcritical:
-the number of admissible words grows like $\rho^m$ for some $\rho < 3$, while the moduli
-scale like powers of $2$ satisfying $3^m < 2^{D(\omega)} < 2\cdot 3^m$.
+We then show that the symbolic growth generated by the admissible grammar is strictly subcritical:
+the number of admissible division words grows like \(\lambda^m\) with \(\lambda<3\), while the 
+corresponding congruence cylinders undergo exponential dyadic refinement. The central mechanism
+of the paper is the competition between these two exponential processes.
 
 Admissible division words organize naturally into a forest of nested cylinders. Contractive
 words define first-passage cylinders that remove positive measure from the residual set,
-while non-contractive extensions form a shrinking survivor forest.
+while non-contractive extensions form a shrinking residual forest.
 
-This transforms the Collatz problem into a competition between symbolic growth and
-arithmetic refinement, with convergence governed by their relative exponential rates.
-The resulting arithmetic refinement is governed by the Sturmian structure induced by the
-continued-fraction expansion of $\log_2(3)$, whose return words generate a hierarchy of
-cocycle towers controlling symbolic growth.
+This imbalance forces the residual forest to become exponentially sparse. Symbolic branching
+cannot compensate for the increasingly fine arithmetic subdivision imposed by successive
+congruence constraints.
 
-This imbalance leads to exponential sparsification of the residual forest.
-Contractive cylinders remove positive dyadic mass at every scale, while the
-number of cylinders required to cover successive dyadic intervals remains
-uniformly bounded. Consequently the residual mass cannot replenish itself
-faster than contractive cylinders remove it.
-
-Empirically, the interaction between symbolic growth and arithmetic refinement produces
-a stable dyadic covering plateau, suggesting that bounded collections of contractive
-cylinders continue to cover successive scales indefinitely.
-
-The objective of this work is therefore not to prove global convergence of
-the Collatz map, but rather to demonstrate that the set of integers admitting
-eventual descent possesses natural density one.
+The central result of the paper is that the admissible Beatty grammar has spectral growth
+strictly below the rate of dyadic refinement. This reduces the density question to a comparison
+of two exponential processes and implies that the residual forest has natural density zero.
+Consequently, the set of integers admitting eventual descent under the accelerated Collatz map
+has natural density one.
 
 While this does not exclude the existence of exceptional trajectories, any such
 exceptions must lie within a set of zero density and cannot arise from any scalable
-arithmetic structure generated by the symbolic dynamics.
-Any counterexample to the Collatz conjecture, if it exists, must therefore
-avoid every contractive cylinder generated by the affine grammar and must
-persist indefinitely within the residual survivor forest.
+arithmetic structure generated by the symbolic dynamics. Any counterexample to the Collatz
+Conjecture, if it exists, must therefore avoid every contractive cylinder generated by the
+affine grammar and remain confined to the residual forest.
 
 \paragraph{Structure of the Paper.}
 The argument proceeds as follows:
 \begin{itemize}
 \item Section~\ref{sec:division-counts} introduces division words and their total division counts.
 \item Section~\ref{sec:affine-representation} develops the affine representation of division words and their congruence structure.
-\item Section~\ref{sec:affine-grammar} establishes admissibility and minimal valuation constraints.
 \item Section~\ref{sec:stepwise-realizability-admissibility} establishes the stepwise realizability of admissible division words and the unique residue lifting property.
 \item Section~\ref{sec:cylinder-geometry} defines the geometry of contractive cylinders.
-\item Section~\ref{sec:beatty-refinement-of-cylinder-forest} explores the branching structure of the affine grammar.
 \item Section~\ref{sec:symbolic-growth} discusses competition between symbolic entropy and dyadic growth.
 \item Section~\ref{sec:measure-collapse} establishes the collapse of measure for disjoint cylinders.
-\item Section~\ref{sec:extremal-growth} establishes extremal growth properties with Sturmian return words.
-% \item Section~\ref{sec:sturmian-return-lags} discussion about impact of return word lags (probably unnecessary).
-% \item Section~\ref{sec:limiting-cocycle-growth} discusses continued fraction origins of tower cocycles.
-% \item Section~\ref{sec:dyadic-plateau-emergence} demonstrates the emergence of the dyadic plateau and implications to density one descent.
-% \item Section~\ref{sec:residual-collapse} demonstrates the emergence of the dyadic plateau and implications to density one descent.
+\item Section~\ref{sec:beatty-barrier} develops the Beatty grammar governing admissible symbolic growth and establishes the Beatty Barrier Theorem.
+\item Section~\ref{sec:spectral-growth-bound} proves the spectral growth bound and combines it with the measure estimates to establish collapse of the residual forest.
 \end{itemize}
+
 
 % ============================================================
 \section{Symbolic Encoding of Collatz Trajectories}
@@ -229,14 +205,18 @@ The argument proceeds as follows:
 
 % ------------------------------------------------------------
 \subsection{Division Words}
+% ------------------------------------------------------------
 
 \begin{definition}[Division Word]
 A division word of length $m \ge 1$ is a sequence
 \[
 \omega = (d_0, \dots, d_{m-1}),
 \]
-where each $d_i \in \mathbb{N}$ denotes the number of factors of \(2\)
-removed at the $i$-th iterate of the accelerated map
+where each $d_i \in \mathbb{N}$ is the 2-adic valuation
+\[
+v_2(3f^i(x)+1)
+\]
+of the corresponding step in the accelerated Collatz map
 \[
 f(x) = \frac{3x+1}{2^{v_2(3x+1)}}.
 \]
@@ -248,14 +228,14 @@ so $d_i \ge 1$ for all $i$.
 \end{remark}
 
 \begin{definition}[Realization]
-An odd integer $x \in \mathbb{N}$ realizes $\omega$ if
+An odd integer $x \in \mathbb{N}$ realizes the division word $\omega$ if
 \[
 d_i = v_2(3f^i(x)+1), \quad 0 \le i < m.
 \]
 \end{definition}
 
 \begin{remark}
-Every odd integer \(x\) determines a unique infinite valuation sequence
+Every odd integer \(x\) induces a unique infinite valuation sequence
 \[
 (v_2(3x+1),\, v_2(3f(x)+1),\, v_2(3f^2(x)+1),\dots),
 \]
@@ -263,7 +243,19 @@ of which a division word is a finite prefix.
 \end{remark}
 
 % ------------------------------------------------------------
-\subsection{Total Division Count}
+\subsection{Word Length and Total Division Count}
+% ------------------------------------------------------------
+
+\begin{definition}[Length]
+The length of a division word
+\[
+\omega=(d_0,\ldots,d_{m-1})
+\]
+is
+\[
+|\omega|:=m.
+\]
+\end{definition}
 
 \begin{definition}
 The total division count of a word $\omega$ is
@@ -273,42 +265,62 @@ D(\omega) := \sum_{i=0}^{m-1} d_i.
 \end{definition}
 
 \begin{remark}
-The quantity \(D(\omega)\) measures the cumulative dyadic contraction
-along the symbolic trajectory encoded by \(\omega\).
+The two basic numerical invariants of a division word are its length
+\(|\omega|\), which records the number of accelerated Collatz steps, and
+its total division count \(D(\omega)\), which records the cumulative
+dyadic exponent. The interaction between these two quantities governs
+both the affine dynamics and the symbolic geometry developed below.
 \end{remark}
+
 
 % ============================================================
 \section{Affine Representation of Division Words}
 \label{sec:affine-representation}
 % ============================================================
 
-\begin{definition}
-Each division word \(\omega\) of length \(m\) determines a formal affine map
+\begin{definition}[Affine Map]
+Each (not necessarily realizable) division word \(\omega\) of length \(m\)
+determines a formal affine map
 \[
 F_\omega(x)=\frac{3^m x+c(\omega)}{2^{D(\omega)}},
 \]
 obtained by symbolic composition of the accelerated Collatz map.
 \end{definition}
 
+\begin{remark}
+The quantity \(D(\omega)\) records the total exponent of 2 removed along
+the trajectory segment encoded by \(\omega\). It determines the modulus
+\(2^{D(\omega)}\) appearing in the associated affine representation above.
+
+A division word is called \emph{realizable} if it is realized by at least one
+odd integer. In later sections we use the synonymous term
+\emph{admissible} when emphasizing the arithmetic structure of realizable
+division words.
+\end{remark}
+
+% ------------------------------------------------------------
+\subsection{Concatenation and Prefix Structure}
+% ------------------------------------------------------------
+
 \begin{proposition}[Concatenation and Nested Affine Structure]
 Let $\omega$ and $\eta$ be division words. If the concatenation
 $\omega\eta$ denotes the word obtained by appending $\eta$ to $\omega$,
 then the associated affine maps satisfy
 \[
-F_{\omega\eta} = F_\eta\circ F_\omega .
+F_{\omega\eta} = F_\eta \circ F_\omega .
 \]
-Consequently, division-word concatenation induces a semigroup
-homomorphism from the free semigroup of division words under
-concatenation to the semigroup of affine transformations under
-composition.
+Consequently, concatenation of division words is compatible with
+composition of their affine maps: the affine map associated with
+a concatenated word is exactly the composition of the affine maps
+associated with its constituent words.
 
 Furthermore, if $C_\omega$ denotes the set of integers
 realizing the word $\omega$, then
 \[
 C_{\omega\eta}\subseteq C_\omega .
 \]
-Thus extensions of division words correspond to nested arithmetic
-cylinders.
+Thus extensions of division words correspond to nested realization
+sets.
 \end{proposition}
 
 \begin{proof}
@@ -328,14 +340,14 @@ Rearranging gives
 \[
 F_\eta(F_\omega(x)) = \frac{ 3^{m+n}x+3^n c(\omega)+2^{D(\omega)}c(\eta) } {2^{D(\omega)+D(\eta)}}.
 \]
-The denominator exponent and ternary exponent add under
-concatenation, while the affine constant combines according to the
-usual affine composition rule. Therefore this map is precisely the
-affine representation associated with the concatenated word
+The denominator and ternary exponents add under concatenation, while
+the affine constant combines according to the usual affine composition
+rule. Therefore this map is precisely the affine representation associated
+with the concatenated word
 $\omega\eta$.
 
-For the cylinder inclusion, any integer realizing $\omega\eta$ must
-first realize the prefix $\omega$ before realizing the appended word
+For the inclusion of realization sets, any integer realizing $\omega\eta$
+must first realize the prefix $\omega$ before realizing the appended word
 $\eta$. Hence every realization of $\omega\eta$ is also a realization of
 $\omega$, and therefore
 \[
@@ -343,148 +355,31 @@ C_{\omega\eta}\subseteq C_\omega .
 \]
 \end{proof}
 
-\begin{definition}[Contractive and Expansive Words]
-Let $\omega$ be a realizable division word of length $m$.
-
-The word $\omega$ is called:
-
+\begin{definition}[Contractive and Expansive Affine Maps]
+Let $\omega$ be a realizable division word of length $m$. Since
+\[
+F_\omega(x)=f^m(x)
+\]
+for every realization of $\omega$, the affine map $F_\omega$ is called
 \begin{itemize}
-\item contractive if
-\[
-F_\omega(x) < x
-\]
-for every realization of $\omega$;
-
-\item expansive if
-\[
-F_\omega(x) \ge x
-\]
-for every realization of $\omega$.
+\item contractive if \(F_\omega(x)<x\) for every realization of $\omega$;
+\item expansive if \(F_\omega(x)\ge x\) for every realization of $\omega$.
 \end{itemize}
 \end{definition}
 
 \begin{remark}
-Contractivity in this sense establishes only finite descent:
+Contractivity refers only to the finite trajectory encoded by
+\(\omega\). Thus
 \[
-f^m(x)<x.
+F_\omega(x)=f^m(x)<x,
 \]
-It does not imply that subsequent iteration converges to $1$.
+but no conclusion is drawn about the behavior of later iterates or
+eventual convergence to \(1\).
 \end{remark}
 
 % ------------------------------------------------------------
-\subsection{Dyadic-Ternary Balance}
-
-The symbolic dynamics of a division word are governed by the balance
-between the cumulative ternary growth \(3^m\) and the cumulative dyadic
-contraction \(2^{D(\omega)}\).
-
-For a division word \(\omega\) of length \(m\), the associated affine map
-has linear coefficient
-\[
-\frac{3^m}{2^{D(\omega)}}.
-\]
-
-Thus:
-\begin{itemize}
-\item if \(2^{D(\omega)} < 3^m\), the symbolic trajectory is linearly expansive,
-\item if \(2^{D(\omega)} > 3^m\), the symbolic trajectory is linearly contractive.
-\end{itemize}
-
-This motivates the Beatty threshold sequence
-\[
-A020914(m)=\lfloor m\log_2 3\rfloor+1,
-\]
-which is the minimal integer \(k\) satisfying
-\[
-2^k>3^m.
-\]
-
-Consequently, \(A020914(m)\) represents the minimal total division count
-for which the affine slope becomes strictly contractive.
-
+\subsection{Explicit Form of the Affine Constant}
 % ------------------------------------------------------------
-\subsection{Example}
-
-Consider convergent segments with $m=4$ iterates of $f$.  
-The minimal total division count for $m=4$ is
-\[
-A020914(4) = 7.
-\]
-
-One realizable division word attaining this minimum is
-\[
-\omega = (1,1,1,4),
-\]
-for which
-\[
-D(\omega) = 1+1+1+4 = 7.
-\]
-
-Composing the accelerated map according to $\omega$ yields
-\[
-f_\omega(x)=\frac{3^4 x + c(\omega)}{2^7}
-           = \frac{81x + 65}{128},
-\]
-so the canonical affine constant for this word is
-\[
-c(\omega)=65.
-\]
-
-The integrality condition
-\[
-81x + 65 \equiv 0 \pmod{128}
-\]
-determines a unique residue class
-\[
-x \equiv 15 \pmod{128}.
-\]
-This congruence defines a constraint fiber with modulus $2^7$.
-These congruence classes will be interpreted as symbolic cylinders
-associated with the division word \(\omega\).
-
-\medskip
-
-\noindent
-\textbf{Interpretation.}
-The word $\omega = (1,1,1,4)$ means:
-
-\begin{itemize}
-    \item At each of the first three iterates of $f$, $3x+1$ contains exactly one factor of $2$.
-    \item At the fourth iterate of $f$, $3x+1$ contains four factors of $2$.
-\end{itemize}
-
-Under the accelerated map
-\[
-f(x)=\frac{3x+1}{2^{v_2(3x+1)}},
-\]
-
-Thus $d_3=4$ means that the fourth iterate divides by $2^4$ in that step.
-The constant $c(\omega)$ is fixed entirely by this symbolic structure and
-ensures that precisely the integers in the residue class $x \equiv 15 \pmod{128}$
-realize the affine transformation associated with $\omega$.
-
-This example illustrates that the behavior of trajectories is governed
-entirely by the symbolic data encoded in $\omega$ and its associated
-affine map. The initial values that realize a given word are precisely
-those satisfying the induced congruence constraint, independent of any
-particular choice of representative.
-
-The affine representation converts symbolic trajectory data into explicit
-arithmetic constraints modulo powers of two, allowing realizable trajectories
-to be studied through congruence geometry rather than direct iteration.
-
-\medskip
-
-\noindent
-In general, not every division word arises from an actual trajectory;
-the condition for realizability will be formulated later as an explicit
-congruence constraint, defining the class of \emph{admissible} words.  The
-next section establishes that admissible words determine unique residue classes.
-
-% ============================================================
-\section{Affine Symbolic Admissibility Grammar}
-\label{sec:affine-grammar}
-% ============================================================
 
 \begin{remark}[Division Words as a Dynamical Encoding]
 Recall from Section~\ref{sec:division-counts} that a \emph{division word}
@@ -492,22 +387,19 @@ $\omega=(d_0,\dots,d_{m-1})$ records the exact 2-adic valuation
 $d_i = v_2(3 x_i + 1)$, occurring at each iterate of the fully accelerated
 Collatz map.
 
-Unlike a purely combinatorial encoding, division words retain essential
-dynamical information. Each division word $\omega=(d_0,\dots,d_{m-1})$
+Division words retain the dynamical information needed to reconstruct the
+affine representation. Each division word $\omega=(d_0,\dots,d_{m-1})$
 determines the sequence of multiplicative factors of the linear coefficient
 \[
 r_i = \frac{3}{2^{d_i}},
 \]
 so that the multiplicative growth or decay contribution of each iterate is
 preserved in the linear coefficient (with the affine term handled separately
-via $c(\omega)$). This structure enables quantitative control of symbolic
-trajectories via affine growth and later permits the formulation of
-arithmetic realizability and descent conditions, even though individual
-trajectories are collapsed under the encoding.
+via $c(\omega)$). This structure allows symbolic trajectories to be analyzed
+through their affine representations and forms the foundation for the
+realizability and descent results developed later.
 \end{remark}
 
-% ------------------------------------------------------------
-\subsection{Explicit Form of the Affine Constant}
 \begin{lemma}[Explicit Form of the Affine Constant]
 Let $\omega = (d_0,\dots,d_{m-1})$ be a division word. Then the affine map
 \[
@@ -542,7 +434,6 @@ x_m
 2^{\sum_{i=j}^{m-1} d_i}
 }.
 \]
-
 Multiplying by \(2^{D(\omega)}\) gives
 \[
 2^{D(\omega)}x_m
@@ -557,19 +448,115 @@ which identifies the affine constant \(c(\omega)\).
 \end{proof}
 
 \begin{remark}
-% The affine constant \(c(\omega)\) records the cumulative contribution
-% of all additive terms generated during symbolic iteration. Earlier
-% terms acquire larger dyadic weights because they experience more
-% subsequent divisions by \(2\), while later terms acquire larger
-% ternary weights through repeated multiplication by \(3\).
-The affine constant \(c(\omega)\) records the cumulative contribution
-of all additive terms generated during symbolic iteration. Earlier
-additive contributions are propagated through more subsequent multiplications
-by 3, while later contributions accumulate more of the preceding dyadic scaling.
-
-Explicit computational examples and a direct reconstruction of the
-associated affine congruence structure are provided in the appendices.
+The affine constant \(c(\omega)\) records the accumulated contribution
+of every additive term introduced during symbolic iteration. Earlier
+contributions are multiplied by more subsequent factors of \(3\),
+whereas later contributions inherit larger powers of \(2\) from the
+preceding divisions.
 \end{remark}
+
+% ------------------------------------------------------------
+\subsection{Dyadic-Ternary Balance}
+% ------------------------------------------------------------
+
+The symbolic dynamics of a division word are governed by the balance
+between the cumulative ternary growth \(3^m\) and the cumulative dyadic
+contraction \(2^{D(\omega)}\). For a division word \(\omega\) of length
+\(m\), the associated affine map has linear coefficient
+\[
+\frac{3^m}{2^{D(\omega)}}.
+\]
+
+The linear coefficient determines the asymptotic behavior of the affine map:
+\begin{itemize}
+    \item if \(2^{D(\omega)} < 3^m\): expansive slope.
+    \item if \(2^{D(\omega)} > 3^m\): contractive slope.
+\end{itemize}
+
+This naturally introduces the Beatty threshold sequence
+\[
+B(m)=\lfloor m\log_2 3\rfloor+1,
+\]
+which is the OEIS sequence \OEIS{A020914}.  This is the minimal integer \(k\) satisfying
+\[
+2^k>3^m.
+\]
+
+Consequently, \(B(m)=A020914(m)\) represents the minimal total division count
+for which the affine slope becomes strictly contractive.
+
+% ------------------------------------------------------------
+\subsection{Example}
+% ------------------------------------------------------------
+
+Consider convergent segments with $m=4$ iterates of $f$.  
+The minimal total division count for $m=4$ is
+\[
+A020914(4) = 7.
+\]
+
+One realizable division word attaining this minimum is
+\[
+\omega = (1,1,1,4),
+\]
+for which
+\[
+D(\omega) = 1+1+1+4 = 7.
+\]
+
+Composing the accelerated map according to $\omega$ yields
+\[
+f_\omega(x)=\frac{3^4 x + c(\omega)}{2^7}
+           = \frac{81x + 65}{128},
+\]
+
+The integrality condition
+\[
+81x + 65 \equiv 0 \pmod{128}
+\]
+determines a unique residue class
+\[
+x \equiv 15 \pmod{128}.
+\]
+This congruence determines a unique residue class modulo $2^7$, and
+defines the arithmetic constraint associated with the division word.
+In Section~\ref{sec:cylinder-geometry}, these congruence classes will
+be identified with the cylinder representation of admissible words.
+
+\medskip
+
+\noindent
+\textbf{Interpretation}
+
+The word $\omega = (1,1,1,4)$ records three successive divisions by 2,
+followed by a division by \(2^4\). The affine representation packages
+this symbolic information into a single arithmetic transformation together
+with its associated congruence condition.
+
+Thus $d_3=4$ means that the fourth iterate removes exactly four factors of \(2\).
+The constant $c(\omega)$ is fixed entirely by this symbolic structure and
+ensures that precisely the integers in the residue class $x \equiv 15 \pmod{128}$
+realize the affine transformation associated with $\omega$.
+
+This example illustrates that the behavior of trajectories is governed
+entirely by the symbolic data encoded in $\omega$ and its associated
+affine map. The initial values that realize a given word are precisely
+those satisfying the induced congruence constraint, independent of any
+particular choice of representative.
+
+The affine representation converts symbolic trajectory data into explicit
+arithmetic constraints modulo powers of two, allowing realizable trajectories
+to be studied through congruence geometry rather than direct iteration.
+
+\medskip
+
+\noindent
+The affine representation is purely symbolic: it associates an affine
+transformation with every formal division word. The following sections
+determine which formal words are realizable under the accelerated Collatz
+map by developing the admissible division grammar and proving its
+equivalence to realizability.
+
 
 % ============================================================
 \section{Stepwise Realizability and Admissibility}
@@ -590,19 +577,25 @@ c(\omega)
 3^{m-1-j}\cdot 2^{\sum_{i=0}^{j-1} d_i}.
 \]
 
-Then for any sequence $(x_0,\dots,x_m)$ satisfying
+% Suppose the successive divisions by \(2^{d_i}\) are all exact, so that
+Suppose
 \[
-x_{i+1} = \frac{3x_i+1}{2^{d_i}}, \quad 0 \le i < m,
+v_2(3x+1) = d_i, \qquad 0 \le i < m.
 \]
-the identity
+% f(x)=\frac{3x+1}{2^{v_2(3x+1)}},
+% v_2(3f^j(x)+1)=d_j, \qquad 0\le j<m.
+Equivalently,
 \[
-2^{D(\omega)} x_m = 3^m x_0 + c(\omega)
+x_{i+1} = \frac{3x_i+1}{2^{d_i}}, \qquad 0\le i<m.
 \]
-holds.
+Then
+\[
+2^{D(\omega)} x_m = 3^m x_0 + c(\omega).
+\]
 \end{theorem}
 
 \begin{corollary}[Stepwise Integrality Criterion]
-The sequence $(x_0,\dots,x_m)$ has all intermediate values integral
+The sequence $(x_0,\dots,x_m)$ is an integer trajectory
 under the accelerated Collatz relations if and only if
 \[
 3^m x_0 + c(\omega) \equiv 0 \pmod{2^{D(\omega)}}.
@@ -677,8 +670,8 @@ v_2(3x+1)=d.
 \]
 \end{proof}
 
-\begin{corollary}[Recursive Exact-Valuation Refinement]
-\label{cor:recursive-refinement}
+\begin{corollary}[Local Valuation Refinement]
+\label{cor:local-refinement}
 Let
 \[
 \omega=(d_0,\dots,d_{m-1})
@@ -687,9 +680,7 @@ be an admissible division word and let
 \[
 \omega_j=(d_0,\dots,d_{j-1})
 \]
-denote its prefixes.
-
-For each \(j\), the condition
+denote its prefixes. For each \(j\), the condition
 \[
 v_2(3f^j(x)+1)=d_j
 \]
@@ -718,8 +709,8 @@ forward recursively through the valuation sequence rather than being
 determined solely by a terminal congruence condition.
 \end{remark}
 
-\begin{theorem}[Unique Residue Lifting]
-\label{thm:unique-residue-lifting}
+\begin{theorem}[Residue Lifting Theorem]
+\label{thm:residue-lifting-theorem}
 Let
 \[
 \omega=(d_0,\dots,d_{m-1})
@@ -804,9 +795,8 @@ this becomes a linear congruence condition on \(x\) modulo
 2^{D(\omega)+d_m} = 2^{D(\omega')}.
 \]
 
-Since the coefficient of \(x\) remains \(3^{m}\), which is odd and therefore
-invertible modulo powers of two, this congruence determines a unique
-refinement of the residue class
+Since \(3^m\) is odd, it is invertible modulo every power of two.  This congruence
+determines a unique refinement of the residue class
 \[
 r_\omega
 \pmod{2^{D(\omega)}}
@@ -826,6 +816,7 @@ of its prefix.  The result follows by induction.
 % ------------------------------------------------------------
 
 \begin{theorem}[Affine Realization Theorem]
+\label{thm:affine-realization}
 Let $\omega$ be a division word.
 
 An integer $x$ realizes $\omega$ if and only if
@@ -905,8 +896,7 @@ x_{j+1}=\frac{3x_j+1}{2^{d_j}}
 is an integer.  By induction, every step satisfies the prescribed valuation
 constraint, and therefore
 \[
-v_2(3f^j(x)+1)=d_j,
-\qquad 0\le j<m.
+v_2(3f^j(x)+1)=d_j, \qquad 0\le j<m.
 \]
 Hence $x$ realizes the division word $\omega$.
 \end{proof}
@@ -917,131 +907,23 @@ Hence $x$ realizes the division word $\omega$.
 
 \begin{definition}[Admissible Division Word]
 \label{def:admissible-division-word}
-A division word
-\[
-\omega=(d_0,\dots,d_{m-1})
-\]
-is admissible if its induced affine residue class contains an integer
-whose successive iterates satisfy
+A division word is \emph{admissible} if it is realizable.
+\end{definition}
+
+\begin{remark}
+Equivalently, a division word \(\omega\) is admissible if its induced affine
+residue class contains an integer whose successive accelerated iterates satisfy
 \[
 v_2(3x_i+1)=d_i,
 \qquad 0\le i<m.
 \]
-\end{definition}
-
-\begin{remark}
-% Admissibility is an arithmetic existence condition ensuring that the
-% affine map $F_\omega$ attains integer values on at least one input.
-Admissibility is the condition that the formal division word corresponds
-to an actual finite valuation trajectory of the accelerated Collatz map.
+Thus admissibility is precisely the condition that a formal symbolic word
+occurs as an actual finite valuation sequence of the accelerated Collatz map.
 \end{remark}
 
 % ------------------------------------------------------------
 \subsection{Residue Class Representation of Division Words}
 % ------------------------------------------------------------
-
-\begin{theorem}[Affine Constraint Representation]
-Let $\omega$ be an admissible division word of length $m$.
-
-Then there exists a unique residue $r_\omega \pmod{2^{D(\omega)}}$ such that
-\[
-x \text{ satisfies } 3^m x + c(\omega) \equiv 0 \pmod{2^{D(\omega)}}
-\iff
-x \equiv r_\omega \pmod{2^{D(\omega)}}.
-\]
-\end{theorem}
-
-\begin{proof}
-From the affine representation,
-\[
-F_\omega(x) = \frac{3^m x + c(\omega)}{2^{D(\omega)}},
-\]
-integrality is equivalent to
-\[
-3^m x + c(\omega) \equiv 0 \pmod{2^{D(\omega)}}.
-\]
-
-Since $3^m$ is odd, it is invertible modulo $2^{D(\omega)}$, yielding
-\[
-x \equiv -c(\omega) \cdot (3^m)^{-1} \pmod{2^{D(\omega)}}.
-\]
-
-This determines a unique residue modulo $2^{D(\omega)}$.
-
-Conversely, any $x$ in this class satisfies the integrality condition.
-By Theorem~\ref{thm:affine-stepwise-identity}, this is equivalent to the
-existence of a trajectory whose successive iterates satisfy
-\[
-x_{i+1} = \frac{3x_i+1}{2^{d_i}}, \quad 0 \le i < m,
-\]
-and hence realize the division word $\omega$.
-
-Thus admissible division words are in one-to-one correspondence with affine
-congruence constraints modulo powers of two.
-\end{proof}
-
-\begin{corollary}
-An integer $x$ realizes $\omega$ if and only if
-\[
-x \equiv r_\omega \pmod{2^{D(\omega)}}.
-\]
-\end{corollary}
-
-% \begin{lemma}[Exact Valuation Congruence]
-% For any odd integer $x$ and integer $d\ge1$,
-% \[
-% v_2(3x+1)=d
-% \]
-% if and only if
-% \[
-% 3x+1\equiv 2^d \pmod{2^{d+1}}.
-% \]
-% \end{lemma}
-
-% \begin{proof}
-% If $v_2(3x+1)=d$, then
-% \[
-% 3x+1=2^d u
-% \]
-% for some odd integer $u$.
-% Writing
-% \[
-% u=2k+1
-% \]
-% gives
-% \[
-% 3x+1
-% =
-% 2^d(2k+1)
-% =
-% 2^d+k2^{d+1},
-% \]
-% and therefore
-% \[
-% 3x+1\equiv2^d\pmod{2^{d+1}}.
-% \]
-
-% Conversely, if
-% \[
-% 3x+1\equiv2^d\pmod{2^{d+1}},
-% \]
-% then
-% \[
-% 3x+1=2^d(2k+1)
-% \]
-% for some integer $k$,
-% so exactly $d$ factors of two divide $3x+1$.
-% Hence
-% \[
-% v_2(3x+1)=d.
-% \]
-% \end{proof}
-
-% \begin{remark}
-% The set of integers realizing $\omega$ forms a full residue class modulo
-% $2^{D(\omega)}$, which will later be interpreted as a symbolic cylinder
-% in the division-word grammar.
-% \end{remark}
 
 \begin{lemma}[Prefix Nesting of Realization Sets]
 \label{lem:prefix-uniqueness}
@@ -1052,7 +934,7 @@ is a prefix of the other.
 \end{lemma}
 
 \begin{proof}
-Every integer \(x\) determines a unique infinite valuation sequence
+Every odd integer \(x\) determines a unique infinite valuation sequence
 \[
 (v_2(3x+1),\, v_2(3f(x)+1),\, v_2(3f^2(x)+1),\dots).
 \]
@@ -1064,16 +946,6 @@ Therefore the two words cannot diverge at any position before the shorter
 word terminates. Hence one word is a prefix of the other.
 \end{proof}
 
-% \begin{corollary}[Disjointness at Equal Length]
-% Distinct admissible division words of the same length define disjoint cylinders.
-% \end{corollary}
-
-% \begin{proof}
-% If two words of equal length intersected, then by
-% Lemma~\ref{lem:prefix-uniqueness},
-% one would be a prefix of the other.
-% Equal lengths force equality of the words.
-% \end{proof}
 
 % ============================================================
 \section{Cylinder Geometry of the Affine Grammar}
@@ -1089,6 +961,8 @@ in terms of nested congruence classes, developed below.
 
 % ------------------------------------------------------------
 \subsection{Cylinder of a Division Word}
+% ------------------------------------------------------------
+
 \begin{definition}[Cylinder]
 Let $\omega$ be an admissible division word with associated residue
 class
@@ -1104,6 +978,7 @@ C_\omega := \{x \in \mathbb N : x \equiv r_\omega \pmod{2^{D(\omega)}}\}.
 
 % ------------------------------------------------------------
 \subsection{Prefix Structure and Forest Geometry of Cylinders}
+% ------------------------------------------------------------
 
 \begin{lemma}[Prefix Nesting of Cylinders]
 \label{lem:cylinder-prefix-nesting}
@@ -1123,14 +998,10 @@ x\in C_\omega\cap C_{\omega'}.
 \]
 
 Then $x$ realizes both division words. By the Affine Realization
-Theorem, every integer determines a unique infinite valuation sequence
-\[
-(v_2(3x+1),\, v_2(3f(x)+1),\, v_2(3f^2(x)+1),\dots).
-\]
-
-Since both $\omega$ and $\omega'$ are finite prefixes of this same
-valuation sequence, they cannot differ before the shorter word
-terminates.  Hence one word is a prefix of the other.
+Theorem~\ref{thm:affine-realization}, $C_\omega$ and $C_{\omega'}$
+are precisely the realization sets of $\omega$ and $\omega'$.
+The result therefore follows immediately from
+Lemma~\ref{lem:prefix-uniqueness}.
 \end{proof}
 
 \begin{theorem}[Cylinder Inclusion Criterion]
@@ -1164,7 +1035,7 @@ Conversely, suppose
 C_\eta\subseteq C_\omega.
 \]
 
-Choose
+Let
 \[
 x\in C_\eta.
 \]
@@ -1189,7 +1060,8 @@ this would force
 \[
 C_\eta=C_\omega,
 \]
-Since equal cylinders have equal moduli, we obtain
+Since each cylinder is defined by a unique residue class modulo
+\(2^{D(\omega)}\), equality of cylinders implies equality of moduli.  Thus
 \[
 D(\eta)=D(\omega).
 \]
@@ -1247,8 +1119,8 @@ containment.  Thus admissible division words organize into a collection
 of nested 2-adic cylinders whose inclusion relations coincide exactly
 with the prefix order on division words.
 
-The admissible symbolic grammar therefore forms a disjoint forest of
-prefix trees rather than a single global tree. Each node corresponds
+The admissible symbolic grammar therefore forms a disjoint \emph{forest}
+of prefix trees rather than a single global tree. Each node corresponds
 to an admissible one-step refinement of a cylinder, obtained by
 extending the associated division word by one admissible symbol.  Each
 descendant cylinder is obtained by refining the associated congruence
@@ -1257,9 +1129,10 @@ class modulo a higher power of two.
 
 % ------------------------------------------------------------
 \subsection{Contractive Cylinders}
+% ------------------------------------------------------------
 
 \begin{definition}[Contractive Cylinder]
-An admissible cylinder \(C_\omega\) is called contractive if the
+A cylinder \(C_\omega\) is called linearly contractive if its
 associated affine map
 \[
 F_\omega(x) = \frac{3^{|\omega|}x+c(\omega)}{2^{D(\omega)}}
@@ -1276,6 +1149,7 @@ D(\omega)>|\omega|\log_2 3.
 
 % ------------------------------------------------------------
 \subsection{Cylinder Contraction Threshold}
+% ------------------------------------------------------------
 
 \begin{lemma}[Minimal Contraction Threshold]
 \label{lem:minimal-contraction-threshold}
@@ -1290,7 +1164,7 @@ D(\omega)\ge A020914(m),
 \]
 where
 \[
-A020914(m)=\lfloor m\log_2 3\rfloor + 1
+B(m) = A020914(m)=\lfloor m\log_2 3\rfloor + 1
 \]
 is the minimal integer \(k\) satisfying
 \[
@@ -1309,568 +1183,55 @@ which is equivalent to
 \]
 
 The minimal integer satisfying this inequality is exactly
-$A020914(m)$, so
+\(A020914(m)\), so
 \[
-D(\omega)\ge A020914(m).
+D(\omega) \ge B(m) = A020914(m).
 \]
 \end{proof}
 
 \begin{remark}
-% The Beatty threshold sequence \OEIS{A020914} defines the boundary between
-% expansive and contractive regions of each tree in the forest. It governs
-% the growth/decay balance along admissible branches within each cylinder,
-% with identical dynamics across the forest of admissible cylinders, independent
-% of the chosen root.
 The Beatty threshold sequence \OEIS{A020914} governs the growth/decay balance along
 admissible branches within every cylinder of the forest.
 \end{remark}
 
-% % ============================================================
-% \section{Reconstruction of Integers from a Division Word}
-% \label{sec:reconstruction}
-
-% \subsection{Inverse Cylinder Construction}
-
-% Let $\omega = (d_0,\dots,d_{m-1})$ be an admissible division word with total division count
-% \[
-% D(\omega) = \sum_{i=0}^{m-1} d_i.
-% \]
-
-% From Section~\ref{sec:affine-grammar}, $\omega$ induces the affine map
-% \[
-% F_\omega(x) = \frac{3^m x + c(\omega)}{2^{D(\omega)}}.
-% \]
-
-% Admissibility implies the congruence condition
-% \[
-% 3^m x + c(\omega) \equiv 0 \pmod{2^{D(\omega)}}.
-% \]
-
-% Since $3^m$ is invertible modulo $2^{D(\omega)}$, this yields the unique residue class
-% \[
-% x \equiv -c(\omega)\,(3^m)^{-1} \pmod{2^{D(\omega)}}.
-% \]
-
-% \subsection{Canonical Parametrization of the Cylinder}
-
-% Let $r_\omega$ denote the canonical representative of this residue class in
-% $\{0,1,\dots,2^{D(\omega)}-1\}$. Then all integers realizing $\omega$ are given by
-% \[
-% x(k) = r_\omega + k\cdot 2^{D(\omega)}, \quad k \in \mathbb{N}_0.
-% \]
-
-% \subsection{Affine Reconstruction Form}
-
-% Applying $F_\omega$ to $x(k)$ yields
-% \[
-% F_\omega(x(k))
-% = \frac{3^m (r_\omega + k2^{D(\omega)}) + c(\omega)}{2^{D(\omega)}}.
-% \]
-
-% Expanding,
-% \[
-% F_\omega(x(k))
-% = k\cdot 3^m + \frac{3^m r_\omega + c(\omega)}{2^{D(\omega)}}.
-% \]
-
-% Define the constant
-% \[
-% K_\omega := \frac{3^m r_\omega + c(\omega)}{2^{D(\omega)}}.
-% \]
-
-% Then the affine form becomes
-% \[
-% F_\omega(x(k)) = k\cdot 3^m + K_\omega.
-% \]
-
-% \subsection{Interpretation}
-
-% Thus each division word induces a bijection between:
-% \begin{itemize}
-% \item integers in a residue class $x(k)$, and
-% \item affine images of the form $k\cdot 3^m + K_\omega$.
-% \end{itemize}
-
-% This provides a complete inverse description of the division-word cylinder.
-
-% \subsection{Example}
-% Solving the congruence
-% \[
-% 3^4 x + 65 \equiv 0 \pmod{128}
-% \]
-% gives
-% \[
-% 81x + 65 \equiv 0 \pmod{128}.
-% \]
-
-% Reducing $81 \equiv -47 \pmod{128}$, we obtain
-% \[
-% -47x + 65 \equiv 0 \pmod{128}
-% \quad \Longrightarrow \quad
-% 47x \equiv 65 \pmod{128}.
-% \]
-
-% Since $47$ is invertible modulo $128$, with
-% \[
-% 47^{-1} \equiv 79 \pmod{128},
-% \]
-% we multiply both sides to obtain
-% \[
-% x \equiv 79 \cdot 65 \equiv 15 \pmod{128}.
-% \]
-
-% Thus the division word $\omega = (1,1,1,4)$ generates the residue class
-% \[
-% x = 15 + 128k, \quad k \in \mathbb{N}_0.
-% \]
-
 
 % ============================================================
-\section{Beatty Refinement of the Cylinder Forest}
-\label{sec:beatty-refinement-of-cylinder-forest}
-% ============================================================
-
-The prefix-tree structure of admissible cylinders induces a corresponding
-symbolic grammar on division words. The admissible extensions of a word
-are governed by cumulative dyadic growth constraints, determined by the
-minimal contraction threshold sequence \OEIS{A020914}.
-
-The branching structure of minimally contractive division words is governed
-by the prefix-sum constraints induced by
-\[
-B(n)=A020914(n)=\lfloor n\log_2 3\rfloor+1.
-\]
-
-% This sequence plays a dual role: it is simultaneously the global Beatty
-% threshold for dyadic contraction and the local admissibility boundary
-% governing extension of division words.  For a division word
-% \[
-% \omega=(d_0,\dots,d_{m-1}),
-% \]
-% define the prefix sums
-% \[
-% H(i)=\sum_{j=0}^{i} d_j.
-% \]
-
-% The quantity \(H(i)\) records the cumulative dyadic exponent accumulated
-% along the first \(i+1\) iterates of the symbolic trajectory. The Beatty
-% threshold \(B(i+1)\) is the minimal exponent for which the corresponding
-% linear coefficient becomes contractive:
-% \[
-% 2^{B(i+1)}>3^{i+1}.
-% \]
-
-This sequence plays a dual role: it is simultaneously the global Beatty
-threshold for dyadic contraction and the local admissibility boundary
-governing extension of division words.
-
-\begin{remark}[Beatty-Controlled Refinement]
-Every admissible division word determines its admissible one-symbol
-extensions. Since admissibility is governed by the Beatty thresholds
-\(B(m)\), the entire cylinder forest is generated recursively from
-the Beatty increment sequence.
-\end{remark}
-% Thus the inequalities
-% \[
-% H(i)<B(i+1)
-% \quad (0\le i<m-1),
-% \]
-% ensure that every proper prefix remains strictly below the contractive
-% threshold, while the terminal equality
-% \[
-% H(m-1)=B(m).
-% \]
-% forces the word to achieve minimal contraction exactly at length \(m\).
-% These inequalities define a constrained lattice region inside
-% \[
-% \mathbb{N}^m,
-% \]
-% whose integer points correspond to minimally contractive admissible
-% division words of length \(m\).
-
-% \begin{definition}[Prefix-Admissible Word]
-% A division word $\omega=(d_0,\dots,d_{m-1})$ is admissible if and only if
-% its prefix sums satisfy
-% \[
-% H(i) < B(i+1) \quad (0 \le i < m-1),
-% \qquad
-% H(m-1)=B(m).
-% \]
-% \end{definition}
-
-% ------------------------------------------------------------
-\subsection{Propagation Versus Expansion}
-
-The increment sequence
-\[
-\delta(n)=B(n+1)-B(n)
-\]
-takes values in \(\{1,2\}\).
-
-The distinction between these two increment types governs the
-combinatorial evolution of the admissible grammar.  In cylinder
-language, these increments correspond to whether refinement
-occurs within an existing residue class or splits it into new
-congruence classes
-
-\begin{lemma}[Unit Increments Preserve the Existing Grammar]
-\label{lem:single-no-new}
-Suppose
-\[
-B(n+1)-B(n)=1.
-\]
-introduces no new interior admissibility directions beyond propagation
-of existing prefixes. The admissible words at level \(n+1\) arise solely
-from propagation of previously admissible prefix configurations.
-\end{lemma}
-
-\begin{proof}[Structural mechanism]
-A unit increment increases the terminal admissibility bound by exactly
-one:
-\[
-B(n+1)=B(n)+1.
-\]
-
-Since every division word component satisfies \(d_i\ge1\), the final
-coordinate is forced to absorb precisely this additional unit.
-
-No new slack is introduced into the earlier prefix constraints
-\[
-H(i)<B(i+1),
-\]
-since the admissibility threshold increases by exactly one, the
-mandatory contribution of the new symbol exhausts the additional
-allowance. Consequently every admissible extension is obtained
-simply by extending an existing admissible prefix. No additional
-extension pattern becomes feasible.
-
-Thus the grammar propagates existing admissible configurations and
-every admissible extension is obtained by prolonging an existing
-admissible prefix; no additional admissible branch is created.
-\end{proof}
-
-\begin{lemma}[Double Increments Expand the Existing Grammar]
-\label{lem:double-expand}
-Suppose
-\[
-B(n+1)-B(n)=2.
-\]
-introduces incremental slack into the terminal admissibility bound, providing
-additional internal directions for admissible extensions.  New admissible words
-at level \(n+1\) arise from both propagation of previously admissible prefix
-configurations and from the new admissible directions created by the additional slack.
-\end{lemma}
-
-\begin{proof}[Structural mechanism]
-A double increment increases the terminal admissibility bound by exactly
-two:
-\[
-B(n+1)=B(n)+2.
-\]
-
-Since every division word component satisfies \(d_i\ge1\), the final
-coordinate absorbs precisely one unit associated with the existing 
-admissible division words, leaving a remaining slack of one.
-
-Only one unit is absorbed into the earlier prefix constraints
-\[
-H(i)<B(i+1),
-\]
-which leaves one additional unit beyond the mandatory contribution of
-the terminal symbol. This additional freedom permits extension patterns
-that were previously excluded by the Beatty bound.
-
-Thus the grammar propagates existing admissible configurations by
-prolonging an existing admissible prefix; while the incremental unit of
-slack means a new admissible branch is created.
-\end{proof}
-
-\begin{theorem}[Grammar Expansion]
-The admissible cylinder forest is generated recursively from the Beatty
-threshold sequence. At each level, unit Beatty increments introduce only
-propagated extensions of existing admissible words, whereas double Beatty
-increments permit additional admissible extensions beyond simple propagation.
-\end{theorem}
-
-% \begin{lemma}[Jump Increments Create New Admissible Words]
-% \label{lem:jump-new-words}
-% Suppose
-% \[
-% B(n+1)-B(n)=2.
-% \]
-
-% Then extending the admissible search from length \(n\) to length
-% \(n+1\) necessarily creates new admissible division words that did
-% not occur at earlier lengths.
-% \end{lemma}
-
-% \begin{proof}[Geometric mechanism]
-% A jump increment enlarges the terminal admissibility bound by two:
-% \[
-% B(n+1)=B(n)+2.
-% \]
-
-% After accounting for the mandatory positivity condition
-% \[
-% d_i\ge1,
-% \]
-% one additional unit of slack remains available.
-
-% This additional slack creates new admissible lattice points satisfying
-% \[
-% H(i)<B(i+1)
-% \]
-% for all intermediate prefixes while still achieving the terminal
-% constraint
-% \[
-% H(n)=B(n+1).
-% \]
-
-% Consequently the admissible lattice region acquires new integer points,
-% corresponding to genuinely new admissible division words.
-% \end{proof}
-
-% % ------------------------------------------------------------
-% \subsection{First-Passage Cylinder Grammar}
-
-% \begin{theorem}[First-Passage Characterisation]
-% A division word is admissible if and only if its prefix-sum trajectory
-% achieves first passage of the Beatty boundary \(B(n)\).
-% \end{theorem}
-
-% \begin{corollary}[Forest Uniqueness]
-% Each admissible division word corresponds to a unique node in the
-% admissible cylinder forest, and hence to a unique cylinder.
-
-% No admissible word can occur at more than one depth.
-% \end{corollary}
-
-% \begin{theorem}[Forest Enumeration Principle]
-% The admissible cylinders form a rooted forest under prefix extension,
-% where each node corresponds to a unique admissible division word.
-
-% Therefore the number of admissible words of length \(m\) equals the
-% number of nodes at depth \(m\) across the forest.
-% \end{theorem}
-
-% \begin{remark}[Grammar as a Constrained Branching Forest]
-% The admissible grammar is therefore a rooted branching forest whose
-% local branching structure at depth \(n\) is determined entirely by the
-% increment
-% \[
-% \delta(n)=B(n+1)-B(n)\in\{1,2\}.
-% \]
-
-% Unit increments propagate existing admissible branches, while jump
-% increments create new admissible branching directions within the forest.
-% \end{remark}
-
-% % ============================================================
-% \section{Symbolic Growth and Spectral Bounds}
-% \label{sec:symbolic-growth}
-% % ============================================================
-
-% The symbolic dynamics naturally separate into two interacting
-% structures:
-
-% \begin{enumerate}
-% \item The \emph{survivor forest}, consisting of those cylinders whose
-% prefix trajectories remain strictly below the Beatty contraction
-% boundary, and
-
-% \item The \emph{first-passage forest}, consisting of those cylinders that
-% reach the contraction boundary for the first time at a specified depth.
-% \end{enumerate}
-
-% The survivor forest evolves by successive refinement of admissible
-% prefixes, while the first-passage forest records the first entry of
-% surviving trajectories into the contractive regime.
-
-% Throughout this section, we study the combinatorial growth of the
-% first-passage forest.  Let
-% \[
-% N(m)
-% \]
-% denote the number of first-passage division words of length \(m\),
-% equivalently the number of contractive cylinders created at depth
-% \(m\). By the first-passage characterization of admissible words,
-% \[
-% N(m)=A186009(m+1).
-% \]
-
-% % ------------------------------------------------------------
-% \subsection{Survivor nesting and first-passage decomposition}
-
-% For each depth \(m\), let
-% \[
-% S_m
-% \]
-% denote the set of integers whose symbolic trajectories remain
-% admissible through depth \(m\), equivalently, whose prefix sums
-% remain strictly below the Beatty boundary at all intermediate depths.
-% Thus
-% \[
-% S_{m+1}\subseteq S_m.
-% \]
-
-% \begin{remark}
-% The symbolic dynamics therefore define a filtration of the odd
-% integers by nested survivor sets together with successive escape
-% layers:
-% \[
-% S_1 \supseteq S_2 \supseteq S_3 \supseteq \cdots.
-% \]
-
-% At each depth, surviving cylinders either:
-% \begin{itemize}
-% \item refine into deeper survivor cylinders, or
-% \item exit into the first-passage forest.
-% \end{itemize}
-% \end{remark}
-
-% % ------------------------------------------------------------
-% \subsection{Cylinder concatenation principle}
-
-% Surviving symbolic branches concatenate only when their associated
-% cylinders are compatible.
-
-% More precisely, let \(\omega\) and \(\eta\) be surviving division
-% words of lengths \(m\) and \(n\). Any surviving extension of total
-% length \(m+n\) must lie in
-% \[
-% C_\omega \cap f^{-m}(C_\eta),
-% \]
-% where \(f^{-m}\) denotes the backward symbolic shift induced by the
-% valuation dynamics.
-
-% By the prefix-nesting property of cylinders, this intersection is
-% either empty or a single refined cylinder determined by a unique
-% surviving extension of \(\omega\).
-
-% Consequently, refinement of survivor cylinders produces only finitely
-% many admissible continuations, with branching uniformly controlled
-% independently of depth.
-
-% % ------------------------------------------------------------
-% \subsection{Submultiplicative growth}
-
-% \begin{lemma}[Submultiplicative Growth]
-% There exists \(C>0\) such that
-% \[
-% N(m+n)\le C\,N(m)N(n).
-% \]
-% \end{lemma}
-
-% \begin{proof}
-% Each first-passage word of length \(m+n\) determines uniquely:
-% \begin{itemize}
-% \item a surviving prefix of length \(m\), and
-% \item a compatible continuation of length \(n\) leading to first passage.
-% \end{itemize}
-
-% By the cylinder structure, every surviving prefix corresponds to a
-% residue class modulo \(2^{D(\omega)}\), and subsequent continuations
-% arise only through compatible refinements of this class.
-
-% The jump/propagation structure of the Beatty boundary \(B(n)\)
-% permits only finitely many admissible refinements at each stage.
-% Hence the number of compatible continuations per surviving cylinder
-% is uniformly bounded independently of depth.
-
-% Therefore the total number of first-passage words of length \(m+n\)
-% is bounded by a constant multiple of the product of the counts at
-% lengths \(m\) and \(n\).
-% \end{proof}
-
-% % ------------------------------------------------------------
-% \subsection{Spectral growth rate}
-
-% \begin{theorem}[Existence of Exponential Growth Rate]
-% The limit superior
-% \[
-% \lambda
-% =
-% \limsup_{m\to\infty} N(m)^{1/m}
-% \]
-% is finite.
-% \end{theorem}
-
-% \begin{proof}
-% The result follows from submultiplicativity via standard
-% Fekete-type arguments.
-% \end{proof}
-
-% % ------------------------------------------------------------
-% \subsection{Entropy versus dyadic contraction}
-
-% The quantity \(N(m)\) measures the combinatorial complexity of the
-% first-passage forest at depth \(m\), while each first-passage
-% cylinder carries dyadic density approximately
-% \[
-% 2^{-D(\omega)}.
-% \]
-
-% For minimally contractive cylinders,
-% \[
-% D(\omega)\approx m\log_2 3,
-% \]
-% so a typical cylinder has density approximately
-% \[
-% 3^{-m}.
-% \]
-
-% Thus the asymptotic behaviour of the symbolic dynamics is governed
-% by the competition between:
-% \begin{itemize}
-% \item exponential branching growth in the number of surviving
-% symbolic trajectories, and
-% \item exponential dyadic contraction in cylinder density.
-% \end{itemize}
-
-% The spectral quantity \(\lambda\) measures the effective entropy
-% production of the survivor forest. If this symbolic growth is
-% dominated by dyadic contraction, then the total surviving density
-% necessarily collapses under successive refinement.
-
-% ============================================================
-\section{Symbolic Growth and Spectral Complexity}
+\section{Symbolic Growth of the Cylinder Forest}
 \label{sec:symbolic-growth}
 % ============================================================
 
-The cylinder forest introduced in the previous section possesses two
-competing forms of complexity:
+The cylinder forest introduced in the previous section exhibits two
+competing exponential effects:
 
 \begin{enumerate}
-\item combinatorial growth in the number of admissible cylinders, and
+\item combinatorial growth in the number of admissible cylinders; and
 \item dyadic contraction in the size of individual cylinders.
 \end{enumerate}
 
 The first of these is purely symbolic and is quantified below.
 
 % ------------------------------------------------------------
-\subsection{Symbolic complexity}
+\subsection{Symbolic Complexity}
+% ------------------------------------------------------------
 
 \begin{definition}[Symbolic complexity]
-Let
-\[
-N(m)
-\]
-denote the number of admissible division words of length \(m\).
+Let \(N(m)\) denote the number of admissible division words of length \(m\).
 Equivalently, \(N(m)\) is the number of admissible cylinders appearing
 at depth \(m\) in the symbolic forest.
 \end{definition}
 
 \begin{remark}
-The quantity \(N(m)\) measures the combinatorial complexity of the
-admissible grammar at depth \(m\). As the forest evolves under symbolic
-refinement, \(N(m)\) records the number of distinct admissible branches
-that survive to depth \(m\).
+The quantity \(N(m)\) measures the combinatorial complexity of the admissible
+grammar at depth \(m\). It counts the number of distinct admissible division
+words, or equivalently the number of admissible cylinders obtained after \(m\)
+levels of symbolic refinement.
 \end{remark}
 
 % ------------------------------------------------------------
-\subsection{Spectral entropy}
+\subsection{Symbolic Growth Rate}
+% ------------------------------------------------------------
 
-\begin{definition}[Symbolic growth rate]
+\begin{definition}[Symbolic Growth Rate]
 Define the symbolic growth rate of the admissible grammar by
 \[
 \lambda := \limsup_{m\to\infty} N(m)^{1/m}.
@@ -1900,15 +1261,21 @@ This is an immediate consequence of the definition of
 \end{proof}
 
 % ------------------------------------------------------------
-\subsection{Entropy versus dyadic contraction}
+\subsection{Entropy Versus Dyadic Contraction}
+% ------------------------------------------------------------
 
-Each admissible cylinder \(C_\omega\) has natural density
+Each admissible cylinder is determined by a congruence class modulo
 \[
-\mu(C_\omega)=2^{-D(\omega)}.
+2^{D(\omega)}
 \]
-From Lemma~\ref{lem:minimal-contraction-threshold}
+Consequently, deeper cylinders correspond to congruence classes modulo
+progressively larger powers of two. Since
 \[
 D(\omega) \ge B(m)
+\]
+every cylinder at depth \(m\) is defined modulo at least
+\[
+2^{B(m)}
 \]
 where
 \[
@@ -1918,45 +1285,36 @@ therefore
 \[
 2^{-D(\omega)} \le 2^{-B(m)} < 3^{-m}.
 \]
-Consequently, the total measure carried by the depth-\(m\) residual
-cylinders is bounded above by the product of two competing factors:
-\begin{itemize}
-\item the number \(N(m)\) of admissible cylinders at depth \(m\), and
-\item the maximal measure of an admissible cylinder at depth \(m\).
-\end{itemize}
 
-The following section combines these two ingredients to estimate the
-residual mass of the cylinder forest. Since cylinders at equal depth
-are pairwise disjoint (Corollary~\ref{cor:equal-depth-disjoint}),
-their measures add.  Consequently, estimating the residual mass reduces
-to estimating the product of the number of admissible cylinders and
-the maximal measure of any one cylinder.
+Two independent quantities govern the structure of the depth-\(m\) cylinder
+forest: the number \(N(m)\) of admissible cylinders and the modulus
+\(2^{D(\omega)}\) associated with each cylinder.
+
+The following section assigns a natural density to each cylinder.
+Since cylinders at equal depth are pairwise disjoint
+(Corollary~\ref{cor:equal-depth-disjoint}), the residual density of
+the depth-\(m\) cylinder forest is bounded above by the product of the
+number of admissible cylinders and the maximal density of any one cylinder.
+
 
 % ============================================================
 \section{Measure Collapse of the Residual Forest}
 \label{sec:measure-collapse}
 % ============================================================
 
-The admissible forest constructed in the previous sections naturally
-induces a nested family of measurable subsets of the odd integers.
-These sets encode the integers whose symbolic trajectories remain
-admissible to increasing depths.
+The admissible forest constructed in the previous sections induces a
+nested family of subsets of the odd integers. These sets encode the
+integers whose symbolic trajectories remain admissible to increasing
+depths.
 
-The central question is whether the densities
-\[
-\mu(S_m)
-\]
-remain bounded away from zero as
-\[
-m\to\infty,
-\]
-or whether repeated refinement causes the residual forest to collapse
-to a set of zero density.
+The central question is whether these residual sets \(S_m\) retain
+positive natural density under repeated symbolic refinement.
 
 % ------------------------------------------------------------
-\subsection{Residual cylinder sets}
+\subsection{Residual Cylinder Sets}
+% ------------------------------------------------------------
 
-\begin{definition}[Depth-$m$ residual set]
+\begin{definition}[Depth-$m$ Residual Set]
 Let
 \[
 S_m := \bigcup_{|\omega|=m} C_\omega
@@ -1971,9 +1329,11 @@ are precisely the trajectories that remain unresolved after \(m\)
 refinement steps.
 \end{remark}
 
-\subsection{First-passage layers}
+% ------------------------------------------------------------
+\subsection{First-Passage Layers}
+% ------------------------------------------------------------
 
-\begin{definition}[First-passage layer]
+\begin{definition}[First-Passage Layer]
 Define the first-passage layer at depth \(m\) by
 \[
 F_m := S_m \setminus S_{m+1}.
@@ -2008,14 +1368,15 @@ Hence every element of \(S_m\) either:
 These two possibilities are mutually exclusive, giving the disjoint decomposition.
 \end{proof}
 
-\begin{remark}[Conservation of symbolic mass]
+\begin{remark}[Residual decomposition]
 The decomposition
 \[
 S_m = F_m \sqcup S_{m+1}
 \]
-shows that symbolic refinement conserves total mass: cylinders are not
-destroyed under refinement, but redistributed between deeper residual
-cylinders and first-passage escape cylinders.
+shows that symbolic refinement partitions the residual set into two
+disjoint components: trajectories that exit the residual forest at
+depth \(m\), and trajectories that remain unresolved to the next level.
+No trajectories are created or duplicated under refinement.
 \end{remark}
 
 \begin{corollary}[Global first-passage decomposition]
@@ -2062,21 +1423,38 @@ and the infinite residual set.
 \end{remark}
 
 % ------------------------------------------------------------
-\subsection{Cylinder measure}
+\subsection{Cylinder Measure}
+% ------------------------------------------------------------
 
-\begin{definition}[Natural dyadic measure]
-Let \(C_\omega\) be a cylinder determined by a residue class modulo
-\(2^{D(\omega)}\). Define its measure by
+\begin{lemma}[Cylinder Density]
+\label{lem:cylinder-density}
+Let \(C_\omega\) be an admissible cylinder associated with the residue
+class
 \[
-\mu(C_\omega) = 2^{-D(\omega)}.
+r_\omega \pmod{2^{D(\omega)}}.
 \]
-\end{definition}
+Then
+\[
+\mu(C_\omega)=2^{-D(\omega)},
+\]
+where \(\mu\) denotes natural density on the odd positive integers.
+\end{lemma}
+
+\begin{proof}
+By the Affine Realization Theorem~\ref{thm:affine-realization},
+\(C_\omega\) is exactly one residue class modulo \(2^{D(\omega)}\).
+A residue classes modulo \(2^{D(\omega)}\) has natural density
+\(2^{-D(\omega)}\). Therefore
+\[
+\mu(C_\omega)=2^{-D(\omega)}.
+\]
+\end{proof}
 
 \begin{remark}
-Since each admissible cylinder corresponds to a single residue class
-modulo \(2^{D(\omega)}\), its canonical dyadic weight is proportional
-to \(2^{-D(\omega)}\). Up to normalization of the odd integers, this
-coincides with the dyadic scaling above.
+The density of a cylinder depends only on its modulus \(2^{D(\omega)}\),
+not on the particular residue \(r_\omega\). Thus deeper cylinders are
+exponentially smaller, with each additional power of two halving the
+natural density.
 \end{remark}
 
 \begin{lemma}[Disjointness at fixed depth]
@@ -2105,8 +1483,9 @@ it is redistributed between progressively finer symbolic layers.
 
 % ------------------------------------------------------------
 \subsection{Nested residual structure}
+% ------------------------------------------------------------
 
-\begin{definition}[Infinite residual set]
+\begin{definition}[Infinite Residual Set]
 Define the infinite residual set by
 \[
 S_\infty := \bigcap_{m=1}^{\infty} S_m.
@@ -2132,49 +1511,16 @@ the measures satisfy
 \end{theorem}
 
 \begin{proof}
-This is the standard continuity property of measure for nested
-decreasing measurable sets.
+This follows from continuity from above for natural density on
+nested measurable residue-class unions.
 \end{proof}
 
-% % ------------------------------------------------------------
-% \subsection{Entropy versus dyadic contraction}
-
-% The residual mass at depth \(m\) is governed by two competing effects:
-
-% \begin{enumerate}
-% \item combinatorial growth in the number of residual cylinders,
-% \item dyadic decay in the measure of each cylinder.
-% \end{enumerate}
-
-% If \(N(m)\) denotes the number of admissible words of length \(m\),
-% then formally
-% \[
-% \mu(S_m) = \sum_{|\omega|=m}2^{-D(\omega)}.
-% \]
-% For minimally contractive admissible words,
-% \[
-% D(\omega)\approx m\log_2 3,
-% \]
-% so individual cylinders have typical size
-% \[
-% 2^{-D(\omega)} \approx 3^{-m}.
-% \]
-
-% Meanwhile the number of admissible cylinders grows exponentially at rate
-% \[
-% \lambda = \limsup_{m\to\infty}N(m)^{1/m}.
-% \]
-
-% Consequently the residual mass heuristically satisfies
-% \[
-% \mu(S_m) \approx \left(\frac{\lambda}{3}\right)^m.
-% \]
-
 % ------------------------------------------------------------
-\subsection{Residual Mass Collapse}
+\subsection{Residual Density Bound}
+% ------------------------------------------------------------
 
-\begin{theorem}[Residual Mass Estimate]
-\label{thm:residual-mass-estimate}
+\begin{theorem}[Residual Density Bound]
+\label{thm:residual-density-bound}
 
 For every depth \(m\),
 \[
@@ -2206,8 +1552,8 @@ Since the sum ranges over \(N(m)\) admissible division words of length \(m\),
 as claimed.
 \end{proof}
 
-\begin{theorem}[Residual Mass Collapse]
-\label{thm:residual-mass-collapse}
+\begin{theorem}[Residual Density Collapse]
+\label{thm:residual-density-collapse}
 Suppose the symbolic growth rate satisfies
 \[
 \lambda<3,
@@ -2241,7 +1587,7 @@ By Lemma~\ref{lem:uniform-envelope}, there exists
 N(m) \le (\lambda+\varepsilon)^m
 \] 
 for every \(m\ge m_0\).  Combining this estimate with
-Theorem~\ref{thm:residual-mass-estimate} gives
+Theorem~\ref{thm:residual-density-bound} gives
 \[
 \mu(S_m) \le (\lambda+\varepsilon)^m \,2^{-B(m)}.
 \]
@@ -2272,6 +1618,7 @@ Finally, Theorem~\ref{thm:nested-measure} implies
 
 % ------------------------------------------------------------
 \subsection{First-Passage Completeness}
+% ------------------------------------------------------------
 
 \begin{theorem}[First-Passage Completeness]
 \label{thm:first-passage-completeness}
@@ -2304,7 +1651,7 @@ Since the union is disjoint,
 \[
 \mu(S_1) = \sum_{m\ge1}\mu(F_m) + \mu(S_\infty).
 \]
-By Theorem~\ref{thm:residual-mass-collapse},
+By Theorem~\ref{thm:residual-density-collapse},
 \[
 \mu(S_\infty) = 0.
 \]
@@ -2318,1504 +1665,470 @@ the stated identity follows immediately.
 
 % ------------------------------------------------------------
 \subsection{Interpretation}
+% ------------------------------------------------------------
 
 The preceding results reduce the density-one problem for accelerated Collatz
 trajectories to a purely symbolic question. Every measure-theoretic aspect of
-the argument is now contained in Theorem~\ref{thm:residual-mass-collapse}.
+the argument is now contained in Theorem~\ref{thm:residual-density-collapse}.
 Consequently, it remains only to establish that the symbolic growth rate of
 the admissible grammar satisfies
 \[
 \lambda < 3
 \]
-The remainder of the paper is devoted entirely to proving this spectral inequality.
+The remainder of the paper is devoted to proving this spectral inequality.
+
 
 % ============================================================
-\section{Extremal Growth in the Sturmian Return-Word System}
-\label{sec:extremal-growth}
+\section{The Beatty Barrier}
+\label{sec:beatty-barrier}
 % ============================================================
 
-\subsection{Dyadic Threshold Sequence Sturmian Structure}
-
-\begin{theorem}[Sturmian realization of the threshold grammar]
-Let
+The remaining task is to bound the symbolic growth rate
 \[
-B(n)=\lfloor n\log_2 3\rfloor+1.
-\]
-Then the increment sequence
-\[
-\delta(n)=B(n+1)-B(n)
+\lambda = \limsup_{m\to\infty} N(m)^{1/m}.
 \]
 
-is a Sturmian word over the alphabet \(\{1,2\}\).
-Consequently the admissible grammar inherits the combinatorial
-structure of an irrational rotation.
-\end{theorem}
+The key observation is that the symbolic growth is not free.
+Every admissible extension of a division word is governed by
+the Beatty increment sequence associated with
+\[
+B(m)=\lfloor m\log_2 3\rfloor+1.
+\]
 
-\begin{proof}
-This is the classical characterization of Beatty increment sequences
-associated with irrational slopes.
-\end{proof}
-
-Let
-\[
-\alpha := \log_2 3,
-\qquad
-d(n) := \lfloor n\alpha \rfloor + 1.
-\]
-The increment sequence
-\[
-\delta(n) := d(n+1) - d(n) \in \{1,2\}
-\]
-is a Sturmian word of slope $\alpha - 1$ and intercept $0$.
-Equivalently, $\delta$ defines a symbolic dynamical system
-\[
-X_\alpha \subset \{1,2\}^{\mathbb{N}}
-\]
-generated by an irrational rotation. All admissible growth structures
-considered in this paper are functions of this Sturmian coding.
+Consequently, the admissible branching process is not arbitrary.
+Every symbolic extension is constrained by the same Beatty sequence that
+governs the dyadic contraction threshold. Thus the symbolic branching
+process and the cylinder refinement process are controlled by a common
+underlying arithmetic.
 
 % ------------------------------------------------------------
+\subsection{Beatty-Controlled Growth}
+% ------------------------------------------------------------
 
-\subsection{Return Words and Primitive Cycle Decomposition}
+The Beatty increment sequence
+\[
+\delta(m)=B(m+1)-B(m)\in\{1,2\}
+\]
+governs two parallel constructions:
 
-\begin{definition}[Return Words]
-A finite word $C$ is a return word of the Sturmian system $X_\alpha$ if it is
-the minimal block between successive visits to a fixed cylinder set induced by
-$\delta$. We denote by $\mathcal{R}_\alpha$ the set of return words.
+\begin{enumerate}
+\item the dyadic refinement of admissible cylinders; and
+\item the doubling events that generate the symbolic counts
+      \(N(m)\) in the horizontal-sum construction of
+      Appendix~\ref{app:horizontal-sum-table}.
+\end{enumerate}
+
+The second statement follows from the construction of \OEIS{A186009},
+whose recursive doubling rule is governed by the increment sequence
+\OEIS{A022921} ~\cite{Winkler2017}, equal to the first differences of
+\OEIS{A020914}.
+
+Thus the same Beatty increment sequence governs both admissible cylinder
+refinement and admissible symbolic branching. The two constructions are
+therefore synchronized by a common Sturmian grammar.
+
+Because the Beatty increment sequence is Sturmian, it admits canonical
+return words of lengths \(2,5,12,\ldots\). Their construction from the
+continued-fraction expansion of \(\log_2 3\) is summarized in
+Appendix~\ref{app:sturmian}. For the present section we require only two
+facts:
+
+\begin{enumerate}
+\item the canonical return words exist; and
+\item each has a well-defined average dyadic increment.
+\end{enumerate}
+
+The next subsection shows that, once the increment sequence is fixed,
+the induced horizontal-sum dynamics is represented by positive linear
+operators, allowing the local symbolic growth contributed by each return
+word to be estimated independently.
+
+% ------------------------------------------------------------
+\subsection{Linear Operator Formulation}
+% ------------------------------------------------------------
+
+Let $v_n = (a_1(n),a_2(n),\dots,a_{k_n}(n))$ denote the generating row at
+level $n$, where the length $k_n$ depends on the increment history.
+Let
+\[
+S_n = \sum_i a_i(n)
+\]
+be its total sum. Away from terminal duplication, the recurrence
+\[
+a_i(n)=a_i(n-1)+a_{i-1}(n)
+\]
+is linear with nonnegative coefficients. The terminal duplication is also
+linear, so the complete evolution is represented by positive linear operators.
+
+Representing the horizontal-sum dynamics by positive linear operators permits the
+growth contributed by finite increment blocks to be analyzed through the corresponding
+operator products.
+
+A single increment acts as a positive linear endomorphism
+$T_s^{(k)} : \mathbb{R}^{k} \to \mathbb{R}^{k}$, preserving row length, whereas
+a double increment acts as a positive linear map
+$T_d^{(k)} : \mathbb{R}^{k} \to \mathbb{R}^{k+1}$, increasing the row length by one
+via terminal duplication.
+
+The essential feature is positivity: every entry of \(T_s\) and \(T_d\) is nonnegative.
+Consequently every admissible evolution is represented by a positive operator product.
+
+Thus each increment symbol $\sigma_n\in\{s,d\}$ induces a positive linear map
+\[
+v_{n+1}=T_{\sigma_n}v_n,
+\]
+so every admissible division word corresponds to a finite product
+\[
+T_{\sigma_{n+k-1}}\cdots T_{\sigma_n}
+\]
+of positive linear operators.
+
+\begin{lemma}[Controlled Growth of Horizontal Sums]
+\label{lem:controlled-horizontal-growth}
+
+Let a row have strictly positive entries with total sum $S$.
+A single increment preserves the total row sum.
+
+If a double increment is applied immediately afterward, producing a row in which
+the terminal entry equals the sum of the previous row and all other entries remain
+strictly positive, then the total sum of the resulting row satisfies
+\[
+S_{\mathrm{new}} < 3S.
+\]
+\end{lemma}
+
+\begin{proof}
+After the intermediate single-increment evolution, the terminal entry equals
+\(S\), while the remaining interior entries are strictly positive and therefore
+have total \(S_{\rm int}<S\).
+
+The subsequent double increment duplicates the terminal entry, producing two
+terminal contributions equal to \(S\). Hence
+
+\[
+S_{\rm new}
+=
+S_{\rm int}+2S,
+\]
+where \(S_{\rm int}<S\). Therefore
+\[
+S_{\rm new}<3S.
+\]
+\end{proof}
+
+Since every admissible evolution is represented by positive operator products,
+each primitive return block determines a finite operator product whose growth
+factor depends only on that block. Consequently the symbolic contribution of
+each primitive return word can be bounded locally.
+
+Appendix~\ref{app:local-growth-details} computes these local growth factors for
+every primitive return block. These provide uniform upper bounds for the symbolic
+growth contributed by each admissible primitive block.
+
+
+% ------------------------------------------------------------
+\subsection{Beatty Block Drift}
+% ------------------------------------------------------------
+
+\begin{definition}[Dyadic Magnitude]
+For a finite increment block $\Omega$, let
+\[
+\Delta(\Omega)
+\]
+denote the sum of its dyadic increments.
+Equivalently, $\Delta(\Omega)$ is the total exponent of $2$
+contributed by the block.
 \end{definition}
 
-\begin{theorem}[Return Words via Continued Fractions]
-Let $\alpha = \log_2 3$ and let $\delta(n)$ be the Sturmian coding induced
-by rotation $R_\alpha$.
-
-Let $q_k$ denote the denominators of the continued-fraction convergents of $\alpha$.
-For the prefix defining the extremal admissible growth process, the set of return
-words is exactly:
+\begin{lemma}[Beatty Drift Lemma]
+\label{lem:beatty-drift-lemma}
+Let \(\Omega\) be a finite block whose average increment satisfies
 \[
-\mathcal{R}_\alpha = \{C_{q_k}, C_{q_{k+1}}\}
+\frac{\Delta(\Omega)}{|\Omega|} > \log_2 3
 \]
-for some index $k$ determined by the chosen prefix.  In particular, for the admissible
-threshold structure of $d(n)=\lfloor n\alpha \rfloor +1$, the relevant convergent pair is:
+Then the infinite periodic word
 \[
-(q_k, q_{k+1}) = (5,12).
+\Omega^{\infty}
 \]
-\end{theorem}
-
-\begin{proof}
-The sequence $\delta(n)$ is a Sturmian word of slope $\alpha$.
-Return words to any prefix correspond to first-return maps of the rotation
-$R_\alpha$ to a subinterval $I$.
-
-The convergent denominators begin (see Appendix \ref{app:continued-fractions} for details):
-% The convergent denominators begin:
-\[
-1,\ 1,\ 2,\ 5,\ 12,\ 41,\ 53,\ 306,\ 665,\ 15601,\ 31867,\ 79335,\ldots
-\]
-
-For the prefix relevant to the admissible grammar, the associated return times are the
-consecutive denominators 5 and 12. Hence the return-word set is $\{C_5, C_{12}\}$.
-\end{proof}
-
-Although the shortest return word is the single double increment $C_1=(2)$, repeated doubles generate the
-Catalan sequence $1,2,5,14,42,132,\ldots$ whose asymptotic exponential growth rate is 4. Since this
-exceeds the critical threshold 3, the pure-double process cannot serve as a useful comparison envelope.
-
-\begin{proposition}[Extremal Primitive Comparison Word]
-\label{prop:extremal-comparison-word}
-The return word \(C_5\) is the shortest return word whose induced
-comparison growth is strictly less than \(3\).
-\end{proposition}
-
-\begin{remark}[Diophantine Origin of the Grammar]
-\label{rem:diophantine-grammar}
-
-The admissible grammar is governed not by arbitrary combinatorial rules but by the Diophantine
-approximation properties of \(\log_2 3\).  The convergent denominators
-\[
-1,\ 1,\ 2,\ 5,\ 12,\ 41,\ 53,\ 306,\ 665,\ 15601,\ 31867,\ 79335,\ldots
-\]
-arise from the continued-fraction approximants of
-\[
-\alpha=\log_2 3,
-\]
-and consequently, the primitive return words governing admissible refinement are
-determined by best rational approximations to the Beatty slope rather than by
-ad hoc combinatorial choices.
-\[
-\frac{p_k}{q_k}\approx \log_2 3.
-\]
-
-Equivalently,
-\[
-2^{p_k}\approx 3^{q_k},
-\]
-so the associated multiplicative cocycle satisfies
-\[
-\frac{2^{p_k}}{3^{q_k}}\to1.
-\]
-
-% The observed alternating expansive and contractive tower structure is
-% therefore a direct manifestation of the alternating sign structure of
-% continued-fraction convergents.
-
-In particular, the appearance of the 5-, 12-, 41-, and 53-cycles
-is not accidental; these cycles are induced by the Diophantine
-approximation hierarchy of $\log_2 3$.
-\end{remark}
-
-\begin{lemma}[Induced Return-Word Hierarchy]
-\label{lem:induced-hierarchy}
-
-Every admissible word in the Sturmian language generated by
-\[
-\delta(n) = \lfloor (n+1)\alpha\rfloor-\lfloor n\alpha\rfloor
-\]
-admits a decomposition into return words generated
-recursively from the primitive pair $(C_5, C_{12})$.
+is not admissible.
 \end{lemma}
-
-\noindent
-
-% ------------------------------------------------------------
-
-\subsection{Multiplicative Cocycle Structure}
-
-Define the multiplicative growth cocycle
-\[
-G(w) := \frac{2^{\#s(w) + 2\#d(w)}}{3^{|w|}},
-\]
-where $\#s(w)$ and $\#d(w)$ are the number of single and double increments in $w$.
-
-\begin{lemma}[Cocycle Additivity]
-For concatenation of admissible return words,
-\[
-G(C_{i_1} \cdots C_{i_n}) = \prod_{k=1}^n G(C_{i_k}).
-\]
-Equivalently,
-\[
-\log G(w) = \sum_{k} \log G(C_{i_k}).
-\]
-\end{lemma}
-Thus the global exponential growth rate reduces to weighted averages
-of return-word contributions.
-
-% ------------------------------------------------------------
-
-\subsection{Local Evaluation of Return Words}
-The local comparison constants computed in Appendix \ref{app:local-growth-details}
-yield the following per-symbol cocycle contributions. The two primitive return words satisfy:
-
-\[
-\frac{1}{5}\log G(C_5)
-=
-\log\!\left(
-3^{2}
-\cdot \frac{123}{33}
-\cdot \frac{341}{131}
-\cdot \frac{329}{123}
-\right)^{1/5},
-\]
-
-\[
-\frac{1}{12}\log G(C_{12})
-<
-\frac{1}{5}\log G(C_5).
-\]
-
-Hence $C_5$ is the unique extremal return word with maximal per-symbol drift.
-
-\begin{proposition}[Extremal Cocycle Principle]
-For any admissible infinite word $\delta \in X_\alpha$,
-\[
-\limsup_{n\to\infty}
-\frac{1}{n} \log G(\delta_{[1,n]})
-\le
-\frac{1}{5}\log G(C_5).
-\]
-\end{proposition}
-
 \begin{proof}
-By the unique decomposition into return words and cocycle additivity,
-the growth rate is a convex combination of the per-symbol contributions
-of $C_5$ and $C_{12}$.
-
+We define \(\Omega^k\) as the \(k\)-fold catentation of \(\Omega\).
+This after \(k\) repetitions of \(\Omega\),
+\[
+\Delta(\Omega^k) = k \Delta(\Omega)
+\]
+while
+\[
+B(k|\Omega|) = k |\Omega| \log_2 3 + O(1)
+\]
 Since
 \[
-\frac{1}{5}\log G(C_5)
->
-\frac{1}{12}\log G(C_{12}),
+\Delta(\Omega) - |\Omega| \log_2 3 > 0,
 \]
-the maximal comparison average is obtained by replacing every return word with $C_5$,
-corresponding formally to the periodic comparison word $C_5^\infty$.
+the difference
+\[
+\Delta(\Omega^k) - B(k|\Omega|)
+\]
+
+tend to \(+\infty\) as \(k \to \infty\). Since the excess drift grows
+linearly while the Beatty discrepancy remains bounded, sufficiently long
+prefixes violate the admissibility constraints. Therefore the infinite
+periodic word \(\Omega^{\infty}\) is not admissible.
 \end{proof}
 
+\begin{remark}
+By way of an explanation, \(\Omega\) posesses positive drift relative to
+\(\log_2 3\). Anything with positive drift cannot persist forever because
+the Beatty sequence never departs from its limiting slope by more than a
+bounded amount whereas positive drift accumulates linearly without bound.
+\end{remark}
+
+\begin{lemma}[Extremal Admissibility Principle]
+\label{lem:extremal-admissibility-principle}
+Let \(\omega\) be an admissible infinite division word. Then
+\[
+\limsup_{n\to\infty} \frac{\Delta_\omega(n)}{n} \le \log_2 3
+\]
+Consequenty no admissible infinite word may contain an asymptotic density
+of double increments exceeding the Beatty slope.
+\end{lemma}
+
+\begin{proof}
+Suppose
+\[
+\limsup_{n\to\infty} \frac{\Delta_\omega(n)}{n} > \log_2 3.
+\]
+
+Then there exists
+\(\varepsilon>0\)
+and infinitely many prefixes satisfying
+\[
+\Delta_\omega(n) \ge (\log_2 3+\varepsilon)n.
+\]
+
+Hence these prefixes accumulate positive Beatty drift growing linearly
+with \(n\), contradicting the Beatty Drift Lemma~\ref{lem:beatty-drift-lemma}.
+\end{proof}
+
+
+% ------------------------------------------------------------
+\subsection{Canonical Return Words}
 % ------------------------------------------------------------
 
-\subsection{Global Growth Bound}
+The Beatty Drift Lemma~\ref{lem:beatty-drift-lemma} constrains only the
+asymptotic average dyadic increment of admissible infinite words. To convert
+this asymptotic restriction into a finite combinatorial statement, we use the
+canonical return words of the Beatty Sturmian sequence.
+
+The continued fraction expansion of \(\log_2 3\) yield the coefficents, \(a_k\) for
+generating the Sturmian return words according to the recursive equation
+\[
+q_{k} = a_k q_{k-1} + q_{k-2}
+\]
+
+For the present argument, only the first two nontrivial canonical return words are
+required, since every longer canonical return word is assembled recursively from them.
+
+\begin{proposition}[Recursive Assembly of Canonical Return Words]
+\label{prop:recursive-assembly}
+
+Let \(C_2=(1,2)\) and
+\(C_5=(1,2,1,2,2)\)
+denote the first two nontrivial canonical Sturmian return words.
+Every subsequent canonical return word is obtained recursively by
+concatenating copies of \(C_2\) and \(C_5\).
+\end{proposition}
+
+\begin{proof}
+
+The canonical Sturmian return words satisfy the standard continued-fraction
+recursion
+\[
+C_k=C_{k-1}^{\,a_k}C_{k-2},
+\]
+
+where \(a_k\) is the corresponding continued-fraction coefficient of
+\(\log_2 3\). The next composite word is
+\[
+C_{12}=C_2\,C_{5}^2
+\]
+
+Suppose inductively that both \(C_{k-1}\) and \(C_{k-2}\)
+are concatenations of \(C_2\) and \(C_5\). Then
+\[
+C_k=C_{k-1}^{\,a_k}C_{k-2}
+\]
+
+is likewise a concatenation of the same primitive words.
+The result follows by induction.
+\end{proof}
+
+
+% ------------------------------------------------------------
+\subsection{The Beatty Barrier Theorem}
+% ------------------------------------------------------------
+
+The Beatty increment sequence satisfies
+\[
+a(n) = \lfloor (n+1) \log_2(3) \rfloor - \lfloor n \log_2 3 \rfloor
+\]
+and therefore
+\[
+\lim_{m \to \infty} \frac{1}{m} \sum_{k=1}^{m} a(k) = \log_2 3
+\]
+as recorded in \OEIS{A020914}. Among the primitive return words, the block
+\[
+C_5 = (1,2,1,2,2)
+\]
+has an avergage increment
+\[
+\frac{8}{5} > \log_2 3.
+\]
+
+Hence the Beatty Drift Lemma implies that the infinite periodic word
+\[
+(1,2,1,2,2)^\infty
+\]
+is not admissible. The obstruction is purely arithmetic: the excess average
+increment accumulates linearly, while the Beatty discrepancy remains bounded.
+
+\begin{theorem}[Beatty Barrier Theorem]
+\label{thm:beatty-barrier}
+
+No admissible infinite division word can contain the primitive block
+\[
+C_5 = (1,2,1,2,2)
+\]
+with asymptotic frequency one.  Equivalently, every admissible infinite
+word must contain infinitely many longer return blocks whose average
+dyadic increment is strictly smaller than $8/5$.
+\end{theorem}
+
+\begin{proof}
+Suppose the asymptotic frequency is one. Then
+\[
+\frac{\Delta(n)}{n} \to \frac{8}{5}
+\]
+since
+\[
+\frac{8}{5} > \log_2 3.
+\]
+this contradicts the Extremal Admissibility Principle
+(Lemma~\ref{lem:extremal-admissibility-principle}),
+which asserts that every admissible infinite division word satisfies
+\[
+\limsup_{n\to\infty} \frac{\Delta_\omega(n)}{n} \le \log_2 3
+\]
+
+Therefore \(C_5\) cannot occur with asymptotic frequency one.
+\end{proof}
+
+
+% ============================================================
+\section{Spectral Growth Bound}
+\label{sec:spectral-growth-bound}
+% ============================================================
+
+The admissible grammar is constrained by the Beatty growth law \(B(n)\).
+Any symbolic process whose average increment exceeds the Beatty slope must
+eventually violate admissibility. The periodic 5-cycle is the minimal
+non-trivial expansive process with this property.
+
+Appendix~\ref{app:local-growth-details} computes the comparison growth
+contributed by every primitive return block. Among these,
+\[
+C_5 = (1,2,1,2,2)
+\]
+
+has the largest per-symbol comparison growth.  Nevertheless,
+\[
+\Lambda_5 = \left( 3^2 \cdot
+\frac{123}{33} \cdot
+\frac{341}{131} \cdot
+\frac{329}{123}
+\right)^{1/5} < 3.
+\]
+
+\begin{lemma}[Extremal Block Dilution]
+\label{lem:extremal-block-dilution}
+Every occurrence of an expansive primitive contributes positive Beatty drift.
+Since total drift must remain bounded, expansive primitives must be balanced
+by sufficiently many contractive return words. Consequently their asymptotic
+frequency is bounded away from one.
+\end{lemma}
+
+\begin{proof}
+By the Extremal Admissibility Principle
+(Lemma~\ref{lem:extremal-admissibility-principle}),
+every admissible infinite division word has average dyadic increment at most
+\(\log_2 3\).
+
+The primitive block \(C_5\) has average increment \(8/5>\log_2 3\), so each
+occurrence contributes positive Beatty drift relative to the admissible mean.
+
+If the asymptotic frequency of expansive blocks approached one, the average
+drift would exceed the Beatty slope, contradicting the Extremal Admissibility
+Principle.
+
+Hence expansive primitives must be balanced by return blocks having smaller
+average increment. Consequently the asymptotic frequency of expansive blocks
+is bounded away from one.
+\end{proof}
 
 \begin{theorem}[Spectral Growth Bound]
-\label{thm:spectral-growth-bound}
-Let $\lambda$ denote the symbolic growth rate introduced in Section
-\ref{sec:symbolic-growth}.
-
-Then
+\label{thm:spectral-growth}
+Every admissible symbolic trajectory satisfies
 \[
-\lambda \le \exp\!\left(\frac{1}{5}\log G(C_5)\right) < 3.
+\lambda < 3.
 \]
 \end{theorem}
 
 \begin{proof}
-% From the extremal return-word principle, the maximal growth is achieved by
-% periodic concatenation of $C_5$. Evaluating the local constants yields
-By Proposition~\ref{prop:extremal-comparison-word}, every admissible infinite
-word has average cocycle growth bounded above by that of \(C_5^\infty\).  Thus
+The Beatty Barrier Theorem excludes infinite repetition of the unique
+extremal primitive block.
+
+Every admissible trajectory therefore contains infinitely many return
+blocks with strictly smaller average growth.  By the Spectral Compensation
+Lemma~\ref{lem:extremal-block-dilution} any instance of the 5-block one must
+insert at least one compensating block.
+
+Since every compensating block has comparison growth strictly smaller than
+the extremal 5-block, the asymptotic exponential growth rate is strictly
+below the growth obtained by perpetual repetition of \(C_5\).  Then
 \[
-\lambda \le \exp\!\left(\frac{1}{5}\log G(C_5)\right).
+\Lambda_5<3.
 \]
-Via explicit evaluation of the local cocycle contributions (Appendix \ref{app:local-growth-details}),
+Thus every admissible symbolic trajectory satisfies
 \[
-\left(
-3^{2}
-\cdot \frac{123}{33}
-\cdot \frac{341}{131}
-\cdot \frac{329}{123}
-\right)^{1/5}
-< 3.
+\lambda<3.
 \]
 \end{proof}
-Theorem~\ref{thm:spectral-growth-bound} closes the logical chain developed throughout
-the paper. The Beatty threshold sequence induces the admissible grammar; the grammar
-determines the symbolic growth rate \(\lambda\); the Sturmian return-word analysis
-establishes the strict bound \(\lambda < 3\); and Theorem~\ref{thm:residual-mass-collapse}
-then forces the residual forest to have zero natural density. Thus the symbolic, arithmetic,
-and measure-theoretic components of the argument fit together in a single chain of implications.
 
-% Theorem~\ref{thm:spectral-growth-bound} verifies the sole spectral hypothesis
-% required by Theorem~\ref{thm:residual-mass-collapse}. Consequently, the
-% measure-theoretic analysis of Section~\ref{sec:measure-collapse} applies without
-% further assumptions.
+% ------------------------------------------------------------
+\subsection{Interpretation}
+% ------------------------------------------------------------
 
-% Thus the symbolic dynamics, the admissible grammar, the extremal cocycle
-% structure, and ultimately the spectral growth bound all originate from the
-% continued-fraction expansion of \(\log_2 3\).
-% % ------------------------------------------------------------
-% \subsection{Interpretation}
-% % ------------------------------------------------------------
+The Sturmian analysis identifies the primitive return words that may appear
+in the Beatty grammar. The proof of the spectral bound depends only on the Beatty
+drift restriction established in the previous section. The continued-fraction and
+return-word analysis serves only to justify that the return cycles are canonical
+primitive comparison words rather than ad hoc choices.
 
-% The admissible grammar is therefore governed by a Sturmian shift with two
-% primitive return words. Although both return words occur in all admissible
-% sequences, the 5-cycle is the unique maximizer of the cocycle drift.
+The Beatty-controlled affine grammar admits an extremal local growth mechanism
+whose infinite repetition is structurally forbidden, and that forbidden mechanism
+is already subcritical, namely \(\lambda < 3\).
 
-% All longer structures (including 12-, 41-, and 53-cycles) arise as
-% concatenations of these primitives and do not introduce new extremal growth.
-
-% Consequently, the asymptotic growth is bounded by the 5-cycle envelope,
-% which is itself strictly subcritical relative to 3.
-
-% The preceding theorem establishes the spectral hypothesis required by
-% Theorem~\ref{thm:residual-mass-collapse}. Since the symbolic growth rate satisfies
-% \[
-% \lambda < 3,
-% \]
-% the dyadic contraction of admissible cylinders dominates the exponential proliferation
-% of symbolic branches. The measure-theoretic reduction developed in the previous section
-% therefore applies, implying that the residual forest has zero natural density.
-% % ============================================================
-% \section{Sturmian Return Word Lags and Beatty Tower Structure}
-% \label{sec:sturmian-return-lags}
-% % ============================================================
-
-% % Summary
-% The numerator is the grammar evaluated at a two-step forward iterate of the
-% Sturmian return map, while the denominator encodes the dyadic resolution at
-% the current iterate. The resulting ratio measures a lagged mismatch between
-% successive return-word partitions and dyadic cylinders.
-
-% \begin{definition}[Induced Return-Time Function]
-% Let $\mathcal{C}$ denote the collection of contractive residue classes.
-
-% For a residue class $x$, define the induced return time
-
-% \[
-% \tau(x)
-% =
-% \min\{m\ge1:\ T^{m}(x)\in\mathcal{C}\},
-% \]
-
-% where $T$ denotes the Collatz map.
-
-% For each $n\ge1$, let
-
-% \[
-% R(n)
-% =
-% \#\{x:\tau(x)=n\},
-% \]
-
-% the number of residue classes whose first return to the contractive
-% grammar occurs after exactly $n$ steps.
-
-% \end{definition}
-
-% The denominator determines the dyadic resolution scale. The numerator
-% counts the newly generated contractive cylinders at that scale.
-
-% Both quantities are governed by the same Sturmian return-word hierarchy,
-% with the numerator depending on a two-step delayed iterate of the same
-% underlying coding. Consequently the ratio reflects the interaction of
-% two observables generated by a common uniquely ergodic dynamical system.
-
-% \begin{remark}[Observed Plateau Phenomenon]
-% \label{rem:plateau}
-
-% Extensive computations up to $n=80\,000$ indicate that the number of
-% consecutive contributions required to span a dyadic interval stabilizes
-% at approximately $12$--$13$ terms.
-
-% Occurrences of $14$ terms are rare and appear only in the form
-% \[
-% 12,\;14,\;12,
-% \]
-% suggesting that they arise from residual overlap between adjacent
-% dyadic intervals rather than from a distinct asymptotic regime.
-
-% Since both the numerator and denominator are generated by the same
-% Sturmian return-word structure, it is natural to conjecture the
-% existence of a limiting cocycle exponent
-% \[
-% \gamma_\infty,
-% \]
-% governing the asymptotic contraction rate of the ratio. If such a
-% limit exists, the observed plateau would represent an invariant of the
-% underlying dynamical system rather than a finite computational artifact.
-% \end{remark}
-
-% \begin{conjecture}[Plateau Stability and Dyadic Coverage]
-% \label{conj:plateau}
-
-% Let
-
-% \[
-% m_n
-% =
-% \frac{A186009(n+1)}
-%      {2^{A020914(n)}}
-% \]
-
-% denote the mass contributed by the newly generated contractive
-% cylinders at level \(n\).
-
-% Assume there exists a limiting averaged growth exponent
-% \(\gamma_\infty\) obtained from return-word averages along the
-% Sturmian hierarchy, i.e.
-
-% \[
-% \gamma_\infty
-% =
-% \lim_{L\to\infty}
-% \frac{1}{L}
-% \log\!\left(
-% \frac{m_{n+L}}{m_n}
-% \right),
-% \]
-
-% where \(L\) ranges over convergent-denominator tower lengths.
-
-% Then there exists a finite constant \(K\) such that for all
-% sufficiently large dyadic levels \(r\), the collection of consecutive
-% masses
-
-% \[
-% m_n,m_{n+1},\ldots,m_{n+K}
-% \]
-
-% associated with that dyadic scale spans the entire interval
-
-% \[
-% (2^{-(r+1)},\,2^{-r}],
-% \]
-
-% up to endpoints.
-
-% Consequently, if the contractive cylinders form a lossless,
-% non-overlapping partition of the covered space, then the cumulative
-% covered measure converges to
-
-% \[
-% \sum_{r=0}^{\infty} 2^{-r}
-% =
-% 1.
-% \]
-
-% \end{conjecture}
-
-% \begin{remark}[Heuristic Origin of the Plateau]
-% \label{rem:plateau-heuristic}
-
-% The empirical plateau phenomenon appears to arise from the fact that
-% both the numerator and denominator of
-
-% \[
-% m_n
-% =
-% \frac{A186009(n+1)}
-%      {2^{A020914(n)}}
-% \]
-
-% are governed by the same Sturmian return-word structure.
-
-% The denominator growth is controlled directly by the Beatty sequence
-% \(A020914\), while the numerator growth is governed by the same
-% sequence through the lagged doubling rule appearing in the Pascal-tuple
-% construction.
-
-% As a consequence, tower lengths corresponding to continued-fraction
-% convergents of \(\log_2 3\)
-
-% \[
-% 5,\ 12,\ 41,\ 53,\ 306,\ 665,\ 15601,\ldots
-% \]
-
-% produce increasingly accurate return-word averages. Away from tower
-% transitions these averages appear nearly constant, yielding an
-% effective exponential decay rate
-
-% \[
-% m_{n+L}
-% \approx
-% e^{\gamma_\infty L} m_n.
-% \]
-
-% Empirically this induces a nearly fixed halving time of approximately
-% 12--13 terms. In rare situations residual overlap between adjacent
-% dyadic intervals produces an apparent 14-term excursion, but these
-% events do not appear to alter the underlying plateau.
-
-% At present this mechanism remains heuristic. A proof would likely
-% follow from establishing existence of the limiting return-word average
-% \(\gamma_\infty\) together with quantitative control of fluctuations
-% near convergent-denominator tower transitions.
-% \end{remark}
-
-
-% % ============================================================
-% \section{Limiting Cocycle Growth Rate Existence}
-% \label{sec:limiting-cocycle-growth}
-% % ============================================================
-
-% \subsection{Origins of the A186009 Cocycle Towers}
-% \label{subsec:cocycle-origins}
-
-% The cocycle tower structure observed throughout this work is not an ad hoc
-% construction. Rather, it arises naturally from the continued-fraction
-% decomposition of the irrational number $\log_2(3)$.
-
-% \[
-% [1;1,1,2,2,3,1,5,2,23,2,2,1,\ldots].
-% \]
-
-% Let $a_n$ denote the partial quotients of this continued fraction.
-% The associated tower lengths are generated by the standard convergent
-% recurrence
-% \[
-% C_n = a_n C_{n-1} + C_{n-2},
-% \]
-
-% with initial values
-% \[
-% C_0 = 0,
-% \qquad
-% C_1 = 1.
-% \]
-
-% The first cocycle towers generated by this recurrence are shown in
-% Table~\ref{tab:cocycle-towers}.
-% \begin{table}[h]
-% \centering
-% \caption{Cocycle towers generated by the continued-fraction expansion of $\log_2(3)$.}
-% \label{tab:cocycle-towers}
-% \begin{tabular}{c c l l}
-% \hline
-% Cocycle & Quotient & Recurrence & Interpretation \\
-% \hline
-
-% $C_0$       & 1  & -- & A186009 single \\
-
-% $C_1$       & 1  & -- & A186009 double \\
-
-% $C_2$       & 1  & $C_0 + 1 C_1$ & Single + Double \\
-
-% $C_5$       & 2  & $2 C_2 + C_1$ & Expansive 5-cycle \\
-
-% $C_{12}$    & 2  & $C_2 + 2 C_5$ & Contractive tower \\
-
-% $C_{41}$    & 3  & $3 C_{12} + C_5$ & Expansive tower \\
-
-% $C_{53}$    & 1  & $C_{12} + 1 C_{41}$ & Contractive tower \\
-
-% $C_{306}$   & 5  & $5C_{53} + C_{41}$ & Expansive tower \\
-
-% $C_{665}$   & 2  & $C_{53} + 2 C_{306}$ & Contractive tower \\
-
-% $C_{15601}$ & 23 & $23 C_{665} + C_{306}$ & Expansive tower \\
-
-% $C_{31867}$ & 2  & $C_{665} + 2 C_{15601}$ & Contractive tower \\
-
-% $C_{79335}$ & 2  & $2 C_{31867} + C_{15601}$ & Expansive tower \\
-
-% $C_{111202}$ & 1 & $C_{31867} + 1 C_{79335}$ & Contractive tower \\
-
-% \hline
-% \end{tabular}
-% \end{table}
-
-% The resulting tower sequence begins
-
-% \[
-% {0,1,2,5,12,41,53,306,665,15601,31867,79335,111202,\ldots}.
-% \]
-
-% These towers naturally separate into two families according to whether
-% their associated induced growth remains below or above the limiting
-% Sturmian slope.
-
-% \[
-% \text{Contractive cocycles: } {0,2,12,53,665,31867,111202,\ldots},
-% \]
-
-% \[
-% \text{Expansive cocycles: } {1,5,41,306,15601,79335,\ldots}.
-% \]
-
-% The alternating appearance of contractive and expansive towers reflects
-% the alternation of lower and upper convergents in the continued-fraction
-% approximation of $\log_2(3)$.
-
-% Consequently, all cocycles appearing in the subsequent analysis are
-% structurally compelled by the arithmetic of the Sturmian slope itself.
-% They are not introduced as auxiliary constructions, but arise inevitably
-% from the convergent hierarchy associated with $\log_2(3)$.
-
-% \subsection{Origins of Cocycle Tower Growth Rates}
-% \label{subsec:cocycle-growth-rates}
-
-% The numerical experiments of the preceding sections suggest that the growth of
-% the numerator sequence $A186009(n)$ is governed by a limiting logarithmic
-% growth rate.
-
-% For a contractive tower length $L$, define
-
-% \[
-% \gamma_L = \frac{\log A186009(L)}{L}.
-% \]
-
-% Empirically, the sequence of tower values
-
-% \[
-% L \in {2,12,53,665,31867,111202,\ldots}
-% \]
-
-% produces a monotone increasing family of estimates
-
-% \[
-% 0.34657, 0.74940, 0.93689, 1.02946, 1.04316, 1.04348, \ldots
-% \]
-
-% whose successive increments decrease rapidly.
-
-% This behavior is consistent with the existence of a limiting exponent
-
-% \[
-% \gamma_\infty = \lim_{L\to\infty}\gamma_L,
-% \]
-
-% where the limit is taken over contractive tower lengths.
-
-% The significance of the tower lengths is that they correspond to the
-% best Sturmian approximations generated by the continued-fraction expansion
-% of $\log_2(3)$. As the tower length increases, the corresponding cocycle
-% becomes a progressively more faithful representation of the underlying
-% Sturmian grammar, and the observed growth rates stabilize.
-
-% More generally, for a cocycle of fixed length $c$, define
-
-% \[
-% \gamma_c(T) = \frac{ \log A186009(T+c) - \log A186009(T) }{c},
-% \]
-
-% evaluated at tower points $T$ for which the cocycle is admissible.
-
-% Computations indicate that every fixed cocycle length possesses its own
-% limiting exponent
-
-% \[
-% \gamma_c^\ast = \lim_{T\to\infty} \gamma_c(T),
-% \]
-
-% and that longer cocycles yield values increasingly close to
-% $\gamma_\infty$.
-
-% The contractive cocycles therefore appear to form an increasing family
-
-% \[
-% \gamma_2^\ast
-% <
-% \gamma_{12}^\ast
-% <
-% \gamma_{53}^\ast
-% <
-% \gamma_{665}^\ast
-% <
-% \cdots
-% <
-% \gamma_\infty.
-% \]
-
-% Although the existence of these limits remains conjectural, the observed
-% behavior is precisely what one expects from successive refinements of a
-% Sturmian return-word system.
-
-% The crucial structural observation is that every admissible trajectory may
-% be decomposed into a concatenation of cocycles. If a trajectory consists of
-% segments of lengths
-% \[
-% c_1,c_2,\ldots,c_k,
-% \]
-
-% then its average logarithmic growth rate is
-% \[
-% \Gamma = \frac{\sum_{i=1}^{k} c_i \gamma_{c_i}}{\sum_{i=1}^{k} c_i},
-% \]
-
-% which is a weighted average of the constituent cocycle growth rates.
-
-% Consequently, the growth rate of any admissible trajectory is controlled by
-% the growth rates of the cocycles from which it is assembled.
-
-% This becomes significant when combined with the exhaustive analysis of
-% grammar-forbidden expansive $5$-cycle concatenations. Those calculations
-% show that even an infinite concatenation of maximal expansive behavior grows
-% more slowly than the corresponding dyadic denominator. Since such
-% concatenations lie outside the admissible Sturmian grammar, every admissible
-% trajectory must exhibit growth no greater than this already-bounded case.
-
-% Thus the Sturmian grammar imposes a global constraint on numerator growth.
-% Successive refinements of the return-word structure do not permit arbitrarily
-% large increases in the average logarithmic growth rate; instead they produce
-% progressively tighter bounds.
-
-% This suggests the following conjectural picture.
-
-% \begin{conjecture}[Limiting Cocycle Exponent]
-% The Sturmian return-word grammar admits a limiting logarithmic growth rate
-% $\gamma_\infty$ satisfying
-
-% \[
-% \gamma_c^\ast < \gamma_\infty
-% \]
-
-% for every finite contractive cocycle length $c$.
-
-% Furthermore, every admissible trajectory possesses an average logarithmic
-% growth rate bounded above by $\gamma_\infty$.
-% \end{conjecture}
-
-% Under this interpretation, the observed $12$--$13$ term plateau is not an
-% isolated numerical phenomenon but rather a consequence of the bounded
-% cocycle growth imposed by the Sturmian grammar. Once the average growth rate
-% is constrained below the dyadic denominator, successive dyadic intervals are
-% filled by a finite number of cocycle contributions, producing the persistent
-% plateau observed throughout the computations.
-
-
-% % ============================================================
-% \section{Dyadic Plateau Emergence}
-% \label{sec:dyadic-plateau-emergence}
-% % ============================================================
-
-% The existence of the asymptotic cocycle growth rate $\lambda_\infty$ (whether
-% as an ordinary limit or a $\limsup$) has important consequences for the
-% structure of the convergent forest. Since the denominator is governed by
-% the Sturmian sequence generated by $\log_2(3)$, successive tower points
-% provide increasingly accurate approximations to the ideal growth ratio $3^n$.
-% At each tower, the minimal exponent $k$ satisfying $2^k>3^n$ becomes increasingly
-% faithful to the true Sturmian slope.
-
-% Table~\ref{tab:tower-fidelity} illustrates this phenomenon.
-
-% \begin{table}[h]
-% \centering
-% \caption{Fidelity of the relation between powers of $2$ and powers of $3$ at the continued-fraction towers of $\log_2(3)$.}
-% \label{tab:tower-fidelity}
-% \begin{tabular}{r l l l}
-% \hline
-% Tower & $2^k$ & $3^n$ & $2^k/3^n$ \\
-% \hline
-% 2      & $8$ & $9$ & $0.88888889$ \\
-% 12     & $5.24288000\times10^{    5}$ & $5.31441000\times10^{    5}$ & $0.98654037$ \\
-% 53     & $1.93428131\times10^{   25}$ & $1.93832457\times10^{   25}$ & $0.99791405$ \\
-% 665    & $1.93025831\times10^{  317}$ & $1.93034257\times10^{  317}$ & $0.99995635$ \\
-% 31867  & $2.64862819\times10^{15204}$ & $2.64864743\times10^{15204}$ & $0.99999274$\\
-% 111202 & $6.88280986\times10^{53056}$ & $6.88283464\times10^{53056}$ & $0.99999640$\\
-% \hline
-% \end{tabular}
-% \end{table}
-
-% The average exponential growth rate of the numerator is defined by
-
-% \[
-% \lambda_n
-% =
-% \frac{\log A186009(n+1)}{n}.
-% \]
-
-% Consequently, the average multiplicative growth factor of the numerator is
-
-% \[
-% e^{\lambda_n}.
-% \]
-
-% At tower points the denominator grows arbitrarily close to the ideal factor $3$,
-% so the relative mass retained from one residue class to the next is asymptotically
-
-% \[
-% r(n)
-% =
-% \frac{e^{\lambda_n}}{3}.
-% \]
-
-% Since $e^{\lambda_n}<3$, we have
-
-% \[
-% 0<r(n)<1,
-% \]
-
-% and the available mass decreases geometrically as additional residue classes are accumulated.
-
-% This naturally suggests defining a characteristic covering length. Let $P(n)$ denote
-% the number of successive residue classes required for the available mass to decrease
-% by one half, corresponding to the next dyadic interval. Thus $P(n)$ satisfies
-
-% \[
-% r(n)^{P(n)}
-% =
-% \frac12.
-% \]
-
-% Solving for $P(n)$ gives
-
-% \[
-% P(n)
-% =
-% \frac{\log(1/2)}
-% {\log(r(n))}
-% =
-% \frac{\log(1/2)}
-% {\log\!\left(e^{\lambda_n}/3\right)}.
-% \]
-
-% The quantity $P(n)$ therefore represents the characteristic dyadic covering length
-% induced by the average cocycle growth rate.  Empirically, $P(n)$ evolves through the values
-
-% \[
-% 0.92,\;
-% 1.98,\;
-% 4.29,\;
-% 10.02,\;
-% 12.50,\;
-% 12.57,\;
-% \ldots
-% \]
-
-% at the successive contractive towers
-
-% \[
-% 2,\;
-% 12,\;
-% 53,\;
-% 665,\;
-% 31867,\;
-% 111202,
-% \]
-
-% respectively.
-
-% These values converge toward the experimentally observed plateau requiring
-% approximately $12$--$13$ consecutive residue classes to span a new dyadic
-% bracket. This agreement suggests that the plateau is not an independent temporal
-% phenomenon, but rather a direct manifestation of the asymptotic cocycle growth rate.
-
-% At present this relationship should be regarded as a heuristic consequence of
-% the limiting cocycle dynamics. Nevertheless, it provides the first quantitative
-% connection between the asymptotic growth rate $\lambda_\infty$ and the observed
-% stabilization of dyadic coverage.
-
-% % ------------------------------------------------------------
-% \subsection{Dyadic Interval Growth Pressure}
-% % ------------------------------------------------------------
-
-% The characteristic covering length $P(n)$ introduced in the previous section is
-% not the same quantity as the number of terms actually required to span the next
-% dyadic interval. Rather, $P(n)$ represents the covering length that would be
-% expected if the average compound growth rate of the numerator remained fixed at
-% its current value.
-
-% The actual dyadic covering length evolves dynamically. Early in the sequence the
-% average growth rate of $A186009(n)$ is still developing, while the denominator is
-% already governed by the Sturmian sequence induced by $\log_2(3)$. Consequently,
-% the number of terms required to span each successive dyadic interval initially
-% exceeds the covering length predicted by $P(n)$. This mismatch creates a persistent
-% \emph{growth pressure}: additional terms must be accumulated before sufficient mass
-% exists to cover the next dyadic bracket.
-
-% This phenomenon is visible immediately.
-
-% The first dyadic interval, representing the even integers, consists of the single contribution
-
-% \[
-% \frac12.
-% \]
-
-% Likewise, the second interval is represented by
-
-% \[
-% \frac14.
-% \]
-
-% In both cases the numerator has experienced no growth, $\lambda=0$, and a single term is sufficient to span the required dyadic mass.
-
-% The first imbalance occurs when the denominator undergoes its initial Sturmian doubling before the numerator experiences its first tuple-doubling event. The denominator therefore advances from $2^2$ to $2^4$, while the numerator remains equal to $1$. The resulting contribution
-
-% \[
-% \frac1{16}
-% \]
-
-% is insufficient to cover the next dyadic interval of size $1/8$.
-
-% At the following step the numerator finally doubles, producing the contribution
-
-% \[
-% \frac2{32}.
-% \]
-
-% Together,
-
-% \[
-% \frac1{16}+\frac2{32}
-% =
-% \frac18,
-% \]
-
-% and the required dyadic mass is recovered. The covering length has therefore increased from one term to two terms.
-
-% The same mechanism repeats. The denominator again outpaces the current average numerator growth, producing the successive contributions
-
-% \[
-% \frac3{128},
-% \qquad
-% \frac7{256},
-% \]
-
-% whose combined mass still falls short of the next dyadic interval of size $1/16$. Only after adding the subsequent contribution
-
-% \[
-% \frac{12}{1024}
-% \]
-
-% is the interval completed. The covering length therefore increases once more, from two terms to three.
-
-% This process continues throughout the early portion of the sequence. Because the average compound growth rate
-
-% \[
-% \lambda_n
-% =
-% \frac{\log A186009(n+1)}{n}
-% \]
-
-% is itself increasing, the equilibrium covering length $P(n)$ also increases. However, $P(n)$ consistently remains below the actual covering length, so upward pressure persists and additional terms continue to accumulate.
-
-% Eventually the situation begins to change. Around the contractive tower at $n=53$, the average numerator growth has increased sufficiently that the covering process briefly requires fewer terms than expected. The observed covering lengths begin to fluctuate,
-
-% \[
-% 1,\,
-% 1,\,
-% 2,\,
-% 3,\,
-% 4,\,
-% 5,\,
-% 6,\,
-% 7,\,
-% 8,\,
-% 9,\,
-% 8,\,
-% 9,\,
-% 10,\,
-% 9,\,
-% 10,\,
-% 10,\,
-% 11,\,
-% 10,\,
-% \ldots,
-% \]
-
-% rather than increasing monotonically. The system has entered a transitional regime in which the increasing numerator growth begins to offset the fixed Sturmian denominator growth.
-
-% This transition becomes even more pronounced at the larger contractive towers. At $n=665$,
-
-% \[
-% \lambda_{665}=1.02946,
-% \qquad
-% P(665)=10.0235,
-% \]
-
-% already placing the equilibrium covering length close to the experimentally observed value of approximately twelve terms.
-
-% At the much larger towers,
-
-% \[
-% \lambda_{31867}=1.043155,
-% \qquad
-% P(31867)=12.4988,
-% \]
-
-% and
-
-% \[
-% \lambda_{111202}=1.043479,
-% \qquad
-% P(111202)=12.5722,
-% \]
-
-% the equilibrium covering length lies remarkably close to the empirical covering requirement of approximately $12$--$13$ terms per dyadic interval.
-
-% This suggests the following interpretation. The increasing average cocycle growth rate continuously raises the equilibrium covering length $P(n)$, while the actual covering length attempts to follow it. Initially the equilibrium lies below the observed covering length, producing persistent upward pressure and requiring additional terms. As $\lambda_n$ approaches its asymptotic value, however, the equilibrium and observed covering lengths come into balance. The upward pressure disappears, and the covering process settles into the experimentally observed plateau of approximately twelve to thirteen terms per dyadic interval.
-
-
-% Defining $\lambda_{\Delta} = \frac{\lambda_{H} - \lambda_{L}}{H-L}$, we can interpret the plateau as a manifestation of the limiting cocycle growth rate. As the average growth rate of the numerator approaches its asymptotic value, the number of terms required to span each dyadic interval stabilizes, reflecting the balance between numerator growth and denominator expansion.
-
-% Defining $P_{\Delta}(n) = \frac{\log(1/2)}{\log(e^{\lambda_{\Delta}}/3)}$, we can interpret the plateau as a manifestation of the limiting cocycle growth rate. As the average growth rate of the numerator approaches its asymptotic value, the number of terms required to span each dyadic interval stabilizes, reflecting the balance between numerator growth and denominator expansion.
-
-% \begin{table}[h]
-% \centering
-% \small
-% \caption{Covering Terms of Cocycle Towers.}
-% \label{tab:cocycle-tower-growth}
-% \begin{tabular}{
-% S[table-format=6.0]
-% S[table-format=6.0]
-% S[table-format=6.6]
-% S[table-format=6.6]
-% S[table-format=1.6]
-% S[table-format=2.5]
-% c
-% }
-% \hline
-% \chead{Low} &
-% \chead{High} &
-% \chead{$\lambda_L$} &
-% \chead{$\lambda_H$} &
-% \chead{$\lambda_\Delta$} &
-% \chead{$P_\Delta$} &
-% \chead{Range} \\
-% \hline
-% % Start: 0 (2-cycle)
-% % Source: 0.00000000, 0.69314718, 1.94591015, 3.40119738
-%    0 &     2 &  0.000000 &  0.693147 & 0.346574 &  0.92169 & 1-2 \\
-% % Start: 2 (2-cycles in 5-cycle)
-% % Source: 0.00000000, 0.69314718, 1.94591015, 3.40119738
-%    2 &     4 &  0.693147 &  1.945910 & 0.626382 &  1.46781 & 2-3 \\
-%    4 &     6 &  1.945910 &  3.401197 & 0.727644 &  1.86848 & 3 \\
-% \hline
-% % Start: 12 - 5 = 7 (2-cycles in 5-cycle)
-% % Source: 4.44265126, 6.16541785, 7.88306865
-%    7 &     9 &  4.442651 &  6.165418 & 0.861384 &  2.92185 & 4 \\
-%    9 &    11 &  6.165418 &  7.883069 & 0.858826 &  2.89068 & 4-5 \\
-% \hline
-% % Start: 12 (12-cycles in 41-cycle)
-% % Source: 8.99280606, 20.52510354, 32.44410124, 44.52830918
-%   12 &    24 &  8.992806 & 20.525104 & 0.961025 &  5.03787 & 5-7 \\
-%   24 &    36 & 20.525104 & 32.444101 & 0.993250 &  6.57869 & 7-8 \\
-%   36 &    48 & 32.444101 & 44.528309 & 1.007017 &  7.56753 & 8-9 \\
-% \hline
-% % Start: 53 (53-cycles in 665-cycle)
-% % Source: 49.65527437, 103.93979383, 158.64602485, 213.52648258, 268.50276979, 323.53980107
-%   53 &   106 &  49.655274 & 103.93979 & 1.024236 &  9.31948 & 9-11 \\
-%  106 &   159 & 103.93979  & 158.64602 & 1.032193 & 10.43594 & 10-11 \\
-%  159 &   212 & 158.64602  & 213.52648 & 1.035480 & 10.97935 & 11-12 \\
-%  212 &   265 & 213.52648  & 268.50277 & 1.037288 & 11.30307 & 11-12 \\
-%  265 &   318 & 268.50277  & 323.53980 & 1.038435 & 11.51833 & 11-12 \\
-% \hline
-% % Start: 665 - 306 = 359 (53-cycles in 306-cycle)
-% % Source: 366.16141709, 421.26620748, 476.39514338, 531.54339744, 586.70728063, 641.88404414
-%  359 &   412 & 366.16142 & 421.26621 & 1.039713 & 11.76835 & 11-12 \\
-%  412 &   465 & 421.26621 & 476.39514 & 1.040168 & 11.86006 & 12 \\
-%  465 &   518 & 476.39514 & 531.54340 & 1.040533 & 11.93454 & 11-12 \\
-%  518 &   571 & 531.54340 & 586.70728 & 1.040828 & 11.99541 & 12 \\
-%  571 &   624 & 586.70728 & 641.88404 & 1.041071 & 12.04607 & 12-13 \\
-% \hline
-% % Start: 665 (665-cycles in 31867-cycle)
-% % Source: 684.59165006, 1377.56879391, 2070.97672338
-%  665 &  1330 &  684.59165 & 1377.5688 & 1.042071 & 12.25911 & 12-13 \\
-% 1330 &  1995 & 1377.5688  & 2070.9767 & 1.042719 & 12.40115 & 12-13 \\
-% % Start: 31867 - 15601 = 16266 (665-cycles in 15601-cycle)
-% % Source: 16961.51372325, 17655.46940823
-% 16266 & 16931 & 16961.514 & 17655.469 & 1.043541 & 12.58664 & 12-14 \\
-% \hline
-% % Start: 31867 (31867-cycles in 111202-cycle)
-% % Source: 33242.22061159, 66498.62784578, 99755.46658808, 116036.95542876, 149294.02439621
-%  31867 &  63734 &  33242.221 &  66498.628 & 1.043600 & 12.59990 & 12-14 \\
-%  63734 &  95601 &  66498.628 &  99755.467 & 1.043614 & 12.60301 & 12-14 \\
-% 111202 & 143069 & 116036.96  & 149294.02  & 1.043621 & 12.60474 & - \\
-
-% \hline
-% \end{tabular}
-% \end{table}
-
-% % ------------------------------------------------------------
-% \subsection{Bounded Covering Length and Perpetual Dyadic Coverage}
-% \label{subsec:bounded-covering-length}
-% % ------------------------------------------------------------
-
-% The empirical dyadic plateau suggests that the number of terms required to
-% cover each successive dyadic interval eventually stabilizes near a constant
-% value. However, for the purposes of the proof spine, convergence to a fixed
-% constant is unnecessary. Uniform boundedness is sufficient.
-
-% Recall that the average cocycle growth rate over an interval $(L,H)$ is defined by
-
-% \[
-% \lambda_{\Delta} = \frac{\lambda_H - \lambda_L}{H-L}.
-% \]
-
-% The most expansive admissible trajectory is given by the infinite concatenation
-% of grammar-forbidden expansive (5)-cycles. Earlier arguments established that
-% this trajectory grows strictly slower than the denominator and satisfies
-
-% \[
-% \left(\frac{30597}{131}\right)^{1/5} < 3.
-% \]
-
-% Consequently,
-
-% \[
-% e^{\lambda_{\Delta}} \le \left(\frac{30597}{131}\right)^{1/5} < 3,
-% \]
-
-% and therefore
-
-% \[
-% \lambda_{\Delta} < \ln(3).
-% \]
-
-% The importance of this inequality is not the precise value obtained, but rather
-% the existence of a strict margin below the Sturmian denominator growth rate.
-
-% Defining the characteristic covering length
-
-% \[
-% P_{\Delta} = \frac{\ln(1/2)}{\ln\left(e^{\lambda_{\Delta}}/3\right)},
-% \]
-
-% we observe that
-
-% \[
-% 0 < \frac{e^{\lambda_{\Delta}}}{3} < 1.
-% \]
-
-% Since the denominator of the expression above is therefore strictly negative
-% and bounded away from zero, it follows immediately that
-
-% \[
-% 0 < P_{\Delta} < \infty.
-% \]
-
-% Thus the number of terms required to reduce the residual mass by one half is
-% always finite.  Importantly, the argument does not require the existence of
-
-% \[
-% \lim_{n\to\infty} P_{\Delta}(n),
-% \]
-
-% nor does it require monotonicity of $(P_{\Delta}(n))$. The sequence may converge,
-% oscillate, or fluctuate indefinitely. The only requirement is the existence of a
-% finite upper bound
-
-% \[
-% \limsup_{n\to\infty} P_{\Delta}(n) < \infty.
-% \]
-
-% This boundedness alone guarantees that no dyadic interval can require an infinite
-% number of new terms for coverage.
-
-% Once a dyadic interval has been covered, the subsequent interval differs only by
-% an overall scaling factor of $(1/2)$. The underlying growth mechanism remains
-% unchanged, and the same bounded covering argument applies recursively to all
-% subsequent intervals.
-
-% Consequently, finite covering of one dyadic interval implies finite covering of
-% every subsequent dyadic interval. Since the process can be repeated indefinitely,
-% the dyadic decomposition remains perpetually coverable.
-
-% The existence of a bounded covering length therefore provides the structural
-% explanation for the observed plateau. Whether $(P_{\Delta}(n))$ converges to a
-% single constant or merely remains bounded is immaterial to the argument. The
-% proof requires only that the covering process never escapes to infinity.
-
-% % ------------------------------------------------------------
-% \subsection{Perpetual Dyadic Coverage and Natural Density}
-% \label{subsec:perpetual-dyadic-coverage}
-% % ------------------------------------------------------------
-
-% The significance of bounded cocycle growth extends beyond the existence of a
-% limiting average growth rate. It implies that the process of constructing dyadic
-% covers never fundamentally changes as the scale increases.  Let
-
-% \[
-% P_\Delta(n) = \frac{\ln(1/2)}
-% {\ln\left(e^{\lambda_\Delta(n)}/3\right)}
-% \]
-
-% denote the characteristic covering length associated with a cocycle interval.
-% Since the average cocycle growth rate satisfies
-
-% \[
-% \lambda_\Delta(n) < \ln(3),
-% \]
-
-% the average denominator growth over a cocycle interval remains strictly larger
-% than the numerator growth and therefore
-
-% \[
-% P_\Delta(n) < \infty
-% \]
-
-% for every admissible interval.
-
-% The existence of a finite covering length is the essential observation. Regardless
-% of whether \(P_\Delta(n)\) converges to a single value, oscillates within a bounded
-% range, or merely admits a finite lim sup, every dyadic interval requires only
-% finitely many admissible residue classes in order to achieve coverage.
-
-% Moreover, once a dyadic interval has been covered, no fundamentally new structure
-% enters the system. The subsequent interval differs only by an additional factor
-% of (1/2) in mass and is governed by the same Sturmian denominator and the same
-% admissible cocycle grammar. The covering problem therefore reproduces itself
-% recursively at each successive scale.
-
-% Consequently the dyadic covering procedure may be iterated indefinitely. The sequence
-% of covered masses becomes
-
-% \[
-% \frac{1}{2}, \qquad
-% \frac{1}{4}, \qquad
-% \frac{1}{8}, \qquad
-% \frac{1}{16}, \qquad
-% \frac{1}{32}, \qquad
-% \frac{1}{64}, \qquad
-% \ldots
-% \]
-
-% and therefore the cumulative covered density approaches
-
-% \[
-% \sum_{k=1}^{\infty}2^{-k}=1.
-% \]
-
-% Since admissible parity classes occupy disjoint residue classes, the densities
-% contributed by individual trees add without overlap. Thus the collection of all
-% convergent trees forms a forest whose total natural density is $1$.
-
-% In this interpretation the dyadic plateau is not merely an empirical feature of
-% the data. It is the manifestation of a stable covering regime in which finite
-% admissible cocycle collections repeatedly generate complete dyadic coverage at
-% every subsequent scale.
-
-% % ============================================================
-% \section{Residual Mass Collapse}
-% \label{sec:residual-collapse}
-% % ============================================================
-
-% The measure-theoretic framework established in
-% Section~\ref{sec:measure-collapse}
-% reduces the global density problem to a single question:
-% does the residual mass remain positive under arbitrarily deep symbolic
-% refinement?
-
-% The preceding sections established three essential structural facts.
-
-% First, the residual sets
-% \[
-% S_m
-% \]
-% form a nested decreasing sequence,
-% \[
-% S_{m+1}\subseteq S_m,
-% \]
-% whose limiting residual set is
-% \[
-% S_\infty
-% =
-% \bigcap_{m\ge1}S_m.
-% \]
-
-% Second, every residual set admits the exact disjoint decomposition
-% \[
-% S_m
-% =
-% F_m
-% \sqcup
-% S_{m+1},
-% \]
-% and consequently
-% \[
-% S_1
-% =
-% \left(
-% \bigsqcup_{m\ge1}F_m
-% \right)
-% \sqcup
-% S_\infty.
-% \]
-
-% Finally, each admissible division word determines a unique residue
-% cylinder whose dyadic measure is
-% \[
-% 2^{-D(\omega)}.
-% \]
-% The residual mass therefore satisfies
-% \[
-% \mu(S_m)
-% =
-% \sum_{|\omega|=m}
-% 2^{-D(\omega)}.
-% \]
-
-% The remaining task is to show that this residual mass tends to zero.
-
-% \begin{theorem}[Residual Mass Collapse]
-% \label{thm:residual-collapse}
-
-% Suppose the symbolic growth satisfies
-% \[
-% N(m)\le C\lambda^m
-% \]
-% for some constant \(C>0\) and some
-% \[
-% \lambda<3.
-% \]
-
-% Then
-% \[
-% \mu(S_m)\longrightarrow0.
-% \]
-
-% Consequently,
-% \[
-% \mu(S_\infty)=0.
-% \]
-
-% \end{theorem}
-
-% \begin{proof}
-
-% By the cylinder measure decomposition established in
-% Section~\ref{sec:measure-collapse},
-% \[
-% \mu(S_m)
-% =
-% \sum_{|\omega|=m}
-% 2^{-D(\omega)}.
-% \]
-
-% Every admissible division word of length \(m\) satisfies
-% \[
-% D(\omega)\ge B(m),
-% \]
-% where \(B(m)\) is the Beatty threshold introduced in
-% Section~\ref{sec:beatty-refinement-of-cylinder-forest}.
-
-% Therefore
-% \[
-% 2^{-D(\omega)}
-% \le
-% 2^{-B(m)}
-% \]
-% for every admissible cylinder, and hence
-% \[
-% \mu(S_m)
-% \le
-% N(m)\,2^{-B(m)}.
-% \]
-
-% Since
-% \[
-% 2^{B(m)-1}<3^m<2^{B(m)},
-% \]
-% it follows that
-% \[
-% 2^{-B(m)}
-% <
-% 3^{-m}.
-% \]
-
-% Consequently,
-% \[
-% \mu(S_m)
-% <
-% N(m)\,3^{-m}.
-% \]
-
-% Applying the assumed symbolic growth bound,
-% \[
-% N(m)\le C\lambda^m,
-% \]
-% yields
-% \[
-% \mu(S_m)
-% \le
-% C
-% \left(
-% \frac{\lambda}{3}
-% \right)^m.
-% \]
-
-% Since
-% \[
-% \lambda<3,
-% \]
-% the right-hand side converges exponentially to zero. Therefore
-% \[
-% \mu(S_m)\longrightarrow0.
-% \]
-
-% Finally,
-% Theorem~\ref{thm:nested-measure}
-% (continuity of measure under nested refinement)
-% gives
-% \[
-% \mu(S_\infty)
-% =
-% \lim_{m\to\infty}\mu(S_m)
-% =
-% 0.
-% \]
-
-% \end{proof}
-
-% \begin{corollary}[Density-One First Passage]
-% \label{cor:density-one}
-
-% The union of the first-passage layers has full natural density.
-
-% \[
-% \mu\!\left(
-% \bigsqcup_{m\ge1}F_m
-% \right)
-% =
-% \mu(S_1).
-% \]
-
-% In particular, after normalization of the odd integers,
-
-% \[
-% \mu\!\left(
-% \bigsqcup_{m\ge1}F_m
-% \right)
-% =
-% 1.
-% \]
-
-% \end{corollary}
-
-% \begin{proof}
-
-% By Corollary~\ref{cor:global-decomposition},
-
-% \[
-% S_1
-% =
-% \left(
-% \bigsqcup_{m\ge1}F_m
-% \right)
-% \sqcup
-% S_\infty.
-% \]
-
-% Taking measures and using disjointness,
-
-% \[
-% \mu(S_1)
-% =
-% \mu\!\left(
-% \bigsqcup_{m\ge1}F_m
-% \right)
-% +
-% \mu(S_\infty).
-% \]
-
-% Theorem~\ref{thm:residual-collapse} shows that
-
-% \[
-% \mu(S_\infty)=0.
-% \]
-
-% Hence
-
-% \[
-% \mu\!\left(
-% \bigsqcup_{m\ge1}F_m
-% \right)
-% =
-% \mu(S_1).
-% \]
-
-% Under the normalization adopted throughout this paper,
-% \(\mu(S_1)=1\), completing the proof.
-
-% \end{proof}
+Thus the measure of the residual forest collapses as \(n \to \infty\).
 
 
 % ============================================================
 \section{Conclusion}
 % ============================================================
 
-% The argument developed in this work reframes the accelerated Collatz problem as a problem in symbolic dynamics, residue-class geometry, and entropy growth rather than direct integer iteration.
-
-% Beginning with the accelerated odd-to-odd Collatz map, every trajectory was encoded by a division word recording the number of factors of two removed at each step. Admissible division words were shown to correspond to non-empty residue classes, which naturally organize into a forest of disjoint dyadic cylinders.
-
-% The principal object of study became not individual trajectories but the growth of the admissible symbolic forest itself. The sequence A186009 was identified as counting newly generated admissible contractive cylinders, while the Beatty sequence associated with $\log_2(3)$ governs the minimal dyadic contraction required for these cylinders to descend.
-
-% The central question therefore became one of competition between symbolic growth and dyadic contraction.
-
-% The analysis of Sturmian return words arising from the continued-fraction expansion of $\log_2(3)$ revealed a hierarchy of cocycle towers whose growth rates converge toward a limiting spectral value strictly below the critical value $\log(3)$. In particular, the expansive five-cycle provides a universal upper envelope for admissible cocycle growth, and even infinite concatenations of this extremal structure remain subcritical relative to ternary expansion.
-
-% Consequently the symbolic entropy of the surviving forest grows more slowly than the dyadic contraction imposed by the denominator. The surviving symbolic structure therefore cannot accumulate density at a sufficient rate to resist continued dyadic refinement.
-
-% The emergence of the empirical dyadic plateau provides an operational manifestation of this imbalance. Although the number of terms required to cover successive dyadic intervals initially increases, the covering length remains bounded. Once this bounded covering regime is reached, no fundamentally new mechanism enters the system. Each subsequent dyadic interval reproduces the same covering problem at a smaller scale, with the same bounded number of covering terms.
-
-% The process therefore repeats indefinitely.
-
-% Since every dyadic interval may be covered after finitely many refinement steps, and since the dyadic intervals themselves exhaust unit measure,
-
-% \[
-% \sum_{k=1}^{\infty} 2^{-k}=1,
-% \]
-
-% the cumulative density of contractive cylinders approaches unity.
-
-% Equivalently, the union of all contractive residue classes has natural density one.
-
-% The surviving infinite forest, if non-empty, is therefore confined to a set of density zero.
-
-% Thus the symbolic dynamics induced by the accelerated Collatz map imply asymptotic global descent in natural density: almost every positive integer eventually enters a contractive cylinder and subsequently reaches a smaller value under iteration.
-
-% The argument presented here does not exclude the logical possibility of exceptional trajectories of density zero. Rather, it establishes that such trajectories, if they exist, are confined to a vanishing portion of the integer line and cannot contribute positive density to the global dynamics.
-
-% In this sense, the Collatz problem becomes not a question of whether descent dominates, but whether anything survives outside a forest whose measure collapses to zero.
-This paper reformulates the accelerated Collatz problem in terms of an admissible
-symbolic grammar whose arithmetic realization is given by nested dyadic cylinders.
-The resulting cylinder forest provides an exact symbolic partition of the odd integers
-together with a natural measure-theoretic filtration.
+This paper reformulates the accelerated Collatz problem in terms of an admissible symbolic grammar whose
+arithmetic realization is given by nested dyadic cylinders. The resulting cylinder forest provides an exact
+symbolic representation of the odd integers together with a natural measure-theoretic filtration.
 
 Within this framework the measure of the residual forest is controlled by two competing
 exponential processes: symbolic proliferation and dyadic contraction. The measure-theoretic
@@ -3825,12 +2138,12 @@ analysis shows that these combine through a single spectral parameter $\lambda$.
 \]
 is sufficient to force the residual forest to have natural density zero.
 
-Combining the spectral estimate with the residual mass estimate shows that the
+Combining the spectral estimate with the residual density bounds shows that the
 infinite residual set has natural density zero. Equivalently, the first-passage
 layers exhaust the entire normalized dyadic measure.
 
 The principal contribution is therefore not merely a new estimate, but a reformulation
-of the density problem itself. Rather than analyzing individual Collatz trajectories
+of the density problem itself. Rather than studying individual Collatz trajectories
 directly, the argument transfers the problem through three equivalent descriptions:
 \[
 \text{symbolic grammar} \longrightarrow \text{cylinder geometry} \longrightarrow \text{measure dynamics}.
@@ -3839,717 +2152,8 @@ Within this framework, the density question becomes a problem of controlling the
 growth of an admissible Sturmian grammar.
 
 This synthesis of symbolic dynamics, Diophantine approximation, and dyadic measure provides
-a unified framework in which the density behavior of the accelerated Collatz map is governed
-by a single explicit spectral inequality.
-
-
-% % ============================================================
-% \section{Beatty Structure and Tower Decomposition of the Denominator}
-% \label{sec:beatty-towers}
-% % ============================================================
-
-% The admissible grammar is controlled by the threshold sequence
-% \[
-% A020914(n)=\lfloor n\log_2 3\rfloor+1,
-% \]
-% whose increment structure is Sturmian.
-
-% Consequently, large-scale behavior of admissible division words is governed
-% by Diophantine approximations to \(\log_2 3\). The convergents and
-% semiconvergents determine distinguished interval lengths at which dyadic
-% and ternary growth become nearly synchronized.
-
-% We formalize the macroscopic structure governing the denominator growth
-% through the Beatty sequence associated with $\log_2 3$.
-
-% % ------------------------------------------------------------
-
-% \begin{definition}[Dyadic Threshold Sequence]
-% Let
-% \[
-% \alpha := \log_2 3,
-% \qquad
-% d(n) := A020914(n) = \lfloor n\alpha \rfloor + 1.
-% \]
-% \end{definition}
-
-% The increment word
-% \[
-% \Delta(n) := d(n+1)-d(n)
-% \]
-% takes values in $\{1,2\}$ and defines a Sturmian (Beatty) sequence.
-
-% % ------------------------------------------------------------
-
-% \begin{definition}[Tower Lengths]
-% A sequence of integers $\{q_k\}$ is called a tower sequence if
-% \[
-% q_k \alpha = p_k + \varepsilon_k,
-% \]
-% where $p_k \in \mathbb{Z}$ and $|\varepsilon_k|$ is minimal among all
-% denominators up to $q_k$.
-
-% We refer to $q_k$ as a \emph{tower length} and $p_k$ as its associated
-% dyadic exponent.
-% \end{definition}
-
-% Empirically, the tower sequence begins as
-% \[
-% 5,\,7,\,12,\,41,\,53,\,306,\,359,\,665,\,15601,\,16266,\,31867,\,\dots
-% \]
-
-% % ------------------------------------------------------------
-
-% \begin{lemma}[Diminishing Approximation Error]
-% \label{lem:tower-error}
-% Let $\varepsilon_k := q_k \alpha - p_k$.
-% Then
-% \[
-% |\varepsilon_k| \to 0 \quad \text{as } k \to \infty.
-% \]
-% \end{lemma}
-
-% \begin{proof}
-% This follows from the theory of continued fractions and best rational
-% approximations of irrational numbers.
-% \end{proof}
-
-% % ------------------------------------------------------------
-
-% \begin{lemma}[Alternating Approximation Sign]
-% \label{lem:alternating}
-% The errors $\varepsilon_k$ alternate in sign.  That is,
-% tower approximations alternate between underestimates and overestimates
-% of $\alpha$.
-% \end{lemma}
-
-% \begin{proof}
-% This is a standard property of convergents of continued fractions.
-% \end{proof}
-
-% % ------------------------------------------------------------
-
-% \begin{definition}[Expansive and Contractive Towers]
-% A tower length $q_k$ is called:
-% \begin{itemize}
-% \item \emph{expansive} if $\varepsilon_k < 0$ (i.e.\ $q_k\alpha < p_k$),
-% \item \emph{contractive} if $\varepsilon_k > 0$.
-% \end{itemize}
-% \end{definition}
-
-% Thus expansive towers slightly undercount dyadic growth, while
-% contractive towers slightly overcount it.
-
-% % ------------------------------------------------------------
-
-% \begin{lemma}[Tower Partition Structure]
-% \label{lem:tower-partition}
-% Tower lengths occur in finite clusters of the form
-% \[
-% \{5,7,12\},\quad
-% \{41,53\},\quad
-% \{306,359,665\},\quad
-% \{15601,16266,31867\},\ \dots
-% \]
-% in which:
-% \begin{itemize}
-% \item the smallest element is expansive,
-% \item all remaining elements are contractive.
-% \end{itemize}
-% \end{lemma}
-
-% \begin{proof}[Heuristic justification]
-% These clusters arise from convergents and semiconvergents of $\alpha$.
-% The smallest element in each cluster lies below $\alpha$ (negative error),
-% while subsequent refinements overshoot (positive error) before the next
-% cycle begins.
-% \end{proof}
-
-% % ------------------------------------------------------------
-
-% \begin{lemma}[Exact Jump Count on Towers]
-% \label{lem:exact-jumps}
-% Let $q_k$ be a tower length.  Then the increment word over the interval
-% $[n,n+q_k)$ contains an exact number of double steps (jumps), independent
-% of $n$.
-% \end{lemma}
-
-% \begin{proof}[Sketch]
-% Since
-% \[
-% d(n+q_k)-d(n) \in \{p_k, p_k+1\},
-% \]
-% and $\varepsilon_k$ is small, the total number of increments equal to $2$
-% is fixed across the block.  The Sturmian structure ensures that all
-% length-$q_k$ factors have identical Parikh counts.
-% \end{proof}
-
-% % ------------------------------------------------------------
-
-% \begin{lemma}[Terminal Double--Double Structure]
-% \label{lem:dd-terminal}
-% Every tower block ends in a double--double pattern $(2,2)$.
-% \end{lemma}
-
-% \begin{proof}[Heuristic]
-% The atomic building blocks of the increment word are the $5$-cycle and
-% $7$-cycle, both of which terminate in $(2,2)$.  Since all tower lengths
-% are concatenations of these atomic cycles, the terminal structure is
-% preserved.
-% \end{proof}
-
-% % ------------------------------------------------------------
-
-% \begin{theorem}[Macroscopic Denominator Law]
-% \label{thm:denominator-law}
-% Let $q_k$ be a tower sequence.  Then over any interval of length $q_k$:
-% \begin{enumerate}
-% \item The total dyadic exponent satisfies
-% \[
-% d(n+q_k)-d(n) = p_k + O(1),
-% \]
-% with $|O(1)| \le 1$.
-
-% \item The jump count is exact and independent of $n$.
-
-% \item The multiplicative imbalance satisfies
-% \[
-% \frac{3^{q_k}}{2^{p_k}} = 2^{\varepsilon_k},
-% \]
-% where $\varepsilon_k \to 0$.
-
-% \item Expansive towers ($\varepsilon_k<0$) create slack, while
-% contractive towers ($\varepsilon_k>0$) consume slack.
-
-% \item The sequence of towers alternates between expansion and contraction,
-% with diminishing magnitude.
-% \end{enumerate}
-% \end{theorem}
-
-% % ------------------------------------------------------------
-
-% \begin{remark}[Denominator Rigidity]
-% The denominator is completely governed by the Beatty structure of
-% $\log_2 3$.  All macroscopic irregularities reduce to a controlled,
-% alternating sequence of small multiplicative errors across tower scales.
-% \end{remark}
-
-
-% % ============================================================
-% \section{Canonical Minimal Envelope and Regenerative Growth}
-% \label{sec:minimal-envelope}
-% % ============================================================
-
-% Let
-% \[
-% a(n)=A186009(n),
-% \]
-% and let
-% \[
-% d(n)=A020914(n)=\lfloor n\log_2 3\rfloor+1.
-% \]
-
-% Define the increment sequence
-% \[
-% \delta(n):=d(n+1)-d(n)\in\{1,2\}.
-% \]
-
-% A value $\delta(n)=2$ induces a terminal duplication event in the
-% admissible tuple grammar.
-
-% The central structural observation is that the admissible grammar is
-% monotone with respect to the placement of duplication events:
-% earlier duplication permanently increases future tuple mass.
-
-% Consequently, the canonical Beatty phase beginning at intercept $0$
-% produces the minimal admissible growth envelope.
-
-% % ------------------------------------------------------------
-
-% \subsection{Jump Schedules and Tuple Evolution}
-
-% % ------------------------------------------------------------
-
-% \begin{definition}[Jump Schedule]
-% A jump schedule is a sequence
-% \[
-% J=(\delta_0,\delta_1,\delta_2,\dots),
-% \qquad
-% \delta_i\in\{1,2\},
-% \]
-% describing the placement of terminal duplication events in the
-% tuple recursion.
-
-% The canonical schedule is the Beatty/Sturmian increment sequence
-% \[
-% \delta_i=d(i+1)-d(i),
-% \]
-% associated to
-% \[
-% d(i)=\lfloor i\log_2 3\rfloor+1.
-% \]
-% \end{definition}
-
-% % ------------------------------------------------------------
-
-% \begin{definition}[Generating Tuple]
-% Let
-% \[
-% T_n=(t_1,t_2,\dots,t_r)
-% \]
-% denote the admissible generating tuple at level $n$.
-
-% The tuple evolves by:
-% \begin{enumerate}
-% \item cumulative Pascal-type addition,
-% \item terminal duplication whenever $\delta(n)=2$.
-% \end{enumerate}
-
-% Define the total tuple mass by
-% \[
-% |T_n|:=\sum_i t_i.
-% \]
-% \end{definition}
-
-% % ------------------------------------------------------------
-
-% \subsection{Monotonicity of the Grammar}
-
-% % ------------------------------------------------------------
-
-% \begin{lemma}[Positivity Preservation]
-% \label{lem:positivity}
-% All tuple entries remain positive under admissible evolution.
-
-% Consequently, any increase introduced at one stage propagates
-% monotonically to all future stages.
-% \end{lemma}
-
-% \begin{proof}
-% The admissible recursion consists entirely of cumulative additions
-% of positive quantities.
-
-% Terminal duplication copies an existing positive terminal entry,
-% and no subtraction occurs anywhere in the grammar evolution.
-
-% Hence all tuple entries remain positive, and any increase introduced
-% at one stage propagates to all future descendants.
-% \end{proof}
-
-% % ------------------------------------------------------------
-
-% \begin{lemma}[Earlier Duplication Dominance]
-% \label{lem:earlier-duplication}
-% Let
-% \[
-% J_1,\qquad J_2
-% \]
-% be two admissible jump schedules that agree through some index $m$.
-
-% Suppose $J_1$ performs a terminal duplication strictly earlier than
-% $J_2$.
-
-% Then the corresponding tuple masses satisfy
-% \[
-% |T_n^{(1)}|
-% \ge
-% |T_n^{(2)}|
-% \]
-% for all sufficiently large $n$, with strict inequality eventually
-% persistent.
-% \end{lemma}
-
-% \begin{proof}[Heuristic mechanism]
-% Earlier duplication inserts additional positive mass into the tuple
-% recursion sooner.
-
-% By Lemma~\ref{lem:positivity}, the admissible evolution is monotone:
-% all future cumulative sums inherit any earlier increase.
-
-% Thus earlier duplication permanently amplifies future tuple growth,
-% yielding eventual domination.
-% \end{proof}
-
-% % ------------------------------------------------------------
-
-% \subsection{Canonical Minimal Envelope}
-
-% % ------------------------------------------------------------
-
-% \begin{theorem}[Canonical Minimal Envelope]
-% \label{thm:minimal-envelope}
-% Among all admissible phase continuations of the Sturmian jump grammar,
-% the canonical intercept-$0$ Beatty phase produces minimal tuple growth.
-
-% Equivalently, for every admissible phase shift $\phi$,
-% \[
-% |T_n^{(0)}|
-% \le
-% |T_n^{(\phi)}|
-% \]
-% for all sufficiently large $n$.
-% \end{theorem}
-
-% \begin{proof}[Structural mechanism]
-% The canonical Beatty phase delays terminal duplication events
-% as long as admissibly possible.
-
-% By Lemma~\ref{lem:earlier-duplication}, any admissible phase shift
-% that introduces duplication earlier produces permanently larger
-% future tuple mass.
-
-% Hence the canonical phase yields the minimal admissible growth
-% envelope.
-% \end{proof}
-
-% % ------------------------------------------------------------
-
-% \begin{remark}[Minimal Regenerative Orbit]
-% Exact self-replication of admissible tuples occurs only after
-% renormalization together with resetting the Beatty phase to the
-% canonical intercept-$0$ schedule.
-
-% However, Theorem~\ref{thm:minimal-envelope} shows that this reset
-% produces the smallest admissible continuation.
-
-% Thus exact regeneration is unnecessary:
-% the canonical reset already provides a universal lower envelope for
-% future admissible growth.
-% \end{remark}
-
-% % ============================================================
-% \section{Restricted Duplication Grammar and Spectral Separation}
-% \label{sec:restricted-grammar}
-% % ============================================================
-
-% The admissible tuple grammar defining \OEIS{A186009} possesses a natural
-% restricted subsystem obtained by forbidding consecutive terminal
-% duplication events.
-
-% This restricted grammar generates the sequence \OEIS{A047749}, which
-% therefore serves as a canonical lower-growth sector of the full
-% admissible grammar.
-
-% % ------------------------------------------------------------
-
-% \subsection{Restricted Duplication Grammar}
-
-% Recall that the admissible grammar evolves through:
-% \begin{enumerate}
-% \item cumulative Pascal-type propagation,
-% \item terminal duplication whenever the jump increment satisfies
-% \[
-% \delta(n)=2.
-% \]
-% \end{enumerate}
-
-% In the full grammar, consecutive duplication events are permitted.
-
-% The restricted grammar forbids consecutive duplication, so every
-% duplication event must be followed by at least one non-duplication step.
-
-% Equivalently, if
-% \[
-% D
-% \]
-% denotes a duplication step and
-% \[
-% S
-% \]
-% a non-duplication step, then the restricted grammar forbids the local
-% pattern
-% \[
-% DD.
-% \]
-
-% % ------------------------------------------------------------
-
-% \begin{definition}[Restricted Duplication Sequence]
-% Let
-% \[
-% a_0(n):=A047749(n).
-% \]
-
-% Then \(a_0(n)\) is generated by the admissible tuple recursion under
-% the constraint that consecutive terminal duplications are forbidden.
-% \end{definition}
-
-% % ------------------------------------------------------------
-
-% \subsection{Initial Coincidence and Spectral Divergence}
-
-% The restricted and unrestricted grammars initially coincide because the
-% canonical Beatty increment sequence contains no consecutive duplication
-% events at small scales.
-
-% Consequently,
-% \[
-% A047749(n)=A186009(n+1)
-% \]
-% through the first coincidence range.
-
-% However, once the unrestricted grammar encounters the first admissible
-% double--double event, the two systems diverge permanently.
-
-% % ------------------------------------------------------------
-
-% \begin{lemma}[Permanent Amplification by Consecutive Duplication]
-% \label{lem:permanent-amplification}
-% Suppose two admissible tuple evolutions agree through some level \(m\),
-% and suppose one evolution performs a consecutive terminal duplication
-% event at level \(m+1\) while the other does not.
-
-% Then the unrestricted evolution eventually dominates strictly:
-% \[
-% |T_n^{(\mathrm{full})}|
-% >
-% |T_n^{(\mathrm{restricted})}|
-% \]
-% for all sufficiently large \(n\).
-% \end{lemma}
-
-% \begin{proof}[Structural mechanism]
-% Terminal duplication inserts additional positive mass into the tuple.
-
-% By positivity preservation of the admissible recursion, all future
-% Pascal-type propagations inherit this excess mass monotonically.
-
-% Thus the effect of an earlier duplication event is permanent and
-% strictly amplifying.
-% \end{proof}
-
-% \begin{corollary}[Spectral Domination]
-% If the exponential growth rates exist, then
-% \[
-% \lambda_0 \le \lambda.
-% \]
-
-% Moreover, computational evidence and the persistent amplification
-% mechanism strongly suggest that the inequality is strict:
-% \[
-% \lambda_0 < \lambda.
-% \]
-% \end{corollary}
-
-% % ------------------------------------------------------------
-% \subsection{Interpretation}
-
-% The sequence \OEIS{A047749} therefore represents the minimal
-% non-consecutive amplification sector of the admissible grammar, while
-% \OEIS{A186009} represents the full unrestricted positive grammar.
-
-% The spectral gap between the two systems is generated entirely by the
-% presence of consecutive terminal duplication events.
-
-% This identifies consecutive duplication as the fundamental local
-% mechanism responsible for accelerated asymptotic growth of admissible
-% division-word configurations.
-
-% % ------------------------------------------------------------
-% \section{Grammar-Induced Deficit Compensation}
-% \label{sec:grammar-compensation}
-
-% We formalize a structural mechanism in which jumps in the dyadic
-% threshold sequence create temporary mass deficits, while the same jumps
-% simultaneously enlarge the admissible grammar of minimal descent words.
-% The resulting delayed compensation drives cumulative density toward $1$.
-
-% % ------------------------------------------------------------
-
-% \begin{definition}[Dyadic Threshold Sequence]
-% Let
-% \[
-% d(n)=A020914(n).
-% \]
-% Equivalently,
-% \[
-% d(n)=\lfloor n\log_2 3 \rfloor + 1.
-% \]
-% This is the minimal dyadic exponent required to exceed the ternary scale
-% $3^n$.
-% \end{definition}
-
-% % ------------------------------------------------------------
-
-% \begin{definition}[Jump Index]
-% An index $n\ge0$ is called a \emph{jump index} if
-% \[
-% d(n+1)-d(n)=2.
-% \]
-% Otherwise,
-% \[
-% d(n+1)-d(n)=1.
-% \]
-% \end{definition}
-
-% % ------------------------------------------------------------
-
-% \begin{lemma}[Binary Step Law]
-% \label{lem:binary-step}
-% For every $n\ge0$,
-% \[
-% d(n+1)-d(n)\in\{1,2\}.
-% \]
-% Hence the sequence $d(n)$ evolves only by unit steps or jump steps.
-% \end{lemma}
-
-% \begin{proof}
-% Using
-% \[
-% d(n)=\lfloor n\log_2 3\rfloor+1,
-% \]
-% we obtain
-% \[
-% d(n+1)-d(n)
-% =
-% \lfloor (n+1)\log_2 3\rfloor-\lfloor n\log_2 3\rfloor.
-% \]
-% Since
-% \[
-% 1<\log_2 3<2,
-% \]
-% the floor can increase only by $1$ or $2$.
-% \end{proof}
-
-% % ------------------------------------------------------------
-
-% \begin{lemma}[Single Dyadic Deficit Law]
-% \label{lem:deficit-law}
-% If $n$ is a jump index, then exactly one intermediate dyadic level is
-% skipped relative to unit growth.
-
-% Equivalently, the denominator factor changes from the expected scale
-% $2^{d(n)+1}$ to the actual scale $2^{d(n)+2}$, reducing the associated
-% mass contribution by a factor of $1/2$.
-% \end{lemma}
-
-% \begin{proof}
-% At a jump index,
-% \[
-% d(n+1)=d(n)+2.
-% \]
-% Relative to the unit-step scale $d(n)+1$, one additional factor of $2$
-% appears in the denominator, so the contribution is halved.
-% \end{proof}
-
-% % ------------------------------------------------------------
-
-% \begin{definition}[Minimal Descent Mass]
-% Let
-% \[
-% N(n)=\frac{A186009(n+1)}{2^{d(n)}}.
-% \]
-% This is the total density contribution of new minimal descent words at
-% level $n$.
-% \end{definition}
-
-% % ------------------------------------------------------------
-
-% \begin{lemma}[Jump Enlarges the Admissible Grammar]
-% \label{lem:jump-grammar}
-% At every jump index, the admissible prefix-sum region defining minimal
-% descent words strictly enlarges at subsequent levels.
-
-% Consequently, new minimal descent words must occur after each jump.
-% \end{lemma}
-
-% \begin{proof}[Proof Sketch]
-% The admissible words are determined by prefix constraints of the form
-% \[
-% H(i)<d(i+1), \qquad H(m-1)=d(m).
-% \]
-% When $d(n)$ jumps, the terminal admissible sum increases while prior
-% prefix constraints remain unchanged. This creates new feasible lattice
-% points in the constrained composition region, yielding new admissible
-% words.
-% \end{proof}
-
-% % ------------------------------------------------------------
-
-% \begin{lemma}[Lagged Numerator Response]
-% \label{lem:lagged-response}
-% There exists an integer $L\ge1$ such that every jump at index $n$
-% produces at least one new minimal descent word among the levels
-% \[
-% n+1,n+2,\dots,n+L.
-% \]
-% \end{lemma}
-
-% \begin{proof}[Heuristic Basis]
-% Computational enumeration shows that new admissible words appear after
-% every jump, with uniformly bounded delay. The bound $L$ is empirically
-% small.
-% \end{proof}
-
-% % ------------------------------------------------------------
-
-% \begin{lemma}[Finite Compensation Packet]
-% \label{lem:packet}
-% There exist constants $L\ge1$ and $c>0$ such that every jump index $n$
-% satisfies
-% \[
-% \sum_{i=1}^{L} N(n+i)\ge c\,2^{-d(n)}.
-% \]
-% That is, each jump-induced unit deficit is compensated by a bounded
-% future packet of new descent mass.
-% \end{lemma}
-
-% % ------------------------------------------------------------
-
-% \begin{definition}[Residual Gap]
-% Let
-% \[
-% C(m)=\sum_{k=0}^{m}N(k),
-% \qquad
-% R(m)=1-C(m).
-% \]
-% \end{definition}
-
-% % ------------------------------------------------------------
-
-% \begin{theorem}[Compensation Implies Gap Contraction]
-% \label{thm:gap-contraction}
-% Suppose the finite compensation packet property holds uniformly.
-% Then there exist constants $M\ge1$ and $\epsilon>0$ such that
-% \[
-% R(m+M)\le (1-\epsilon)R(m)
-% \]
-% for all sufficiently large $m$.
-% \end{theorem}
-
-% \begin{proof}[Proof Sketch]
-% Each jump creates at most one unit deficit by
-% Lemma~\ref{lem:deficit-law}. By Lemma~\ref{lem:packet}, each such deficit
-% is repaired within bounded delay by a positive packet of future mass.
-% Uniform boundedness implies a fixed positive fraction of the remaining
-% gap is removed over each window of length $M$.
-% \end{proof}
-
-% % ------------------------------------------------------------
-
-% \begin{corollary}[Density Exhaustion]
-% \label{cor:density-exhaustion}
-% Under the hypotheses of Theorem~\ref{thm:gap-contraction},
-% \[
-% \lim_{m\to\infty} C(m)=1.
-% \]
-% \end{corollary}
-
-% \begin{proof}
-% Iterating the contraction inequality gives
-% \[
-% R(m+kM)\le (1-\epsilon)^kR(m)\to0.
-% \]
-% Hence $C(m)\to1$.
-% \end{proof}
-
-% % ------------------------------------------------------------
-
-% \begin{remark}[Critical Reduction]
-% The remaining task is purely combinatorial: prove a uniform bound on the
-% delay and size of compensation packets generated by jump indices in the
-% admissible division-word grammar.
-% \end{remark}
+a unified framework in which the density question for the accelerated Collatz map reduces
+to a single explicit spectral inequality.
 
 
 \appendix
@@ -4603,7 +2207,9 @@ F_\omega(x) = \frac{3^m x + c(\omega)}{2^{D(\omega)}} \in \mathbb{Z} \quad \text
 \]
 
 \newpage
+% ------------------------------------------------------------
 \subsection{Example}
+% ------------------------------------------------------------
 
 Let \(\omega = (1,1,1,4)\) with \(m=4\) and \(D(\omega) = \sum_{i=0}^{3} d_i = 1 + 1 + 1 + 4 = 7\):
 
@@ -4652,25 +2258,20 @@ arithmetic progression
 \]
 with common difference \(81=3^4\).
 
+% ------------------------------------------------------------
 \subsection*{Remark}
+% ------------------------------------------------------------
 
 This construction is purely illustrative and is not required for the density
 or growth arguments in the main text. It demonstrates concretely how the affine
 map is fully determined by the division word \(\omega\).
 
-% Since any two integers realizing the same division word differ by a multiple of $2^{D(\omega)}$,
-% the value of $c(\omega)$ computed by this procedure is independent of the chosen
-% representative.
 By the Cylinder Representation Theorem (Section~\ref{sec:cylinder-geometry}), every
 realization of \(\omega\) belongs to a single residue class modulo \(2^{D(\omega)}\).
 Consequently, the value of \(c(\omega)\) computed above is independent of the chosen
 representative.
 
 \begin{remark}[Cylinder Rigidity]
-% The affine constant \(c(\omega)\) is invariant across the entire residue
-% class realizing \(\omega\).  Consequently, the symbolic data encoded by
-% the division word uniquely determines both the affine map and the associated
-% cylinder modulo \(2^{D(\omega)}\).
 The division word $\omega$ uniquely determines its canonical affine
 constant $c(\omega)$, and therefore uniquely determines the affine map
 \[
@@ -4683,153 +2284,9 @@ cylinder.
 \end{remark}
 
 
-% % ============================================================
-% \newpage
-% \section{Cylinder Reconstruction and Affine Structure}
-% \label{app:cylinder-reconstruction}
-% % ============================================================
-
-% This appendix illustrates how admissible division words determine
-% explicit congruence cylinders and corresponding affine arithmetic
-% families.
-
-% % ------------------------------------------------------------
-
-% \subsection{Cylinder Reconstruction}
-
-% Let
-% \[
-% \omega=(d_0,\dots,d_{m-1})
-% \]
-% be an admissible division word with total division count
-% \[
-% D(\omega)=\sum_{i=0}^{m-1} d_i.
-% \]
-
-% From the affine representation,
-% \[
-% F_\omega(x)
-% =
-% \frac{3^m x+c(\omega)}{2^{D(\omega)}}.
-% \]
-
-% Admissibility is equivalent to the congruence condition
-% \[
-% 3^m x+c(\omega)\equiv0\pmod{2^{D(\omega)}}.
-% \]
-
-% Since \(3^m\) is invertible modulo \(2^{D(\omega)}\), there exists a
-% unique residue class
-% \[
-% x\equiv r_\omega \pmod{2^{D(\omega)}}.
-% \]
-
-% Thus all integers realizing \(\omega\) are parametrized by
-% \[
-% x(k)=r_\omega+k\,2^{D(\omega)}, \qquad k\in\mathbb N_0.
-% \]
-
-% The corresponding congruence class is called the
-% \emph{cylinder} associated with \(\omega\).
-
-% % ------------------------------------------------------------
-
-% \subsection{Affine Arithmetic Structure}
-
-% Applying the affine map to \(x(k)\) gives
-% \[
-% F_\omega(x(k))
-% =
-% \frac{3^m(r_\omega+k2^{D(\omega)})+c(\omega)}
-%      {2^{D(\omega)}}.
-% \]
-
-% Expanding,
-% \[
-% F_\omega(x(k))
-% =
-% k\,3^m
-% +
-% \frac{3^m r_\omega+c(\omega)}
-%      {2^{D(\omega)}}.
-% \]
-
-% Define
-% \[
-% K_\omega
-% :=
-% \frac{3^m r_\omega+c(\omega)}
-%      {2^{D(\omega)}}.
-% \]
-
-% Then
-% \[
-% F_\omega(x(k))
-% =
-% k\,3^m+K_\omega.
-% \]
-
-% Thus every admissible division word induces:
-
-% \begin{itemize}
-% \item a congruence cylinder modulo \(2^{D(\omega)}\), and
-% \item an affine arithmetic progression with slope \(3^m\).
-% \end{itemize}
-
-% Consequently, the symbolic dynamics partitions the odd integers into
-% affine congruence fibers determined entirely by the division grammar.
-
 % ------------------------------------------------------------
-
-% \subsection{Example}
-
-% Consider the admissible division word
-% \[
-% \omega=(1,1,1,4),
-% \]
-% for which
-% \[
-% m=4,
-% \qquad
-% D(\omega)=7,
-% \]
-% and
-% \[
-% F_\omega(x)=\frac{81x+65}{128}.
-% \]
-
-% The admissibility condition becomes
-% \[
-% 81x+65\equiv0\pmod{128}.
-% \]
-
-% Solving yields the unique residue class
-% \[
-% x\equiv15\pmod{128}.
-% \]
-
-% Hence the cylinder is
-% \[
-% x(k)=15+128k.
-% \]
-
-% Applying the affine map,
-% \[
-% F_\omega(15+128k)
-% =
-% 81k+10.
-% \]
-
-% Thus the symbolic cylinder generated by \(\omega\) is mapped onto the
-% arithmetic progression
-% \[
-% 10,\,91,\,172,\,253,\dots
-% \]
-% with common difference \(81=3^4\).
-
-% ------------------------------------------------------------
-
 \subsection{Illustrative Derivation of the Affine Constant}
+% ------------------------------------------------------------
 
 For readers wishing to see the affine constant arise directly from
 iterated substitution, consider a general division word
@@ -4914,7 +2371,9 @@ grammar and explains the origin of the distinguished cycle lengths
 \]
 that appear throughout the paper.
 
+% ------------------------------------------------------------
 \subsection{Continued-Fraction Origin of the Tower Cycles}
+% ------------------------------------------------------------
 
 Let
 
@@ -4980,7 +2439,9 @@ $q_k$ & Cycle & $k$ & $a_k$ & Cycle Composition & Sequence \\
 Thus the tower hierarchy is not an empirical feature of the grammar.
 It is forced by the Diophantine approximation structure of $\log_2 3$.
 
+% ------------------------------------------------------------
 \subsection{Alternating Expansion and Contraction}
+% ------------------------------------------------------------
 
 The convergents alternately overestimate and underestimate $\alpha$.
 
@@ -5054,7 +2515,9 @@ $\displaystyle 2^{p_k} / 3^{q_k}$ \\
 \end{tabular}
 \end{table}
 
+% ------------------------------------------------------------
 \subsection{Primitive Return Words and the Failure of the Double Process}
+% ------------------------------------------------------------
 
 The Sturmian word generated by
 \[
@@ -5124,82 +2587,10 @@ The pure-double process is therefore unsuitable as a comparison
 envelope: it overestimates growth by too large a margin and cannot
 yield the desired spectral bound.
 
+% ------------------------------------------------------------
 \subsection{The Extremal Envelope}
+% ------------------------------------------------------------
 
-% Define the multiplicative cocycle
-% \[
-% G(w)
-% =
-% \frac{2^{\#s(w)+2\#d(w)}}{3^{|w|}}.
-% \]
-
-% where \(\#s(w)\) and \(\#d(w)\) count the number of single and double steps
-% in the word \(w\), respectively.
-
-% By the return-word decomposition theorem, every admissible infinite word
-% can be written uniquely as a concatenation of primitive return words.
-
-% Among these primitive return words, the 5-cycle
-% \[
-% C_5=(1,2,1,2,2)=(s,d,s,d,d)
-% \]
-% has maximal normalized cocycle growth. Consequently,
-% for every admissible return word $R$,
-% \[
-% G(R)^{1/|R|}
-% \le
-% G(C_5)^{1/5}.
-% \]
-
-% Although the periodic word
-% \[
-% C_5^\infty
-% \]
-% is not itself admissible in the Sturmian language, replacing each return
-% word in an admissible decomposition by $C_5$ can only increase the
-% per-symbol growth rate. Thus $C_5^\infty$ provides a universal extremal
-% comparison process.
-
-% \begin{proposition}[Extremal Envelope]
-% \label{prop:extremal-envelope}
-% Let $\lambda$ denote the exponential growth rate of admissible
-% configurations. Then
-% \[
-% \lambda
-% \le
-% \lambda_{\mathrm{env}},
-% \]
-% where
-% \[
-% \lambda_{\mathrm{env}}
-% =
-% G(C_5)^{1/5}.
-% \]
-% \end{proposition}
-
-% \begin{proof}
-% Every admissible word admits a decomposition into primitive return words.
-% By cocycle multiplicativity, the logarithmic growth rate is a weighted
-% average of the normalized cocycle contributions of these return words.
-
-% Since $C_5$ has maximal normalized cocycle growth, no admissible
-% decomposition can exceed the per-symbol growth rate obtained by replacing
-% every return word with $C_5$. Therefore
-% \[
-% \lambda
-% \le
-% G(C_5)^{1/5}.
-% \]
-% \end{proof}
-
-% The extremal envelope is deliberately larger than the admissible growth
-% process. Indeed, the comparison word $C_5^\infty$ is forbidden by the
-% grammar. Consequently, if even this exaggerated comparison process
-% satisfies
-% \[
-% G(C_5)^{1/5}<3,
-% \]
-% then every admissible growth process must also satisfy the same bound.
 The main text proves that every admissible Sturmian word decomposes uniquely
 into primitive return words. Since the normalized cocycle contribution of \(C_5\)
 exceeds that of every other primitive return word, replacing each return word by \(C_5\)
@@ -5207,29 +2598,6 @@ can only increase the average cocycle drift. Although the periodic comparison wo
 \(C_5^\infty\) is itself forbidden by the Sturmian grammar, it provides a universal
 comparison envelope. The explicit evaluation of this envelope is carried out in 
 Appendix~\ref{app:local-growth-details}.
-% \subsection{Interpretation}
-
-% The tower hierarchy, the alternating expansive and contractive blocks,
-% and the extremal-envelope construction all originate from the same
-% Diophantine source: the continued-fraction approximation of
-% \(\log_2 3\).
-
-% \subsection{Interpretation}
-
-% The tower hierarchy, the alternating expansive and contractive blocks,
-% and the extremal-envelope construction all originate from the same
-% Diophantine source: the continued-fraction approximation of
-% \(\log_2 3\).
-
-% The admissible grammar therefore does not generate the distinguished
-% cycle lengths independently. Rather, it realizes combinatorially the
-% canonical convergent structure of \(\log_2 3\).
-
-% From this perspective the 5-cycle appears naturally as the first
-% nontrivial expansive return word, while the larger tower cycles
-% \(12,41,53,306,\ldots\) arise recursively through the convergent
-% recurrence. The extremal-envelope bound is therefore ultimately a
-% consequence of the Diophantine structure of \(\log_2 3\).
 
 % ============================================================
 \newpage
@@ -5242,12 +2610,13 @@ growth bounds used in the density argument. Recall that the sequence \OEIS{A0209
 has first differences given by \OEIS{A022921}, consisting of repeated blocks of
 \emph{single} steps ($s$) and \emph{double} steps ($d$).
 
+% ------------------------------------------------------------
 \subsection{Illustrative Extremal Computations}
+% ------------------------------------------------------------
 
 The generating rows evolve by a horizontal-sum rule:
 \begin{equation}
 a_i(n) = a_i(n-1) + a_{i-1}(n), \quad i,n \in \mathbb{N},
-% \label{eq:horizontal-sum-recurrence}
 \end{equation}
 
 so that sequences of single steps exhibit ordinary Pascal--type growth.
@@ -5258,7 +2627,6 @@ monotonicity of the preceding entries.
 \begin{lemma}[Pascal-Type Horizontal Growth]
 \label{lem:pascal-growth}
 
-% Let a row generated by the horizontal-sum construction have total sum $S$.
 Let a row generated by the horizontal-sum construction have strictly positive entries
 with total sum $S$.
 
@@ -5331,8 +2699,7 @@ shown below should be interpreted as extremal upper-bound realizations rather th
 identities valid for all rows.
 
 The following row-by-row computations realize extremal growth for the admissible
-local patterns and together determine the sharpest uniform bounds used in
-% Proposition ~\ref{prop:extremal-envelope}.  Each example illustrates how a local pattern
+local words and together determine the sharpest uniform bounds used in
 Proposition ~\ref{prop:extremal-comparison-word}.  Each example illustrates how a local pattern
 can saturate its maximal growth factor under the horizontal-sum dynamics.  Let $S$
 denote the total sum of entries in the generating row prior to a given local pattern.
@@ -5478,7 +2845,9 @@ d,d,s & 37/13
 \end{array}
 \]
 
+% ------------------------------------------------------------
 \subsection*{Improved Extremal Alignment}
+% ------------------------------------------------------------
 
 Because the total multiplicative growth over a cycle is the product of the local
 growth factors, the geometric mean over one full cycle is maximized by selecting
@@ -5531,65 +2900,363 @@ local growth constraints and provide a strict upper envelope. Equation~\eqref{eq
 confirms that even this extremal envelope has geometric growth rate $< 3$, ensuring
 subdominance relative to the denominator $2^{B(i)}$.
 
-% % ============================================================
-% \newpage
-% \section{Grammar–Drift–Block Framework}
-% \label{sec:grammar-drift-block}
-% % ============================================================
 
-% \begin{table}[htbp]
-% \centering
-% \caption{Minimum block size, $M$, for logarithmic convexity of $a(n) = A186009(n)$}
-% \label{tab:A186009}
-% \vspace{4pt}
-% \begin{tabular}{@{}rccrr@{}}
-% \toprule
-% $M$ & $a_{n} a_{n+2M} \ge a_{n+M}$ & {S/D} & $n$ & $a(n)$ \\
-% \midrule
-% 1 & $a_{ 1} a_{ 3} \ge a_{ 2} a_{ 2}$ & S &  1 &            1 \\
-% 1 & $a_{ 2} a_{ 4} \ge a_{ 3} a_{ 3}$ & S &  2 &            1 \\
-% 2 & $a_{ 3} a_{ 7} \ge a_{ 5} a_{ 5}$ & S &  3 &            1 \\
-% 1 & $a_{ 4} a_{ 6} \ge a_{ 5} a_{ 5}$ & D &  4 &            2 \\
-% 2 & $a_{ 5} a_{ 9} \ge a_{ 7} a_{ 7}$ & S &  5 &            3 \\
-% 1 & $a_{ 6} a_{ 8} \ge a_{ 7} a_{ 7}$ & D &  6 &            7 \\
-% 1 & $a_{ 7} a_{ 9} \ge a_{ 8} a_{ 8}$ & S &  7 &           12 \\
-% 3 & $a_{ 8} a_{14} \ge a_{11} a_{11}$ & D &  8 &           30 \\
-% 1 & $a_{ 9} a_{11} \ge a_{10} a_{10}$ & D &  9 &           85 \\
-% 2 & $a_{10} a_{14} \ge a_{12} a_{12}$ & S & 10 &          173 \\
-% 1 & $a_{11} a_{13} \ge a_{12} a_{12}$ & D & 11 &          476 \\
-% 1 & $a_{12} a_{14} \ge a_{13} a_{13}$ & S & 12 &          961 \\
-% 4 & $a_{13} a_{21} \ge a_{17} a_{17}$ & D & 13 &         2652 \\
-% 1 & $a_{14} a_{16} \ge a_{15} a_{15}$ & D & 14 &         8045 \\
-% 3 & $a_{15} a_{21} \ge a_{18} a_{18}$ & S & 15 &        17637 \\
-% 1 & $a_{16} a_{18} \ge a_{17} a_{17}$ & D & 16 &        51033 \\
-% 2 & $a_{17} a_{21} \ge a_{19} a_{19}$ & S & 17 &       108950 \\
-% 1 & $a_{18} a_{20} \ge a_{19} a_{19}$ & D & 18 &       312455 \\
-% 1 & $a_{19} a_{21} \ge a_{20} a_{20}$ & S & 19 &       663535 \\
-% 4 & $a_{20} a_{28} \ge a_{24} a_{24}$ & D & 20 &      1900470 \\
-% 1 & $a_{21} a_{23} \ge a_{22} a_{22}$ & D & 21 &      5936673 \\
-% 2 & $a_{22} a_{26} \ge a_{24} a_{24}$ & S & 22 &     13472296 \\
-% 1 & $a_{23} a_{25} \ge a_{24} a_{24}$ & D & 23 &     39993895 \\
-% 1 & $a_{24} a_{26} \ge a_{25} a_{25}$ & S & 24 &     87986917 \\
-% 4 & $a_{25} a_{33} \ge a_{29} a_{29}$ & D & 25 &    257978502 \\
-% 1 & $a_{26} a_{28} \ge a_{27} a_{27}$ & D & 26 &    820236724 \\
-% 3 & $a_{27} a_{33} \ge a_{31} a_{31}$ & S & 27 &   1899474678 \\
-% 1 & $a_{28} a_{30} \ge a_{29} a_{29}$ & D & 28 &   5723030586 \\
-% 2 & $a_{29} a_{33} \ge a_{31} a_{31}$ & S & 29 &  12809477536 \\
-% 1 & $a_{30} a_{32} \ge a_{31} a_{31}$ & D & 30 &  38036848410 \\
-% 1 & $a_{31} a_{33} \ge a_{32} a_{32}$ & S & 31 &  84141805077 \\
-% 4 & $a_{32} a_{40} \ge a_{36} a_{36}$ & D & 32 & 248369601964 \\
-% 1 & $a_{33} a_{35} \ge a_{34} a_{34}$ & D & 33 & 794919136728 \\
-% \bottomrule
-% \end{tabular}
-% \end{table}
+% ============================================================
+\section{Extremal Growth in the Sturmian Return-Word System}
+\label{app:sturmian}
+% ============================================================
 
-% This section formalises the interaction between the combinatorial
-% structure induced by $A020914(n)$ and the induced growth dynamics
-% of $C(n) = \sum_{k=0}^n N(k)$.
+% ------------------------------------------------------------
+\subsection{Dyadic Threshold Sequence Sturmian Structure}
+% ------------------------------------------------------------
 
-% The central idea is that admissible division words generate a
-% finite-state grammar, which induces a bounded drift automaton.
-% This in turn yields a uniform block inequality governing residual decay.
+\begin{theorem}[Sturmian realization of the threshold grammar]
+Let
+\[
+B(n)=\lfloor n\log_2 3\rfloor+1.
+\]
+Then the increment sequence
+\[
+\delta(n)=B(n+1)-B(n)
+\]
+
+is a Sturmian word over the alphabet \(\{1,2\}\).
+Consequently the admissible grammar inherits the combinatorial
+structure of an irrational rotation.
+\end{theorem}
+
+\begin{proof}
+This is the classical characterization of Beatty increment sequences
+associated with irrational slopes.
+\end{proof}
+
+Let
+\[
+\alpha := \log_2 3,
+\qquad
+d(n) := \lfloor n\alpha \rfloor + 1.
+\]
+The increment sequence
+\[
+\delta(n) := d(n+1) - d(n) \in \{1,2\}
+\]
+is a Sturmian word of slope $\alpha - 1$ and intercept $0$.
+Equivalently, $\delta$ defines a symbolic dynamical system
+\[
+X_\alpha \subset \{1,2\}^{\mathbb{N}}
+\]
+generated by an irrational rotation. All admissible growth structures
+considered in this paper are functions of this Sturmian coding.
+
+% ------------------------------------------------------------
+\subsection{Return Words and Primitive Cycle Decomposition}
+% ------------------------------------------------------------
+
+\begin{definition}[Return Words]
+A finite word $C$ is a return word of the Sturmian system $X_\alpha$ if it is
+the minimal block between successive visits to a fixed cylinder set induced by
+$\delta$. We denote by $\mathcal{R}_\alpha$ the set of return words.
+\end{definition}
+
+\begin{theorem}[Return Words via Continued Fractions]
+Let $\alpha = \log_2 3$ and let $\delta(n)$ be the Sturmian coding induced
+by rotation $R_\alpha$.
+
+Let $q_k$ denote the denominators of the continued-fraction convergents of $\alpha$.
+For the prefix defining the extremal admissible growth process, the set of return
+words is exactly:
+\[
+\mathcal{R}_\alpha = \{C_{q_k}, C_{q_{k+1}}\}
+\]
+for some index $k$ determined by the chosen prefix.  In particular, for the admissible
+threshold structure of $d(n)=\lfloor n\alpha \rfloor +1$, the relevant convergent pair is:
+\[
+(q_k, q_{k+1}) = (5,12).
+\]
+\end{theorem}
+
+\begin{proof}
+The sequence $\delta(n)$ is a Sturmian word of slope $\alpha$.
+Return words to any prefix correspond to first-return maps of the rotation
+$R_\alpha$ to a subinterval $I$.
+
+The convergent denominators begin (see Appendix \ref{app:continued-fractions} for details):
+% The convergent denominators begin:
+\[
+1,\ 1,\ 2,\ 5,\ 12,\ 41,\ 53,\ 306,\ 665,\ 15601,\ 31867,\ 79335,\ldots
+\]
+
+For the prefix relevant to the admissible grammar, the associated return times are the
+consecutive denominators 5 and 12. Hence the return-word set is $\{C_5, C_{12}\}$.
+\end{proof}
+
+Although the shortest return word is the single double increment $C_1=(2)$, repeated doubles generate the
+Catalan sequence $1,2,5,14,42,132,\ldots$ whose asymptotic exponential growth rate is 4. Since this
+exceeds the critical threshold 3, the pure-double process cannot serve as a useful comparison envelope.
+
+\begin{proposition}[Extremal Primitive Comparison Word]
+\label{prop:extremal-comparison-word}
+The return word \(C_5\) is the shortest return word whose induced
+comparison growth is strictly less than \(3\).
+\end{proposition}
+
+\begin{remark}[Diophantine Origin of the Grammar]
+\label{rem:diophantine-grammar}
+
+The admissible grammar is governed not by arbitrary combinatorial rules but by the Diophantine
+approximation properties of \(\log_2 3\).  The convergent denominators
+\[
+1,\ 1,\ 2,\ 5,\ 12,\ 41,\ 53,\ 306,\ 665,\ 15601,\ 31867,\ 79335,\ldots
+\]
+arise from the continued-fraction approximants of
+\[
+\alpha=\log_2 3,
+\]
+and consequently, the primitive return words governing admissible refinement are
+determined by best rational approximations to the Beatty slope rather than by
+ad hoc combinatorial choices.
+\[
+\frac{p_k}{q_k}\approx \log_2 3.
+\]
+
+Equivalently,
+\[
+2^{p_k}\approx 3^{q_k},
+\]
+so the associated multiplicative cocycle satisfies
+\[
+\frac{2^{p_k}}{3^{q_k}}\to1.
+\]
+
+In particular, the appearance of the 5-, 12-, 41-, and 53-cycles
+is not accidental; these cycles are induced by the Diophantine
+approximation hierarchy of $\log_2 3$.
+\end{remark}
+
+\begin{lemma}[Induced Return-Word Hierarchy]
+\label{lem:induced-hierarchy}
+
+Every admissible word in the Sturmian language generated by
+\[
+\delta(n) = \lfloor (n+1)\alpha\rfloor-\lfloor n\alpha\rfloor
+\]
+admits a decomposition into return words generated
+recursively from the primitive pair $(C_5, C_{12})$.
+\end{lemma}
+
+\noindent
+
+% ------------------------------------------------------------
+\subsection{Multiplicative Cocycle Structure}
+% ------------------------------------------------------------
+
+Define the multiplicative growth cocycle
+\[
+G(w) := \frac{2^{\#s(w) + 2\#d(w)}}{3^{|w|}},
+\]
+where $\#s(w)$ and $\#d(w)$ are the number of single and double increments in $w$.
+
+\begin{lemma}[Cocycle Additivity]
+For concatenation of admissible return words,
+\[
+G(C_{i_1} \cdots C_{i_n}) = \prod_{k=1}^n G(C_{i_k}).
+\]
+Equivalently,
+\[
+\log G(w) = \sum_{k} \log G(C_{i_k}).
+\]
+\end{lemma}
+Thus the global exponential growth rate reduces to weighted averages
+of return-word contributions.
+
+% ------------------------------------------------------------
+\subsection{Local Evaluation of Return Words}
+% ------------------------------------------------------------
+
+The local comparison constants computed in Appendix \ref{app:local-growth-details}
+yield the following per-symbol cocycle contributions. The two primitive return words satisfy:
+
+\[
+\frac{1}{5}\log G(C_5)
+=
+\log\!\left(
+3^{2}
+\cdot \frac{123}{33}
+\cdot \frac{341}{131}
+\cdot \frac{329}{123}
+\right)^{1/5},
+\]
+
+\[
+\frac{1}{12}\log G(C_{12})
+<
+\frac{1}{5}\log G(C_5).
+\]
+
+Hence $C_5$ is the unique extremal return word with maximal per-symbol drift.
+
+\begin{proposition}[Extremal Cocycle Principle]
+For any admissible infinite word $\delta \in X_\alpha$,
+\[
+\limsup_{n\to\infty}
+\frac{1}{n} \log G(\delta_{[1,n]})
+\le
+\frac{1}{5}\log G(C_5).
+\]
+\end{proposition}
+
+\begin{proof}
+By the unique decomposition into return words and cocycle additivity,
+the growth rate is a convex combination of the per-symbol contributions
+of $C_5$ and $C_{12}$.
+
+Since
+\[
+\frac{1}{5}\log G(C_5)
+>
+\frac{1}{12}\log G(C_{12}),
+\]
+the maximal comparison average is obtained by replacing every return word with $C_5$,
+corresponding formally to the periodic comparison word $C_5^\infty$.
+\end{proof}
+
+% ------------------------------------------------------------
+\subsection{Global Growth Bound}
+% ------------------------------------------------------------
+
+\begin{theorem}[Spectral Growth Bound]
+\label{thm:spectral-growth-bound}
+Let $\lambda$ denote the symbolic growth rate introduced in Section
+\ref{sec:symbolic-growth}.
+
+Then
+\[
+\lambda \le \exp\!\left(\frac{1}{5}\log G(C_5)\right) < 3.
+\]
+\end{theorem}
+
+\begin{proof}
+% From the extremal return-word principle, the maximal growth is achieved by
+% periodic concatenation of $C_5$. Evaluating the local constants yields
+By Proposition~\ref{prop:extremal-comparison-word}, every admissible infinite
+word has average cocycle growth bounded above by that of \(C_5^\infty\).  Thus
+\[
+\lambda \le \exp\!\left(\frac{1}{5}\log G(C_5)\right).
+\]
+Via explicit evaluation of the local cocycle contributions (Appendix \ref{app:local-growth-details}),
+\[
+\left(
+3^{2}
+\cdot \frac{123}{33}
+\cdot \frac{341}{131}
+\cdot \frac{329}{123}
+\right)^{1/5}
+< 3.
+\]
+\end{proof}
+Theorem~\ref{thm:spectral-growth-bound} closes the logical chain developed throughout
+the paper. The Beatty threshold sequence induces the admissible grammar; the grammar
+determines the symbolic growth rate \(\lambda\); the Sturmian return-word analysis
+establishes the strict bound \(\lambda < 3\); and Theorem~\ref{thm:residual-density-collapse}
+then forces the residual forest to have zero natural density. Thus the symbolic, arithmetic,
+and measure-theoretic components of the argument fit together in a single chain of implications.
+
+
+\newpage
+\section{Horizontal-Sum Table for A186009}
+\label{app:horizontal-sum-table}
+
+For reference, a portion of \OEIS{A186009} generated by the horizontal-sum construction is
+given below as per an algorithm derived from Winkler \cite{Winkler2017}. This table is included
+for illustration of the horizontal-sum mechanism; none of the density or growth bounds in the
+main text depend on these specific numeric values.
+
+\begin{table}[htbp]
+\centering
+\caption{A186009 Horizontal Sum Formulation}
+\label{tab:A186009}
+\vspace{4pt}
+\begin{tabular}{@{}rrrrrrrrrrr@{}}
+\toprule
+$n$ & $a_1(n)$ & $a_2(n)$ & $a_3(n)$ & $a_4(n)$ & $a_5(n)$ &
+$a_6(n)$ & $a_7(n)$ & $a_8(n)$ & $a_9(n)$ & $\sum a_i(n)$ \\
+\midrule
+1  & 1 &   &   &   &   &   &   &   &   & 1 \\
+2  & 1 &   &   &   &   &   &   &   &   & 1 \\
+3  & 1 &   &   &   &   &   &   &   &   & 1 \\
+4  & 1 & 1 &   &   &   &   &   &   &   & 2 \\
+5  & 1 & 2 &   &   &   &   &   &   &   & 3 \\
+6  & 1 & 3 & 3 &   &   &   &   &   &   & 7 \\
+7  & 1 & 4 & 7 &   &   &   &   &   &   & 12 \\
+8  & 1 & 5 & 12 & 12 &   &   &   &   &   & 30 \\
+9  & 1 & 6 & 18 & 30 & 30 &   &   &   &   & 85 \\
+10 & 1 & 7 & 25 & 55 & 85 &   &   &   &   & 173 \\
+11 & 1 & 8 & 33 & 88 & 173 & 173 &   &   &   & 476 \\
+12 & 1 & 9 & 42 & 130 & 303 & 476 &   &   &   & 961 \\
+13 & 1 & 10 & 52 & 182 & 485 & 961 & 961 &   &   & 2652 \\
+14 & 1 & 11 & 63 & 245 & 730 & 1691 & 2652 & 2652 &   & 8045 \\
+15 & 1 & 12 & 75 & 320 & 1050 & 2741 & 5393 & 8045 &   & 17637 \\
+16 & 1 & 13 & 88 & 408 & 1458 & 4199 & 9592 & 17637 & 17637 & 51033 \\
+17 & 1 & 14 & 102 & 510 & 1968 & 6167 & 15759 & 33396 & 51033 & 108950 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+There is a sequence closely related to \OEIS{A186009} called \OEIS{A100982}.  \OEIS{A186009}
+prepends the number 1 to the \OEIS{A100982} sequence.  Along with the listing of initial
+terms for \OEIS{A100982} comes an algorithm which explains how to generate the entire sequence
+starting with an initial value of 1.  As a result of its close similarity, this method can
+also be leveraged to generate all of the terms in \OEIS{A186009}. 
+
+Theorem 2 \cite{Winkler2017} referenced in \OEIS{A100982} asserts that the elements in the
+sequence can be derived in a Pascal–triangle–type manner, beginning with an initial condition:
+\[
+a(1) = a_1(1) = 1
+\]
+
+The algorithm for $A100982(n)$ states that the $k^{th}$ term of the $n^{th}$ series component
+can be computed as follows:
+% Recursive algorithm for generating new terms for A100982 based on previously generated terms
+\[
+a_{k+1}(n) = a_k(n) + a_k(n-1); k \in \setNo, n \in \setN
+\]
+
+The algorithm also stipulates that the last term in the sequence is repeated whenever
+$A022921(n-2)=2$ (which can be derived from \OEIS{A020914} by taking the first
+differences between its terms).  In doing so, this imposes the implicit constraint that this rule
+applies only when $n \ge 2$.  Keeping in mind that repeated terms in \OEIS{A022921}
+occur only once $n \ge 2$, the recurrence is extended to $n=1$ by treating the duplication
+condition as inactive at the boundary, producing an augmented vertical-sum expansion.
+
+In rows without terminal duplication, this recurrence is exactly Pascal’s binomial rule; duplication acts
+only at the boundary and therefore preserves the monotone, binomial-type growth of interior entries.
+This boundary-only modification is precisely why the extremal growth analysis in
+Appendix~\ref{app:local-growth-details} reduces to \emph{local pattern frequencies}
+rather than global row shape.
+
+We reformulate this construction such that the first non-zero term in
+each row is always at index 1 and thus the formula henceforth (producing the same expansion
+components up to a reindexing of coordinates) is modified as follows.
+
+Preserving $a(1) = a_1(1) = a_1(n) = 1 \text{ for all } n\in\setN$, the $i^{th}$ term of the
+$n^{th}$ \OEIS{A100982} element is:
+% Modified recursive algorithm for generating new terms for A100982 based on previously generated terms
+\[
+a_{i}(n) = a_i(n-1) + a_{i-1}(n); i,n \in \setN
+\]
+
+This reindexing does not change any row sums or terminal-duplication positions; it only relocates coordinates.
+Using this formulation the initial term for all values of $n \in \setN$ is always 1 rather than
+shifting out for each value of $n$.  The other significant difference is that in this formulation
+the values for $a_i(n)$ appear horizontally as opposed to vertically.  The doubling rule for the
+terminal entry remains unchanged in substance – namely that it occurs when $A022921(n-2) = 2$ -
+which is precisely the single/double grammar governing admissible growth in the preceding appendices,
+and hence the local multiplicative structure used in the extremal bounds.
+
+Because \OEIS{A186009} is obtained from \OEIS{A100982} by prepending an initial row, all row indices
+shift by one.  Consequently the terminal-duplication condition expressed in the original
+formulation as $A022921(n-2)=2$ now becomes $A022921(n-3)=2$ in the present indexing.
+
 
 % ============================================================
 \clearpage
