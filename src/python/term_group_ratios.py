@@ -97,5 +97,5 @@ def generate_term_group_ratios(figures_dir: Path, data_dir: Path) -> list[Path]:
 
 if __name__ == "__main__":
     figures_dir = ensure_figdir()
-    data_dir = Path(__file__).parent.parent / "data"
+    data_dir = Path(__file__).resolve().parent.parent.parent / "data"
     generate_term_group_ratios(figures_dir, data_dir)

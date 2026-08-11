@@ -3,10 +3,96 @@
     "configurations": [
         {
             "name": "Python: Current Script",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "${file}",
             "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "Attach by Process ID",
+            "processId": "${command:PickProcess}",
+            "request": "attach",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "node"
+        },
+        {
+            "name": "(lldb) menu launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/menu",
+            "args": [],
+            "stopAtEntry": true,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb",
+            "miDebuggerPath": "/Users/waynerbrassem/Documents/Personal/Code/lldb/bin/lldb-mi",
+        },
+        {
+            "name": "C++ menu client",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/menu",
+            "stopAtEntry": true,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "externalConsole": true,
+            "MIMode": "lldb",
+        },
+
+        // This task is to debug the executable on Windows.
+        // It presumes the MinGW debugger gdb has been installed
+        // and that the PATH variable includes where it is.
+        {
+            "args": ["1"],
+            "name": "Windows gdb debug menu",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/menu.exe",
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": true,
+            "MIMode": "gdb",
+            "miDebuggerPath": "gdb.exe",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            // "preLaunchTask": "Windows mingw g++ build",
+        },
+
+        // This task is to debug the executable on Windows.
+        // It presumes the MinGW debugger gdb has been installed
+        // and that the PATH variable includes where it is.
+        {
+            "args": [
+                "-o", "${workspaceFolder}/data",
+                "-n", "800",
+                // "--debug"
+            ],
+            "name": "Windows gdb debug data generator",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/data_gen.exe",
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": true,
+            "MIMode": "gdb",
+            "miDebuggerPath": "gdb.exe",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
         }
     ]
 }

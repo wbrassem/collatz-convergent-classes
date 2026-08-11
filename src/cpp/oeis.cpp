@@ -243,7 +243,7 @@ const mpz_class& A000079::operator++()
     ++oeis_index;
 
     // Return the new term value
-    return oeis_term *= 2;
+    return oeis_term <<= 1;   // multiply by 2
 }
 
 /**
@@ -259,7 +259,7 @@ const mpz_class& A000079::operator--()
         --oeis_index;
 
         // Return the new term value
-        return oeis_term /= 2 ;
+        return oeis_term >>= 1;   // divide by 2
     }
 
     // Return the original unaltered term value

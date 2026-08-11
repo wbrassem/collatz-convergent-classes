@@ -15,6 +15,101 @@
             "presentation": {
                 "reveal": "always"
             }
+        },
+        {
+            "type": "cppbuild",
+            "label": "C/C++: Build menu C++ client",
+            "command": "/usr/bin/clang++",
+            "args": [
+                "-fcolor-diagnostics",
+                "-fansi-escape-codes",
+                "-g",
+                "${workspaceFolder}/src/cpp/btree.cpp",
+                "${workspaceFolder}/src/cpp/main.cpp",
+                "${workspaceFolder}/src/cpp/menu.cpp",
+                "${workspaceFolder}/src/cpp/oeis.cpp",
+                "-o",
+                "${workspaceFolder}/build/menu",
+                "-lgmpxx",
+                "-lgmp"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "detail": "Menu build task."
+        },
+
+        // This task is to build the executable on Windows.
+        // It presumes the MinGW compiler g++ has been installed
+        // and that the PATH variable includes where it is.
+        // For the task to run the \build directory must exist.
+        {
+            "label": "Windows mingw g++ build menu",
+            "type": "shell",
+            "command": "g++",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-std=c++20",
+                "-g",
+                "${workspaceFolder}/src/cpp/btree.cpp",
+                "${workspaceFolder}/src/cpp/main.cpp",
+                "${workspaceFolder}/src/cpp/menu.cpp",
+                "${workspaceFolder}/src/cpp/oeis.cpp",
+                "-o",
+                "${workspaceFolder}/build/menu.exe",
+                "-lgmpxx",
+                "-lgmp"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": {
+                "owner": "cpp",
+                "fileLocation": [
+                    "relative",
+                    "${workspaceFolder}"
+                ],
+                "pattern": {
+                    "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "severity": 4,
+                    "message": 5
+                }
+            }
+        },
+        {
+            "type": "cppbuild",
+            "label": "Windows mingw g++ build data generator",
+            "command": "C:\\msys64\\mingw64\\bin\\g++.exe",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-std=c++20",
+                "-g",
+                "${workspaceFolder}/src/cpp/data_gen.cpp",
+                "${workspaceFolder}/src/cpp/oeis.cpp",
+                "-o",
+                "${workspaceFolder}/build/data_gen.exe",
+                "-lgmpxx",
+                "-lgmp"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "compiler: C:\\msys64\\mingw64\\bin\\g++.exe"
         }
     ]
 }

@@ -196,6 +196,9 @@ class A020914 : public OEIS_base
          */
         inline mpz_class operator--(int) { return OEIS_base::operator--(0); };
 
+        inline const mpz_class& get_twos() const { return this->twos; };             /**< Return the const current value of the power of 2. */
+        inline const mpz_class& get_threes() const { return this->threes; };         /**< Retrun the const current value of the power of 3 */
+
         // Virtual init() function which is used for default initialization of class variables
         virtual void init();                                                // Resets the class to the default state which is the first term
 

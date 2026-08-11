@@ -9,12 +9,88 @@
  * 
  */
 
- #include <filesystem>
+#include <filesystem>
 #include <fstream>
+#include <iomanip>  // for std::setprecision, std::fixed, std::setw
+#include <cmath>     // for std::log
+#include <set>
+#include <unordered_map>
 
 #include "common.hpp"
+#include "format.hpp"
 #include "oeis.hpp"
 #include "path.hpp"
+
+// Global debug flag, set by command line argument
+bool debug = false;
+
+// Global debug output stream, can be set to a file if needed
+std::ostream* debug_stream = &std::cout;  // default to console
+
+// Debug output function that only prints when debug mode is enabled
+template<typename... Args>
+inline void debug_out(Args&&... args) {
+    if (debug) {
+        (*debug_stream << ... << std::forward<Args>(args)) << '\n';
+    }
+}
+
+// Macro which can be used for debug output, will only print if debug mode is enabled
+#define DEBUG_OUT(...) \
+    debug_out("[", __func__, ":", __LINE__, "] ", __VA_ARGS__)
+    
+namespace cycle_output
+{
+    int max_depth = 1;          // Default to top level cycle output only
+    std::ofstream cycle_fout;    // Output file stream for cycle output
+    // ostream &csv(ostream &os, auto&&... args) {
+    //     // Fold expression to write each argument followed by a comma, except for the last one
+    //     ((os << args << ","), ...);
+    //     os << "\n"; // End the line after all arguments are written
+    //     return os; // Return the stream to allow chaining
+    // }
+
+    //     // fs::path filename = outdir / ("group_ratios_" + std::to_string(i) + ".txt");
+
+    //     // std::ofstream fout(filename);
+    // fs::path cycle_filename = outdir / "cycle_output.csv";
+    // std::ofstream cycle_fout(cycle_filename);
+
+    // cycle_output::max_depth = 6;
+
+
+    void cycle_print(int len, int index, int depth)
+    {
+        if (depth > max_depth) return;
+
+        // // To std::cout with formatting
+        // std::cout << std::setw(6) << index
+        //           << std::string(depth*2+1,' ')
+        //           << len << "-cycle"
+        //           << "\n";
+
+        // To file with csv formatting
+        // std::cout << std::setw(6) << index
+        //           << std::string(depth+1,',')
+        //           << len << "-cycle"
+        //           << "\n";
+        cycle_fout << index
+        // std::cout << index
+                << "," << depth
+                << "," << len
+                << "\n";
+    }
+            // printf("Failure matching 359-cycle!!! Index = %d\n", copy.index());
+    void cycle_error(int len, int index, int depth)
+    {
+        if (depth > max_depth) return;
+
+        std::cout << std::string(depth*2,' ')
+                  << "Failure matching a " << len << "-cycle"
+                  << ". Index = " << index
+                  << "\n";
+    }
+}
 
 /**
  * @brief Calculates the sum of novel convergence fractions for a range of terms.
@@ -279,19 +355,20 @@ void novel_sum_3(int terms, int t, FILE *fptr)
  * The terms are composed of novel convergence fractions which are represented as discrete integers for numerator
  * and denominator.  The sum is returned in the numer and denom multiple precision integers passed by reference.
  * If the input arguments start and/or term are invalid, then the values returned by reference is 1 over 1 (unity).
+ * @param [in] fout - A reference to an output stream to write results to.
  * @param [in] terms - The number of terms to summate.
  * @param [in] t - The maximum number of elements to evaluate.
- * @param [in] fout - A reference to an output stream to write results to.
- * @param [in] cycle_elem_41 - An array of int8_t representing the 41-cycle elements.
- * @param [in] cycle_elem_53 - An array of int8_t representing the 53-cycle elements.
  */
-void novel_sum_4(int terms, int t, FILE *fptr, int8_t *cycle_elem_41, int8_t *cycle_elem_53)
-// void novel_sum_4(int terms, int t, std::ostream& fout, int8_t *cycle_elem_41, int8_t *cycle_elem_53)
+void novel_sum_4( std::ostream& fout, int terms, int t )
 {
-    char buffer[80];
+    // Step 1: check stream health immediately
+    if (!fout) {
+        std::cerr << "novel_sum_4: output stream not ready\n";
+        return;
+    }
 
     // If no terms needed then return immediately with the modified reference parameters
-    if ( (terms < 2) || (terms > 15) )
+    if ( (terms < 1) || (terms > 15) )
         return;
 
     Cumulative cumulative;
@@ -307,9 +384,11 @@ void novel_sum_4(int terms, int t, FILE *fptr, int8_t *cycle_elem_41, int8_t *cy
         denoms[n%range] = cumulative.denominator();
         numers[n%range] = cumulative.numerator();
 
+// gmp_printf("novel_sum_4: n = %d, n%range = %d, numers[n%range] = %Zd, denoms[n%range] = %Zd\n", n, n%range, numers[n%range], denoms[n%range]);
+
         // If index is less that one group of terms, just store values literally
         if ( n < terms ) {
-            differ[n%range] = cumulative.numerator();
+            differ[n%range] = cumulative.numerator();           // The modulo is used to wrap around the array for the next group of terms
         }
 
         // Otherwise there is at least one group of terms, so compute the differential
@@ -317,34 +396,39 @@ void novel_sum_4(int terms, int t, FILE *fptr, int8_t *cycle_elem_41, int8_t *cy
             power_of_2 = denoms[n%range] / denoms[(n-terms)%range];
             differ[n%range] = cumulative.numerator() - power_of_2 * numers[(n-terms)%range];    
 
+// gmp_printf("novel_sum_4: n = %d, power_of_2 = %Zd, differ[n%range] = %Zd\n", n, power_of_2, differ[n%range]);
+
             // If the index has at least two complete groups you can begin to compute the ratio between groups
             if ( n >= range) {
 
                 uint16_t curr_sum_index = (n-1) % range;
                 uint16_t prev_sum_index = (n-terms-1) % range;
 
+// gmp_printf("novel_sum_4: n = %d, curr_sum_index = %d, prev_sum_index = %d\n", n, curr_sum_index, prev_sum_index);
+
                 mpz_class ratio_num = differ[curr_sum_index] * denoms[prev_sum_index];
                 mpz_class ratio_den = differ[prev_sum_index] * denoms[curr_sum_index];
+
+// gmp_printf("novel_sum_4: n = %d, differ[curr_sum_index] = %Zd, denoms[prev_sum_index] = %Zd\n", n, differ[curr_sum_index], denoms[prev_sum_index]);
+// gmp_printf("novel_sum_4: n = %d, differ[prev_sum_index] = %Zd, denoms[curr_sum_index] = %Zd\n", n, differ[prev_sum_index], denoms[curr_sum_index]);
+// gmp_printf("novel_sum_4: n = %d, ratio_num = %Zd, ratio_den = %Zd\n", n, ratio_num, ratio_den);
         
                 // gmp_printf("terms = %d, n = %d: ratio = %Zd/%Zd = %9.7Ff\n", terms, n-range, ratio_num, ratio_den, ratio);
                 mpf_class ratio = mpf_class(ratio_num) / mpf_class(ratio_den);
 
-                // Write to file if you have a file pointer
-                if (fptr) {
+// gmp_printf("novel_sum_4: n = %d, ratio = %9.7Ff\n", n, ratio);
 
-                    // Choose which values and column to populate for 41-cycle or 53-cycle
-                    if ( cycle_elem_53[n] < 0 )
-                        gmp_sprintf(buffer, "%d,%d,%d,%9.7Ff,", n-range, n-terms, n, ratio, cycle_elem_41[n]);
-                    else
-                        gmp_sprintf(buffer, "%d,%d,%d,,%9.7Ff", n-range, n-terms, n, ratio, cycle_elem_53[n]);
-                    // gmp_sprintf(buffer, "%d,%d,%d,%9.7Ff", n-range, n-terms, n, ratio);
-                    fprintf(fptr,"%s\n", buffer);
+                // Output to console with formatting every 10 terms
+                if ( !( (n-range) % 10) ) {
+                    csv(fout,
+                        n - range,          // ratio first appears at n = range
+                        fmt::f(9,7,ratio)   // ratio of terms
+                    );
                 }
 
-                // 53=cycle ratios provide for greater smoothness
-                if ( !( (n-range) % 10) ) {
-                    gmp_printf("terms = %02d, n = %5d: ratio = %9.7Ff, 53[] = %d, 41[] = %d\n",
-                                terms, n-range, ratio, cycle_elem_53[n], cycle_elem_41[n]);
+                // Blip
+                if ( !( (n-range) % 100) ) {
+                    gmp_printf("terms = %2d, n = %5d: ratio = %9.7Ff\n", terms, n-range, ratio);
                 }
             }
         }
@@ -352,9 +436,6 @@ void novel_sum_4(int terms, int t, FILE *fptr, int8_t *cycle_elem_41, int8_t *cy
         // Increment the cumulative ratio from which all values are derived
         ++cumulative;
     }
-
-    // Drop a newline as a separator
-    printf("\n");
 }
 
 /**
@@ -958,6 +1039,15 @@ double partial_threshold(const mpz_class& numer, const mpz_class& denom, const m
     return delta.get_d();
 }
 
+double partial_threshold2(const mpz_class& numer, const mpz_class& denom, const mpz_class& threshold)
+{
+    mpz_class partial_numer = numer - threshold;
+    mpz_class partial_denom = denom - threshold;
+    mpf_class delta = mpf_class( partial_numer ) / mpf_class( partial_denom );
+
+    return delta.get_d();
+}
+
 void Cumulative_seq3( Cumulative *c, uint32_t t )
 {
     mpz_class old_numer = 1, old_denom = 1, novel = 0;
@@ -1162,7 +1252,7 @@ void Cumulative_seq4( Cumulative *c, uint32_t t, int8_t *cycle_elem_41, int8_t *
         scale = denom / power;              // This evaluates to an integer power of 2
         threshold = (power-1) * scale;      // The value the numer must exceed in order to reach next bracket
 
-        // A blip every 1000 terms
+        // A blip every 200 terms
         if ( !(i % 200) ) {
             printf("n = %d\n", i);
         }
@@ -1274,9 +1364,9 @@ void Cumulative_seq4( Cumulative *c, uint32_t t, int8_t *cycle_elem_41, int8_t *
     // Write out the frequencies of each term type to the file
     for ( uint32_t i=1; i<=max_terms; ++i ) {
         if (minimums[i] > maximums[i])
-            fprintf(fptr, "\n%2d-term occurances: %4d\n", i, 0);
+            fprintf(fptr, "\n%2d-term occurrences: %4d\n", i, 0);
         else
-            fprintf(fptr, "\n%2d-term occurances: %4d, range %8.6f to %8.6f\n", i, frequency[i], minimums[i], maximums[i]);
+            fprintf(fptr, "\n%2d-term occurrences: %4d, range %8.6f to %8.6f\n", i, frequency[i], minimums[i], maximums[i]);
     }
 
     // Output the histogram results
@@ -1330,14 +1420,309 @@ void Cumulative_seq4( Cumulative *c, uint32_t t, int8_t *cycle_elem_41, int8_t *
     fclose(fptr);
 }
 
-void load_array( int8_t* cycle_elem, uint32_t last, uint32_t elements)
+// This function find the number of terms of A186009 needed to cover the next 1/2^n interval
+void Cumulative_seq5( std::ostream& fout, Cumulative    c, uint32_t t )
 {
-    // Now populate the array with the positions in a cycle of length elements 
-    uint32_t first = last-elements, pos=0;
+    mpz_class numer, denom, power, scale, threshold;
+    mpz_class newt=1, oldt=1, next_denom;
+    A000079 a000079(2);
 
-    // Load each element with it's position in the cycle
-    for (uint32_t i = first; i<last; ++i) {
-        cycle_elem[i] = pos++;
+    double new_interval=1, partial=1, last_partial=1, diff=1;
+    uint32_t last_i=0, term=1, exponent=1, last_exponent=1;
+
+    // Turn interval into an array of strings [1] to [14] + create a parallel array as a histogram of the frequency of term counts
+    FILE *fptr = fopen("partial-pos.txt", "w");
+
+    // Print out the first t elements of the sequence
+    for ( uint32_t i=0; i<=t; ++i ) {
+        numer = c.numerator();
+        denom = c.denominator();
+        // novel = c.novel();
+        exponent = c.exponent();
+        power = a000079();
+        scale = denom / power;              // This evaluates to an integer power of 2
+        threshold = (power-1) * scale;      // The value the numer must exceed in order to reach next bracket
+// gmp_printf("n = %5d; numer = %Zd, denom = %Zd, novel = %Zd, threshold = %Zd, power = %Zd, scale = %Zd\n", i, numer, denom, novel, threshold, power, scale);
+gmp_printf("n = %5d; numer = %Zd, denom = %Zd, exponent = %d, threshold = %Zd, power = %Zd, scale = %Zd\n", i, numer, denom, exponent, threshold, power, scale);
+
+
+// New approach to calculating the next threshold is to look at the exponent and denominator of the next term, which gives a more accurate picture of
+// where the next threshold will be than simply doubling the previous threshold.  This is because the terms are not always powers of 2, so the next term
+// may not be exactly double the previous one.
+        uint32_t next_exponent = c.exponent();
+        mpz_class next_denom = c.denominator();
+        // Take the midpoint between the old threshold and the denominator as the new threshold,
+        // which is a more accurate reflection of the point at which the next term would be required.
+        uint32_t pow = next_exponent - last_exponent;
+        // mpz_class oldt = threshold << pow;
+        // mpz_class newt = (next_denom + oldt) >> 1;
+        // newt <<= pow;           // Scale the old threshold by the power difference to get the new threshold
+gmp_printf("n = %5d; pow = %d, old threshold = %Zd, new threshold = %Zd, denom = %Zd, next_exponent = %d, last_exponent = %d, next_denom = %Zd\n", i, pow, oldt, newt, denom, next_exponent, last_exponent, next_denom);
+        last_exponent = next_exponent;
+
+
+
+        // A blip every 200 terms
+        if ( !(i % 200) ) {
+            printf("n = %d\n", i);
+        }
+
+        // Compute the fractional component to the next threshold
+        partial = partial_threshold(numer, denom, threshold);
+
+        // Compare cumulative to the power of two
+        if ( numer >= threshold ) {
+            c++;
+            next_denom = c.denominator();
+            next_exponent = c.exponent();
+            pow = next_exponent - last_exponent;
+            oldt <<= pow;
+            newt = (next_denom + oldt) >> 1;
+gmp_printf("n = %5d; pow = %d, old threshold = %Zd, new threshold = %Zd, denom = %Zd, next_exponent = %d, last_exponent = %d, next_denom = %Zd\n", i, pow, oldt, newt, denom, next_exponent, last_exponent, next_denom);
+
+
+            // mpz_class oldthresh = threshold;
+            // Calculate the amount the numerator has crossed into another 2^-k bracket
+            mpz_class overshoot = numer - threshold;
+
+            // Calculate the coverage of the 2^-k bracket
+            diff = 1 - (last_partial - partial);
+
+            // Debug output for the current term and the diff to the next threshold
+            // DEBUG_OUT("n = ", fmt::d(5,i), 
+            //           ", term = ", fmt::d(2,term), 
+            //           ", partial = ", fmt::f(8,6,partial),
+            //           "; last_partial = ", fmt::f(8,6,last_partial),
+            //           ", diff = ", fmt::f(8,6,diff)
+            // );
+
+            // Calculate the new threshold
+            threshold = (power*2-1) * scale;
+            // mpz_class partial_thresh = threshold - oldthresh;
+
+            // Compute the fractional component to the next threshold
+            new_interval = partial_threshold(numer*2, denom*2, threshold);
+
+             // Generate the tuple
+            csv(fout, 
+                i,
+                term,
+                fmt::e(8,6,overshoot),
+                // fmt::e(8,6,partial_thresh),
+                fmt::f(8,6,diff),
+                fmt::f(8,6,new_interval)
+            );
+
+            // Debug output for the new threshold and the new interval to the next threshold.  Overshoot is the amount by which the
+            // current numerator exceeds the threshold, which is a measure of how far into the new bracket we are.
+            DEBUG_OUT("n = ", fmt::d(5,i), 
+                      ", term = ", fmt::d(2,term), 
+                      ", partial = ", fmt::f(8,6,partial),
+                      "; last_partial = ", fmt::f(8,6,last_partial),
+                      "; numer = ", fmt::e(8,6,numer),
+                      ", denom = ", fmt::e(8,6,denom),
+                      ", threshold = ", fmt::e(8,6,threshold),
+                      ", overshoot = ", fmt::e(8,6,overshoot),
+                      ", diff = ", fmt::f(8,6,diff),
+                      ", power = ", fmt::e(8,6,power),
+                      ", scale = ", fmt::e(8,6,scale),
+                      ", new_interval = ", fmt::f(8,6,new_interval)
+            );
+
+            // Store the starting index position for the next interval
+            last_i = i;
+
+            // Reset the term value to 1 prior to printing
+            term = 1;
+
+            // Save the highest percentage achieved from previous bracket
+            last_partial = partial;
+oldt = newt;
+            // Increment the power of 2
+            ++a000079;
+        }
+        // Otherwise it's just another term in the bracket
+        else {
+            c++;
+            ++term;
+            next_exponent = c.exponent();
+            pow = next_exponent - last_exponent;
+        newt <<= pow;           // Scale the old threshold by the power difference to get the new threshold
+gmp_printf("n = %5d; pow = %d, old threshold = %Zd, new threshold = %Zd, denom = %Zd, next_exponent = %d, last_exponent = %d, next_denom = %Zd\n", i, pow, oldt, newt, denom, next_exponent, last_exponent, next_denom);
+oldt = newt;
+
+            // Output the additional term and the partial threshold
+            // fprintf(fptr, "n = %5d, term = %2d, partial = %8.6f \n", i, term, partial);
+            // fout    << "n = " << fmt::d(5,i)
+            //         << ", term = " << fmt::d(2,term)
+            //         << ", partial = " << fmt::f(8,6,partial)
+            //         << std::endl;
+            DEBUG_OUT("n = ", fmt::d(5,i), 
+                      ", term = ", fmt::d(2,term), 
+                      ", partial = ", fmt::f(8,6,partial)
+            );
+        }
+
+        // Increment to the next cumulative summation
+        // c.operator++();
+    }
+
+    // Close the file
+    fclose(fptr);
+}
+
+// This function find the number of terms of A186009 needed to cover the next 1/2^n interval
+// This version is the same as seq5 but going to carve out the unnecessary calculations.
+void Cumulative_seq6( std::ostream& fout_py, std::ostream& fout_rd, uint32_t t )
+{
+    Cumulative c;
+
+    // Generate the header for the output
+    if ( fout_py ) {
+        csv(fout_py, 
+            "n",
+            "term",
+            "coverage",
+            "overshoot"
+        );
+    }
+
+    // mpz_class numer=c.numerator(), denom=c.denominator();
+    mpz_class threshold=1, last_threshold=0;
+
+    // double new_interval=1, partial=1, last_partial=1, diff=1;
+    uint32_t term=1, exponent=c.exponent(), last_exponent=exponent;
+
+    // Print out the first t elements of the sequence
+    for ( uint32_t n=0; n<=t; ++n ) {
+        mpz_class numer = c.numerator();
+        mpz_class denom = c.denominator();
+
+        // The bit shift is the difference between power of 2 exponents
+        uint32_t shift = exponent - last_exponent;
+
+        // save the last exponent for the next iteration
+        last_exponent = exponent;
+
+        DEBUG_OUT("n = ", fmt::d(3,n), 
+                ", term = ", fmt::d(2,term), 
+                ", numer = ", fmt::e(numer), 
+                ", denom = ", fmt::e(denom), 
+                ", threshold = ", fmt::e(threshold),
+                ", last_threshold = ", fmt::e(last_threshold),
+                ", exponent = ", fmt::d(3,exponent), 
+                ", last_exponent = ", fmt::d(3,last_exponent)
+        );
+
+        // A blip every 200 terms
+        if ( !(n % 200) ) {
+            printf("n = %d\n", n);
+        }
+
+        // Compare cumulative to the power of two
+        if ( numer >= threshold ) {
+            // Calculate the amount the numerator has crossed into another 2^-k bracket
+            mpz_class overshoot = numer - threshold;
+            // mpq_class ratio(overshoot, denom - threshold);
+            mpq_class ratio(numer - last_threshold, denom - threshold);
+
+            // Generate the tuple
+            if ( fout_py ) {
+                csv(fout_py, 
+                    n,
+                    term,
+                    fmt::f(8,6,ratio.get_d()),
+                    fmt::e(overshoot)
+                );
+            }
+
+            // gmp_fprintf(fptr, "n = %5d, term = %2d, coverage = %8.6f, overshoot = %Fe\n", n, term, ratio.get_d(), mpf_class(overshoot));
+            if ( fout_rd ) {
+                fout_rd << "n = " << fmt::d(5,n) 
+                        << ", term = " << fmt::d(2,term) 
+                        << ", coverage = " << fmt::f(8,6,ratio.get_d()) 
+                        << ", overshoot = " << fmt::e(overshoot) 
+                        << std::endl;
+            }
+
+            // Go to next cumulative term
+            c++;
+
+            // Retrieve the exponent and calculate the power difference for the next term
+            exponent = c.exponent();
+            shift = exponent - last_exponent;
+
+            // Update the numerator, denominator and threshold for the next term
+            numer = c.numerator();
+            denom = c.denominator();
+            threshold <<= shift;
+            last_threshold = threshold;
+            threshold = (denom + threshold) >> 1;      // Find the midpoint between the old threshold and the denominator
+
+            // Debug output for the new threshold and the new interval to the next threshold.  Overshoot is the amount by which the
+            DEBUG_OUT("n = ", fmt::d(3,n), 
+                    ", term = ", fmt::d(2,term), 
+                    ", numer = ", fmt::e(numer), 
+                    ", denom = ", fmt::e(denom), 
+                    ", threshold = ", fmt::e(threshold),
+                    ", last_threshold = ", fmt::e(last_threshold),
+                    ", exponent = ", fmt::d(3,exponent), 
+                    ", last_exponent = ", fmt::d(3,last_exponent),
+                    ", shift = ", fmt::d(shift), 
+                    ", partial = ", fmt::f(8,6,ratio.get_d()),
+                    ", overshoot = ", fmt::e(overshoot)
+            );
+
+            // Reset the term value to 1 prior to printing
+            term = 1;
+        }
+
+        // Otherwise it's just another term in the bracket
+        else {
+            // Calculate the amount the numerator falls short of the 2^-k bracket
+            mpz_class gap = threshold - numer;
+            mpz_class overshoot = numer - last_threshold;
+            mpq_class ratio(overshoot, denom - threshold);
+
+            // Generate the tuple
+            if ( fout_py ) {
+                csv(fout_py, 
+                    n,
+                    term,
+                    fmt::f(8,6,ratio.get_d()),
+                    fmt::e(overshoot)
+                );
+            }
+
+            // Go to next cumulative term
+            c++;
+
+            // Retrieve the exponent and calculate the power difference for the next term
+            exponent = c.exponent();
+            shift = exponent - last_exponent;
+
+            // Update the numerator, denominator and threshold for the next term
+            ++term;
+            threshold <<= shift;           // Scale the old threshold by the shift difference to get the new threshold
+            last_threshold <<= shift;           // Scale the old threshold by the shift difference to get the new threshold
+
+            gap <<= shift;                 // Scale the gap by the shift difference to get the new gap
+            numer <<= shift;              // Scale the numerator by the shift difference to get the new numerator
+            denom <<= shift;              // Scale the denominator by the shift difference to get the new denominator
+
+            DEBUG_OUT("n = ", fmt::d(3,n), 
+                    ", term = ", fmt::d(2,term), 
+                    ", numer = ", fmt::e(numer), 
+                    ", denom = ", fmt::e(denom), 
+                    ", threshold = ", fmt::e(threshold),
+                    ", last_threshold = ", fmt::e(last_threshold),
+                    ", exponent = ", fmt::d(3,exponent), 
+                    ", last_exponent = ", fmt::d(3,last_exponent),
+                    ", shift = ", fmt::d(shift), 
+                    ", partial = ", fmt::f(8,6,ratio.get_d()),
+                    ", gap = ", fmt::e(gap)
+            );
+        }
     }
 }
 
@@ -1381,20 +1766,22 @@ bool found_12_cycle( A022921& a022921 )
         return false;
 }
 
-bool found_41_53_cycle( A022921& a022921, uint16_t subcycles )
+bool found_41_53_cycle( A022921& a022921, uint16_t subcycles, int depth )
 {
     A022921 copy = a022921;
 
     // Cycle through the first 12-cycles and return if not matching
     for ( uint8_t i = 0; i<subcycles; ++i ) {
         if ( !found_12_cycle(copy) ) {
-            printf("Failure matching 12-cycle!!! Index = %d\n", copy.index());
+            cycle_output::cycle_error(12, copy.index(), depth);
+            a022921 = copy;
             return false;
         }
     }
 
     if ( !found_5_cycle(copy) ) {
-        printf("Failure matching a 5-cycle. Index = %d\n", copy.index());
+        cycle_output::cycle_error(5, copy.index(), depth);
+        a022921 = copy;
         return false;
     }
 
@@ -1402,54 +1789,65 @@ bool found_41_53_cycle( A022921& a022921, uint16_t subcycles )
     return true;
 }
 
-bool found_41_cycle( A022921& a022921, int8_t *cycle_elem )
+// bool found_41_cycle( A022921& a022921, int8_t *cycle_elem, int depth )
+bool found_41_cycle( A022921& a022921, int depth )
 {
+    int subcycles = 3;         // There are 3 12-cycles in a 41-cycle
     A022921 copy = a022921;
 
     // Cycle through the first 3 12-cycles and return if not matching
-    if ( !found_41_53_cycle( copy, 3 ) ) {
+    if ( !found_41_53_cycle( copy, subcycles, depth+1 ) ) {
+        cycle_output::cycle_error(41, copy.index(), depth);
         return false;
     }
 
     // Load array with 41 elements from 0 to 41
-    load_array( cycle_elem, copy.index(), 41 );
+    // load_array( cycle_elem, copy.index(), 41 );
 
-    printf("Found a 41-cycle. Index = %d\n", copy.index());
+    cycle_output::cycle_print(41, copy.index(), depth);
     a022921 = copy;
     return true;
 }
 
-bool found_53_cycle( A022921& a022921, int8_t *cycle_elem )
+// bool found_53_cycle( A022921& a022921, int8_t *cycle_elem, int depth )
+bool found_53_cycle( A022921& a022921, int depth )
 {
+    int subcycles = 4;         // There are 4 12-cycles in a 53-cycle
     A022921 copy = a022921;
 
     // Cycle through the first 4 12-cycles and return if not matching
-    if ( !found_41_53_cycle( copy, 4 ) ) {
+    if ( !found_41_53_cycle( copy, subcycles, depth+1 ) ) {
+        cycle_output::cycle_error(53, copy.index(), depth);
         return false;
     }
 
     // Load array with 53 elements from 0 to 52
-    load_array( cycle_elem, copy.index(), 53 );
+    // load_array( cycle_elem, copy.index(), 53 );
 
-    printf("Found a 53-cycle. Index = %d\n", copy.index());
+    cycle_output::cycle_print(53, copy.index(), depth);
     a022921 = copy;
     return true;
 }
 
-bool found_306_359_cycle( A022921& a022921, uint16_t subcycles, int8_t *cycle_elem_41, int8_t *cycle_elem_53 )
+// bool found_306_359_cycle( A022921& a022921, uint16_t subcycles, int8_t *cycle_elem_41, int8_t *cycle_elem_53, int depth )
+bool found_306_359_cycle( A022921& a022921, uint16_t subcycles, int depth )
 {
     A022921 copy = a022921;
 
     // Cycle through the first 53-cycles and return if not matching
     for ( uint8_t i = 0; i<subcycles; ++i ) {
-        if ( !found_53_cycle(copy, cycle_elem_53) ) {
-            printf("Failure matching 53-cycle!!! Index = %d\n", copy.index());
+        // if ( !found_53_cycle(copy, cycle_elem_53, depth+1) ) {
+        if ( !found_53_cycle(copy, depth+1) ) {
+            cycle_output::cycle_error(665, copy.index(), depth);
+            a022921 = copy;
             return false;
         }
     }
 
-    if ( !found_41_cycle(copy, cycle_elem_41) ) {
-        printf("Not a 41-cycle. Index = %d\n", copy.index());
+    // if ( !found_41_cycle(copy, cycle_elem_41, depth+1) ) {
+    if ( !found_41_cycle(copy, depth+1) ) {
+        cycle_output::cycle_error(41, copy.index(), depth);
+        a022921 = copy;
         return false;
     }
 
@@ -1457,62 +1855,78 @@ bool found_306_359_cycle( A022921& a022921, uint16_t subcycles, int8_t *cycle_el
     return true;
 }
 
-bool found_306_cycle( A022921& a022921, int8_t *cycle_elem_41, int8_t *cycle_elem_53 )
+// bool found_306_cycle( A022921& a022921, int8_t *cycle_elem_41, int8_t *cycle_elem_53, int depth )
+bool found_306_cycle( A022921& a022921, int depth )
 {
+    int subcycles = 5;         // There are 5 53-cycles in a 306-cycle plus an additional 41-cycle
     A022921 copy = a022921;
 
     // Cycle through the first 5 53-cycles and return if not matching
-    if ( !found_306_359_cycle( copy, 5, cycle_elem_41, cycle_elem_53 ) ) {
+    // if ( !found_306_359_cycle( copy, subcycles, cycle_elem_41, cycle_elem_53, depth ) ) {
+    if ( !found_306_359_cycle( copy, subcycles, depth ) ) {
+        a022921 = copy;
         return false;
     }
 
-    printf("Found a 306-cycle. Index = %d\n", copy.index());
+    cycle_output::cycle_print(306, copy.index(), depth);
     a022921 = copy;
     return true;
 }
 
-bool found_359_cycle( A022921& a022921, int8_t *cycle_elem_41, int8_t *cycle_elem_53 )
+// bool found_359_cycle( A022921& a022921, int8_t *cycle_elem_41, int8_t *cycle_elem_53, int depth )
+bool found_359_cycle( A022921& a022921, int depth )
 {
     A022921 copy = a022921;
+    int subcycles = 6;         // There are 6 53-cycles in a 359-cycle plus an additional 41-cycle
 
     // Cycle through the first 6 53-cycles and return if not matching
-    if ( !found_306_359_cycle( copy, 6, cycle_elem_41, cycle_elem_53 ) ) {
-        return false;
+    // if ( !found_306_359_cycle( copy, subcycles, cycle_elem_41, cycle_elem_53, depth ) ) {
+    if ( !found_306_359_cycle( copy, subcycles, depth ) ) {
+        a022921 = copy;
     }
 
-    printf("Found a 359-cycle. Index = %d\n", copy.index());
+    cycle_output::cycle_print(359, copy.index(), depth);
     a022921 = copy;
     return true;
 }
 
-bool found_665_cycle( A022921& a022921,  int8_t *cycle_elem_41, int8_t *cycle_elem_53 )
+// bool found_665_cycle( A022921& a022921,  int8_t *cycle_elem_41, int8_t *cycle_elem_53, int depth )
+bool found_665_cycle( A022921& a022921, int depth )
 {
     A022921 copy = a022921;
 
-    // printf("inside found_665_cycle()\n");
-    if ( found_359_cycle(copy, cycle_elem_41, cycle_elem_53) && found_306_cycle(copy, cycle_elem_41, cycle_elem_53) ) {
-        printf("Found a 665-cycle. Index = %d\n", copy.index());
+    // Cycle through a 665-cycle and return if not matching
+    // if ( found_359_cycle(copy, cycle_elem_41, cycle_elem_53, depth+1) && found_306_cycle(copy, cycle_elem_41, cycle_elem_53, depth+1) ) {
+    // if ( found_359_cycle(copy, depth+1) && found_306_cycle(copy, cycle_elem_41, cycle_elem_53, depth+1) ) {
+    if ( found_359_cycle(copy, depth+1) && found_306_cycle(copy, depth+1) ) {
+        cycle_output::cycle_print(665, copy.index(), depth);
         a022921 = copy;
         return true;
     }
-    else
-        return false;
+
+    a022921 = copy;
+    return false;
 }
 
-bool found_15601_16266_cycle( A022921& a022921, uint16_t subcycles,  int8_t *cycle_elem_41, int8_t *cycle_elem_53 )
+// bool found_15601_16266_cycle( A022921& a022921, uint16_t subcycles,  int8_t *cycle_elem_41, int8_t *cycle_elem_53, int depth )
+bool found_15601_16266_cycle( A022921& a022921, uint16_t subcycles, int depth )
 {
     A022921 copy = a022921;
 
     // Cycle through the first 665-cycles and return if not matching
     for ( uint8_t i = 0; i<subcycles; ++i ) {
-        if ( !found_665_cycle(copy, cycle_elem_41, cycle_elem_53 ) ) {
-            printf("Failure matching 359-cycle!!! Index = %d\n", copy.index());
+        // if ( !found_665_cycle(copy, cycle_elem_41, cycle_elem_53, depth+1 ) ) {
+        if ( !found_665_cycle(copy, depth+1 ) ) {
+            cycle_output::cycle_error(665, copy.index(), depth);
+            a022921 = copy;
             return false;
         }
     }
 
-    if ( !found_306_cycle(copy, cycle_elem_41, cycle_elem_53 ) ) {
-        printf("Not a 306-cycle. Index = %d\n", copy.index());
+    // if ( !found_306_cycle(copy, cycle_elem_41, cycle_elem_53, depth+1 ) ) {
+    if ( !found_306_cycle(copy, depth+1 ) ) {
+        cycle_output::cycle_error(306, copy.index(), depth);
+        a022921 = copy;
         return false;
     }
 
@@ -1520,51 +1934,62 @@ bool found_15601_16266_cycle( A022921& a022921, uint16_t subcycles,  int8_t *cyc
     return true;
 }
 
-bool found_15601_cycle( A022921& a022921, int8_t *cycle_elem_41, int8_t *cycle_elem_53 )
+// bool found_15601_cycle( A022921& a022921, int8_t *cycle_elem_41, int8_t *cycle_elem_53, int depth )
+bool found_15601_cycle( A022921& a022921, int depth )
 {
     A022921 copy = a022921;
+    int subcycles = 23;         // There are 23 665-cycles in a 15601-cycle
 
     // Cycle through the first 23 665-cycles and return if not matching
-    if ( !found_15601_16266_cycle( copy, 23, cycle_elem_41, cycle_elem_53 ) ) {
+    // if ( !found_15601_16266_cycle( copy, subcycles, cycle_elem_41, cycle_elem_53, depth ) ) {
+    if ( !found_15601_16266_cycle( copy, subcycles, depth ) ) {
+        cycle_output::cycle_error(15601, copy.index(), depth);
+        a022921 = copy;
         return false;
     }
 
-    printf("Found a 15601-cycle. Index = %d\n", copy.index());
+    cycle_output::cycle_print(15601, copy.index(), depth);
     a022921 = copy;
     return true;
 }
 
-bool found_16266_cycle( A022921& a022921,int8_t *cycle_elem_41, int8_t *cycle_elem_53 )
+// bool found_16266_cycle( A022921& a022921,int8_t *cycle_elem_41, int8_t *cycle_elem_53, int depth )
+bool found_16266_cycle( A022921& a022921, int depth )
 {
     A022921 copy = a022921;
+    int subcycles = 24;         // There are 24 665-cycles in a 16266-cycle
 
     // Cycle through the first 24 665-cycles and return if not matching
-    if ( !found_15601_16266_cycle( copy, 24, cycle_elem_41, cycle_elem_53 ) ) {
+    // if ( !found_15601_16266_cycle( copy, subcycles, cycle_elem_41, cycle_elem_53, depth ) ) {
+    if ( !found_15601_16266_cycle( copy, subcycles, depth ) ) {
+        cycle_output::cycle_error(16266, copy.index(), depth);
+        a022921 = copy;
         return false;
     }
 
-    printf("Found a 16266-cycle. Index = %d\n", copy.index());
+    cycle_output::cycle_print(16266, copy.index(), depth);
     a022921 = copy;
     return true;
 }
 
-bool found_cycle( A022921& a022921, int8_t *cycle_elem_41, int8_t *cycle_elem_53 )
+// bool found_cycle( A022921& a022921, int8_t *cycle_elem_41, int8_t *cycle_elem_53 )
+bool found_cycle( A022921& a022921 )
 {
     A022921 copy = a022921;
+    int depth = 0;
 
-    // printf("inside found_665_cycle()\n");
-    if ( found_16266_cycle(copy, cycle_elem_41, cycle_elem_53) && found_15601_cycle(copy, cycle_elem_41, cycle_elem_53) ) {
-        printf("Found a 31867-cycle. Index = %d\n", copy.index());
+    // Cycle through a 31867-cycles and return if not matching
+    // if ( found_16266_cycle(copy, cycle_elem_41, cycle_elem_53, depth+1) && found_15601_cycle(copy, cycle_elem_41, cycle_elem_53, depth+1) ) {
+    // if ( found_16266_cycle(copy, depth+1) && found_15601_cycle(copy, cycle_elem_41, cycle_elem_53, depth+1) ) {
+    if ( found_16266_cycle(copy, depth+1) && found_15601_cycle(copy, depth+1) ) {
+        cycle_output::cycle_print(31867, copy.index(), depth);
         a022921 = copy;
         return true;
     }
-    else
-        return false;
-}
 
-void find_cycles( uint8_t* cycle_elem )
-{
-
+    cycle_output::cycle_error(31867, copy.index(), depth);
+    a022921 = copy;
+    return false;
 }
 
 double sum_consecutive_ratios( uint16_t terms, double *ratios )
@@ -1638,6 +2063,226 @@ void consecutive_novel_ratios( uint32_t terms )
 namespace fs = std::filesystem;             // Create an alias for the filesystem namespace
 
 /**
+ * @brief Calculate the logarithm of a large integer n using its mantissa and exponent in base 2.
+ * @param n The large integer for which to calculate the logarithm.
+ * @return double The logarithm of n in base 2.
+ */
+double mpz_log(const mpz_class& n)
+{
+    mp_exp_t exp;
+
+    // n = mantissa * 2^exp
+    double mantissa = mpz_get_d_2exp(&exp, n.get_mpz_t());
+
+    return std::log(mantissa) + exp * std::log(2.0);
+}
+
+void gamma()
+{
+        // Test
+    mpz_class test = 1024;  // 2^10
+    double log_test = mpz_log(test);
+    std::cout << "Log of 2^10: " << log_test << std::endl;
+
+    // uint32_t max = 80000;           // Default maximum number of terms to calculate for cumulative sequence
+    // fs::path outdir = ".";
+    int start = 15500, terms = 200; 
+
+    A186009 a186009(start+1);         // Set index to starting point for testing
+    A020914 a020914(start);         // Set index to starting point for testing
+
+    int longest_cycle = 53;
+    double mpz_log_terms[terms + longest_cycle];
+    double mpf_numer_exps[terms + longest_cycle];
+    double std_log_two = std::log(2.0);         // ~0.69314718056
+
+    // First built out an array of gamma values (+ more than called for as per longest_cycle)
+    for (int i=0; i<terms+longest_cycle; ++i) {
+        mpz_log_terms[i] =  mpz_log(a186009.term());
+        mpf_numer_exps[i] = a020914.term().get_d();
+        a186009++;
+        a020914++;
+    }
+
+    // Loop starting from starting index for a given number of terms
+    for (int i=0; i<terms; ++i) {
+        double gamma05 = ( mpz_log_terms[i+05] - mpz_log_terms[i] ) /  5.0 - ( mpf_numer_exps[i+05] - mpf_numer_exps[i] ) * std_log_two /  5.0;
+        double gamma12 = ( mpz_log_terms[i+12] - mpz_log_terms[i] ) / 12.0 - ( mpf_numer_exps[i+12] - mpf_numer_exps[i] ) * std_log_two / 12.0;
+        double gamma53 = ( mpz_log_terms[i+53] - mpz_log_terms[i] ) / 53.0 - ( mpf_numer_exps[i+53] - mpf_numer_exps[i] ) * std_log_two / 53.0;
+        std::cout << "Index: " << start+i << ", Gamma(5): " << fmt::f(8,6,gamma05) << ", Gamma(12): " << fmt::f(8,6,gamma12) << ", Gamma(53): " << fmt::f(8,6,gamma53) << std::endl;
+    }
+}
+
+void differential()
+{
+    // int expansive[]   = { 5, 41, 306, 15601,  79335};       // The expansive   cycle lengths to calculate gamma for
+    // int contractive[] = {12, 53, 665, 31867, 111202};       // The contractive cycle lengths to calculate gamma for
+    int towers[] = { 2, 5, 12, 41, 53, 306, 665, 15601, 31867, 79335, 111202 };   // The tower indices to calculate gamma for
+    // int exp_start[sizeof(expansive)/sizeof(expansive[0])];  // Array to hold the starting indices for expansive cycle lengths
+    int a186009_doubling_offset = 2;                        // The offset to apply to the index when calculating gamma
+    int tower = towers[sizeof(towers)/sizeof(towers[0])-1] + a186009_doubling_offset;            // The index of the tower to calculate gamma up to
+
+    A186009 a186009;                        // Set index to default starting point for testing
+
+    // Build out array of expanive cycle starting indices based on the contractive cycle lengths.
+    // for (size_t j=0; j<sizeof(expansive)/sizeof(expansive[0]); ++j) {
+    //     exp_start[j] = contractive[j]-expansive[j];     // Calculate the starting index for each expansive cycle length based on the corresponding contractive cycle length and the offset
+    // }
+
+    double last_log_tower = 0;                      // Variable to hold the logarithm of the last tower value for calculating gamma
+    int last_cycle_index = 1;                      // Variable to hold the last cycle index for calculating gamma
+
+    // The series A186009(n) begins at n=1, with a doubling rule offest by n-2
+    for (int i=1; i<=tower; ++i) {
+
+        // Search for contractive cycle terminations and calculate gamma.
+        if (std::find(std::begin(towers), std::end(towers), i-a186009_doubling_offset) != std::end(towers)) {
+            int cycle_index = i - a186009_doubling_offset;
+            int tower_delta = cycle_index - last_cycle_index;
+            double log_tower = mpz_log(a186009.term());
+            double gamma = ( log_tower - last_log_tower ) / ( cycle_index - last_cycle_index );
+            std::cout << "Calculating gamma(" << last_cycle_index << "->" << cycle_index << ") with tower separation " << tower_delta << ": " << fmt::f(8,6,gamma) << std::endl;
+
+            last_log_tower = log_tower;
+            last_cycle_index = cycle_index;
+        }
+
+        // // Search for contractive cycle terminations and calculate gamma.
+        // if (std::find(std::begin(contractive), std::end(contractive), i-a186009_doubling_offset) != std::end(contractive)) {
+        //     int cycle_index = i - a186009_doubling_offset;
+        //     double log_tower = mpz_log(a186009.term());
+        //     double gamma = log_tower /  cycle_index;
+        //     std::cout << "Calculating gamma for contractive cycle length: " << cycle_index << ", gamma: " << fmt::f(8,6,gamma) << std::endl;
+        // }
+
+        // // Search for expansive cycle beginnings and calculate starting gamma.
+        // if (std::find(std::begin(expansive), std::end(expansive), i-a186009_doubling_offset) != std::end(expansive)) {
+        //     int cycle_index = i - a186009_doubling_offset;
+        //     double log_tower = mpz_log(a186009.term());
+        //     double gamma = log_tower /  cycle_index;
+        //     std::cout << "Calculating gamma for expansive cycle length: " << cycle_index << ", gamma: " << fmt::f(8,6,gamma) << std::endl;
+        // }        ++a186009;      // Increment to the next term in A186009 for the next iteration
+
+        // // Search for expansive cycle terminations and calculate gamma.
+        // if (std::find(std::begin(expansive), std::end(expansive), i-a186009_doubling_offset) != std::end(expansive)) {
+        //     int cycle_index = i - a186009_doubling_offset;
+        //     double log_tower = mpz_log(a186009.term());
+        //     double gamma = log_tower /  cycle_index;
+        //     std::cout << "Calculating gamma for expansive cycle length: " << cycle_index << ", gamma: " << fmt::f(8,6,gamma) << std::endl;
+        // }
+        
+        ++a186009;      // Increment to the next term in A186009 for the next iteration
+    }
+}
+
+double calculate_gamma( double log_tower, double last_log_tower, int cycle_index, int last_cycle_index )
+{
+    return ( log_tower - last_log_tower ) / ( cycle_index - last_cycle_index );
+}
+
+void tower_point_cocycle_growth(std::ofstream& A186009_out)
+{
+    int expansive[]   = {1, 5,  41, 306, 15601, 79335};     // The expansive   cycle lengths to calculate gamma for
+    int contractive[] = {2, 12, 53, 665, 31867, 111202};    // The contractive cycle lengths to calculate gamma for
+    int a186009_doubling_offset = 2;                        // The offset to apply to the index when calculating gamma
+    int last_tower = 143500;                                // The index of the tower to calculate A186009 up to
+
+    A186009 a186009;                        // Set index to default starting point for testing
+    std::set<int> a186009_co_cycle_indices;
+    std::unordered_map<int,double> log_a186009_map;
+
+    // Initialize set with the value of 0 to represent the starting point of the cycles
+    a186009_co_cycle_indices.insert(0);
+
+    // Test out the new getters
+    for ( int tower_index : contractive ) {
+        mpf_class twos, threes, fidelity;
+        A020914 a020914( tower_index );
+        twos =  a020914.get_twos() * 2;
+        threes = a020914.get_threes() * 3;
+        fidelity = twos / threes;
+        std::cout << "Tower: " << tower_index << "; Twos = " << fmt::e(10,8,twos) << ", Threes = " << fmt::e(10,8,threes) << ", Fidelity = " << fmt::f(10,8,fidelity) << std::endl;
+    }
+
+    // The first iteration of this loop will be to find the cycle start and end points, but not calculate gamma.
+    for ( int tower_index : contractive ) {
+
+        // Add the contractive cycle termination point to the set of indices to calculate gamma for
+        a186009_co_cycle_indices.insert(tower_index);
+
+        std::cout << "Contractive cycle termination at tower index: " << tower_index << ", (0," << tower_index << ")" << std::endl;
+
+        for ( int termination : expansive ) {
+            int exp_cycle_index = tower_index - termination;
+            if ( exp_cycle_index >= 0 ) {
+                std::cout << "    Expansive cycle length: " << termination << ", (" << exp_cycle_index << "," << tower_index << ")" << std::endl;
+
+                // Add the expansive cycle initiation point to the set of indices to calculate gamma for
+                a186009_co_cycle_indices.insert(exp_cycle_index);
+            }
+        }
+
+        for ( int initiation : contractive ) {
+            int exp_cycle_index = tower_index + initiation;
+            if ( exp_cycle_index <= 2 * tower_index) {
+                std::cout << "    Contractive cycle length: " << initiation << ", (" << tower_index << "," << exp_cycle_index << ")" << std::endl;
+
+                // Add the contractive cycle initiation point to the set of indices to calculate gamma for
+                a186009_co_cycle_indices.insert(exp_cycle_index);
+            }
+        }
+    }
+
+    // The second iteration will be to calculate the log of the tower values at the critcal points and tabulate.
+    for ( int a186009_index = 1; a186009_index <= last_tower; ++a186009_index ) {
+
+        // Align the tower index with the A186009 index by applying the doubling offset
+        int tower_index = a186009_index - a186009_doubling_offset;
+
+        // Check if the current index is in the set of indices to calculate gamma for, and if so,
+        // calculate the log of the tower value and store it in the map
+        if (a186009_co_cycle_indices.find(tower_index) != a186009_co_cycle_indices.end()) {
+            log_a186009_map[tower_index] = mpz_log(a186009.term());
+            std::cout << "Tower index: " << fmt::d(6,tower_index) << ", A186009 term: " << fmt::e(a186009.term())
+                    << ", log: " << fmt::f(10,8,log_a186009_map[tower_index]) << std::endl;
+        }
+
+        A186009_out << fmt::d(a186009_index) << "," <<fmt::d(tower_index) << "," << fmt::e(a186009.term()) << "," << fmt::f(10,8,mpz_log(a186009.term())) << std::endl;
+        ++a186009;      // Increment to the next term in A186009 for the next iteration
+    }
+
+    // The final iteration will be to calculate gamma for the cycle lengths.
+    for ( int tower_index : contractive ) {
+
+        double co_cycle_log;
+
+        // If the tower index is in the map, calculate the log of the tower value at the cycle termination point
+        if ( log_a186009_map.contains(tower_index) ) {
+            co_cycle_log = log_a186009_map[tower_index] / tower_index;
+            std::cout << "Contractive cycle termination at tower index: " << tower_index << "; range(0," << tower_index << ") = " << co_cycle_log << std::endl;
+        }
+
+        // Iterate through the expansive cycle lengths and calculate gamma terminating at the tower index
+        for ( int termination : expansive ) {
+            int exp_cycle_index = tower_index - termination;
+            if ( exp_cycle_index >= 0 && log_a186009_map.contains(tower_index) && log_a186009_map.contains(exp_cycle_index) ) {
+                co_cycle_log = calculate_gamma( log_a186009_map[tower_index], log_a186009_map[exp_cycle_index], tower_index, exp_cycle_index );
+                std::cout << "    Expansive   cycle length: " << termination << "; range(" << exp_cycle_index << "," << tower_index << ") = " << co_cycle_log << std::endl;
+            }
+        }
+
+        // Iterate through the contractive cycle lengths and calculate gamma initiating at the tower index
+        for ( int initiation : contractive ) {
+            int exp_cycle_index = tower_index + initiation;
+            if ( exp_cycle_index <= 2 * tower_index && log_a186009_map.contains(exp_cycle_index) && log_a186009_map.contains(tower_index) ) {
+                co_cycle_log = calculate_gamma( log_a186009_map[exp_cycle_index], log_a186009_map[tower_index], exp_cycle_index, tower_index );
+                std::cout << "    Contractive cycle length: " << initiation << "; range(" << tower_index << "," << exp_cycle_index << ") = " << co_cycle_log << std::endl;
+            }
+        }
+    }
+}
+
+/**
  * @brief The main() entry point is used to call menu() and also for testing components \b before calling menu().
  * @details Everything needs a starting point
  * @return int - Executable currently does not return any values to caller.
@@ -1645,97 +2290,139 @@ namespace fs = std::filesystem;             // Create an alias for the filesyste
 
 int main(int argc, char* argv[])
 {
-    bool stop_in_main = true;
-
     fs::path outdir = ".";
+    fs::path a186009_file = outdir / "data" / "ln_A186009.csv";
+    std::ofstream A186009_out = std::ofstream(a186009_file);
 
-    // If an output directory is given as an argument, attempt to create it and use it for output. Otherwise, use the current directory.
-    if (argc > 1) {
-        outdir = argv[1];
-        if (!fs::create_directories(outdir) && !fs::exists(outdir)) {
-            std::cerr << "Cannot create output directory: " << outdir << "\n";
+    // Calculate the growth rates of the towers at the critical points of the cycles and print results to console
+    tower_point_cocycle_growth(A186009_out);
+
+    std::cout << "Stopping before the rest of the gamma calculations and output formatting is built out..." << std::endl;
+exit(0);        // protecting the above code for now as I build out the rest of the gamma calculations and output formatting below
+
+    // Calculate gamma values for the expansive and contractive cycles based on space between towers and print results to console
+    differential();
+
+    // Calculate gamma values for the expansive and contractive cycles and print results to console
+    gamma();
+
+    uint32_t max = 80000;           // Default maximum number of terms to calculate for cumulative sequence
+    int start = 15500, terms = 200; 
+
+
+    // Stop before hitting this big stuff
+    exit(0);
+    Cumulative sum(start);         // A large tower exists at 79335
+
+    // Iterate over the large tower
+    mpz_class last_novel = sum.novel();
+    mpz_class last_denom = sum.denominator();
+    std::cout << "Index: " << start << ", Numerator: " << fmt::e(sum.numerator()) << ", Denominator: " << fmt::e(last_denom) << ", Novel: " << fmt::e(last_novel) << std::endl;
+    for (int n=start; n<start+terms; ++n) {
+        sum++;
+        mpz_class novel = sum.novel();
+        mpz_class denom = sum.denominator();
+
+        mpz_class ratio_num = novel * last_denom;
+        mpz_class ratio_den = denom * last_novel;
+        mpf_class ratio = mpf_class(ratio_num) / mpf_class(ratio_den);
+
+// std::cout << "Index: " << n << ", last novel: " << fmt::e(last_novel) << ", novel: " << fmt::e(novel) << ", ratio numer: " << fmt::e(ratio_num) << std::endl;
+// std::cout << "Index: " << n << ", last denom: " << fmt::e(last_denom) << ", denom: " << fmt::e(denom) << ", ratio denom: " << fmt::e(ratio_den) << std::endl;
+// std::cout << "Index: " << n << ", ratio: " << fmt::f(8,6,ratio.get_d()) << std::endl;
+
+        std::cout << "Index: " << n << ", Numerator: " << fmt::e(sum.numerator()) << ", Denominator: "
+                << fmt::e(denom) << ", Novel: " << fmt::e(novel) << ", Ratio: " << fmt::f(8,6,ratio.get_d()) << std::endl;
+
+        last_novel = novel;
+        last_denom = denom;
+    }
+
+    // Process command line arguments to set debug mode and output directory
+    for (int i = 1; i < argc; ++i) {
+        std::string arg = argv[i];
+
+        // If the debug flag is set, enable debug mode which may print additional information during execution.
+        if (arg == "-d" || arg == "--debug") {
+            debug = true;
+
+        // If an output directory is given as an argument, attempt to create it and use it for output. Otherwise, use the current directory.
+        } else if ((arg == "-o" || arg == "--output") && i + 1 < argc) {
+            outdir = argv[++i]; // next argument is directory
+
+        } else if ((arg == "-n" || arg == "--max") && i + 1 < argc) {
+            try {
+                max = std::stoul(argv[++i]);
+            } catch (const std::exception& e) {
+                std::cerr << "Invalid value for -n: " << argv[i] << "\n";
+                return 1;
+            }
+
+            // Otherise it's an error so print an error message and exit.
+        } else {
+            std::cerr << "Unknown argument: " << arg << "\n";
             return 1;
         }
     }
 
-    A100982 rangecheck;
-    rangecheck[7];
-    int size = rangecheck.size();
+    // Attempt to create the output directory if it doesn't exist, and check if it was successful. If not, print an error message and exit.
+    if (!fs::create_directories(outdir) && !fs::exists(outdir)) {
+        std::cerr << "Cannot create output directory: " << outdir << "\n";
+        return 1;
+    }
 
     // Size of the arrays holding the position in the 41 or 53 cycles
     uint32_t asize = 800;
     uint32_t csize = 100000;
 
-    A022921 test;
+    fs::path cycle_filename = outdir / "cycle_output.csv";
+    cycle_output::cycle_fout = std::ofstream(cycle_filename);
+    cycle_output::cycle_fout << "index,depth,cycle\n";
+    cycle_output::max_depth = 6;
 
-    // In general 26-term over previous 26-term is less than 0.25 = (3/8)/(3/2), but this doesn't matter
-    // for ( int i=26; i<=26; ++i ) {
-    //     char filename[40];
-    //     sprintf(filename,"group_ratios_%d.txt",i);
-    //     FILE *fptr = fopen(filename, "w");
-    //     printf("%d term consecutive group ratios\n", i);
-    //     novel_sum_4(i, asize, fptr);  // start with 2 and for now ignore other parameters
-    //     fclose(fptr);
-    // }
-
-    // Compute the consecutive ratios of N(n) up to argument given
-    // consecutive_novel_ratios(80000);
-
-    // // How many digits in denominator when n=80000?
-    // Cumulative tester( asize );
-    // mpz_class testval;
-    // testval = tester.denominator();
-
-    // int i=0;
-    // do {
-    //     testval /= 10;      // Power of ten
-    //     ++i;
-    // } while ( testval );
-
-    // printf("Cumulative[%d] has a %d digit denominator\n", asize, i);
-
-// this approach sucks - takes forever...
-// void novel_sum(int start, int terms, mpz_class& numer, mpz_class& denom)
-// double find_ratio(mpz_class n1, mpz_class d1, mpz_class n2, mpz_class d2)
-    mpz_class n1, n2, d1, d2;
-    // novel_sum( 79800, 13, n1, d1 );
-    // novel_sum( 79800, 26, n2, d2 );
-    // double ratio = find_ratio( n1, d1, n2, d2 );
-    // novel_sum(0,13,n1,d1);
-
-    // Signed integer arrays which hold up to n=100,000 to a position in a 53 or 41 cycle.
-    int8_t cycle_elem_41[csize];
-    int8_t cycle_elem_53[csize];
-
-    // Init each array to -1 which is used to indicate whether the value found is in 41 or 53 cycle
-    std::fill( cycle_elem_41, cycle_elem_41+asize, -1 );
-    std::fill( cycle_elem_53, cycle_elem_41+asize, -1 );
+    A022921 a022921;
 
     // This computes all the non-linear cycles up to the first three 31,867 cycles (95601)
-    for ( int i = 0; i<1; ++i )         // The number of large (31867) cycles to find
-    // for ( int i = 0; i<3; ++i )
+    for ( int i = 0; i<3; ++i )         // The number of large (31867) cycles to find
     {
-        if ( !found_cycle( test, cycle_elem_41, cycle_elem_53 ) ) {
+        if ( !found_cycle( a022921  ) ) {
             printf("Not a known cycle !!!\n\n");
             break;
         }
     }
 
-    for ( int i=11; i<=15; ++i ) {
-        char filename[40];
-        sprintf(filename,"group_ratios_%d.txt",i);
-        FILE *fptr = fopen(filename, "w");
-        printf("%d term consecutive group ratios\n", i);
-        // novel_sum_3(0,i,n1,d1);  // start with 2 and for now ignore other parameters
-        // novel_sum_3(i, asize, fptr);  // start with 2 and for now ignore other parameters
-        novel_sum_4(i, asize, fptr, cycle_elem_41, cycle_elem_53);  // start with 2 and for now ignore other parameters
-        fclose(fptr);
+    // Close the cycle output file if it's open
+    if (cycle_output::cycle_fout.is_open())
+        cycle_output::cycle_fout.close();    
+
+    bool run_novel_sum_4 = true;
+
+    // Run the novel sum 4 which calculates the sum of the ratios of the novel term to the prior term for 4 consecutive terms, and write results to file
+    if ( run_novel_sum_4 ) {
+
+        // Loop to generate term group ratios for start_terms > 1 to max_terms and write to file
+        int start_terms=1, max_terms=1;
+
+        for (int i = start_terms; i <= max_terms; ++i)
+        {        
+            fs::path filename = outdir / ("group_ratios_" + std::to_string(i) + ".txt");
+            std::ofstream fout(filename);
+
+            if (!fout)
+            {
+                std::cerr << "Cannot open " << filename << "\n";
+            }
+            else {
+                std::cout << i << " term consecutive group ratios\n";
+                novel_sum_4(fout, i, 80000);
+            }
+        }
     }
-
-    // for (int i = 11; i <= 15; ++i)
+    // // Loop to generate term group ratios for start_terms > 1 to max_terms and write to file
+    // int start_terms=16, max_terms=15;
+    // for (int i = start_terms; i <= max_terms; ++i)
     // {
-        // fs::path filename = outdir / ("group_ratios_" + std::to_string(i) + ".txt");
-
+    //     fs::path filename = outdir / ("group_ratios_" + std::to_string(i) + ".txt");
     //     std::ofstream fout(filename);
 
     //     if (!fout)
@@ -1746,92 +2433,37 @@ int main(int argc, char* argv[])
 
     //     std::cout << i << " term consecutive group ratios\n";
 
-    //     novel_sum_4(i, asize, fout, cycle_elem_41, cycle_elem_53);
+    //     novel_sum_4(fout, i, 80000);
     // }
 
     // eleven_or_twelve();
 
     // The following determines if 11 terms is sufficient to cover the next 2^{-k} interval
-    // capped(1,0,1);
-    // capped(2,1,1);
-    // capped(3,3,3);
-    // capped(4,6,4);
+    capped(1,0,1);
+    capped(2,1,1);
+    capped(3,3,3);
+    capped(4,7,5);
 
-    capped(26,199,11);
-    capped(27,210,11);
-    capped(28,222,11);
-    capped(29,233,11);
-    capped(30,245,11);
+    // capped(26,199,11);
+    // capped(27,210,11);
+    // capped(28,222,11);
+    // capped(29,233,11);
+    // capped(30,245,11);
 
-    uint32_t seqno[200];
-    double   value[200];
+    bool run_cumulative_seq6 = true;
 
-    // Number of elements in Cumulative series to calculate
-    uint32_t max = 80000;
+    // Run the cumulative sequence 6 which calculates the number of terms of A186009 needed to cover the next 1/2^n interval, and write results to file
+    if ( run_cumulative_seq6 ) {
 
-    Cumulative c,d;
-    // Cumulative_seq2( &c, 100 );
-    // Cumulative_seq3( &d, 80000 );
-    // Cumulative_seq3( &d, 79999 );
-    // Cumulative_seq3( &d, max-1 );
-    Cumulative_seq4( &d, max-1, cycle_elem_41, cycle_elem_53 );
+        fs::path filename_py = outdir / "partial_py.txt";
+        fs::path filename_rd = outdir / "partial_rd.txt";
 
-    // // Write ratios out to file
-    // FILE *fptr = fopen("last200.txt", "w");
-    // printf("Writing ratio of last 200 to file.\n");
-    // for (int i=0; i<200; ++i) {
-    //     fprintf(fptr, "n = %05d, ratio = %9.7f\n", seqno[i], value[i]);
-    // }
+        std::ofstream fout_py(filename_py);
+        std::ofstream fout_rd(filename_rd);
 
-    long integer = -321;        // A very cool negative integer starting point
-
-    mpz_class an(1), last_an(1);
-    mpz_class numer = 0, denom = 1, last_denom = 1;
-    // int neg = -1;
-    // path broken( 13, neg );
-
-    A020914 exp_of_2;
-    A000079 power_of_2;
-    A186009 a186009;
-
-    // Generate the denominators an, d numerators for C(n)
-    // for ( int n = 1; n <= 40; n++ )
-    // {
-    //     last_an = an;
-    //     last_denom = denom;
-
-    //     an = a186009.term();
-
-    //     mpf_class ratio = mpf_class(an)/mpf_class(last_an);
-    //     denom = power_of_2[ exp_of_2() ];
-    //     numer *= denom / last_denom;
-    //     numer += an;
-    //     mpf_class error = 1.0 - mpf_class(numer)/ mpf_class(denom);
-
-    //     // Now try to replicate the output of the elements
-    //     std::vector< mpz_class > copy = a186009.elements();
-
-    //     // Output the term details
-    //     std::cout << "n = " << a186009.index() << ", j = " << copy.size() << ", a(n) = " << an;
-    //     std::cout << ", a(n)/a(n-1) = " << ratio;
-    //     std::cout << ", exponent = " << exp_of_2 << ", non-convergent = " << error;
-    //     std::cout << "; numerator = " << numer << "; denominator = " << denom << std::endl;
-        
-    //     // Spew out the generating vector
-    //     for ( std::vector< mpz_class >::const_iterator iter = copy.cbegin(); iter != copy.cend(); ++iter )
-    //     {
-    //         std::cout << *iter << " ";
-    //     }
-
-    //     std::cout << std::endl;
-
-    //     // Move to next terms in sequences
-    //     ++a186009;
-    //     ++exp_of_2;
-    // }
-
-    // Display the selection menu.  Once you return from this you're done.
-    // menu();
+        std::cout << "Calculating number of terms covering next 2^{-k} interval...\n";
+        Cumulative_seq6( fout_py, fout_rd, max-1 );
+    }
 
     // That's it.
     printf("all done.\n");

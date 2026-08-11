@@ -1,0 +1,653 @@
+\documentclass[12pt, oneside]{article}
+
+\usepackage{xparse}
+
+\usepackage{geometry}
+\geometry{letterpaper}
+\usepackage[parfill]{parskip}
+\usepackage{float}
+
+% Math packages
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{mathalpha}
+
+% Tables
+\usepackage{booktabs}
+\usepackage{afterpage}
+
+% Hyperlinks
+\usepackage{hyperref}
+
+% References
+\numberwithin{equation}{section}
+\usepackage[numbers]{natbib}
+
+% TikZ (optional for later)
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,chains}
+
+% Theorem environments
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{axiom}{Axiom}[section]
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+
+\title{Affine Constraint Dynamics and Density-One Descent in the Collatz Map}
+\author{Wayne Brassem}
+
+\begin{document}
+
+% Custom commands
+\NewDocumentCommand{\setN}{}{\mathbb{N}}
+\NewDocumentCommand{\setZ}{}{\mathbb{Z}}
+\NewDocumentCommand{\setQ}{}{\mathbb{Q}}
+
+% Document commands which provide hyperlinks to OEIS sequences referenced herein
+\NewDocumentCommand{\OEIS}{m}{\href{https://oeis.org/#1}{#1}}
+
+\maketitle
+
+\begin{abstract}
+
+We study the Collatz map via the fully accelerated transformation
+\[
+f(x)=\frac{3x+1}{2^{v_2(3x+1)}}.
+\]
+
+Finite trajectories are encoded by division words, each inducing an affine map
+whose admissibility imposes congruence constraints on initial values. This
+yields a symbolic--affine framework in which admissible words correspond to
+compatible residue classes determined by inverse affine lifting.
+
+We analyze the growth of admissible words through their associated division
+counts, showing that the induced affine constraints refine at an exponential
+rate governed by $2^{D(\omega)}$, while symbolic expansion remains subcritical.
+This imbalance forces a sparsification of admissible initial conditions.
+
+As a consequence, the set of integers that fail to admit a finite descent prefix
+has natural density zero. Density-one descent follows as a corollary of this
+affine growth domination.
+
+\end{abstract}
+
+\newpage
+\tableofcontents
+
+% ============================================================
+\newpage
+\section{Introduction}
+
+Below is sample excerpt from the old spine. It is not yet fully integrated into
+the new structure, but it gives a sense of the motivation and context for the work and
+to verify ToC, reference, formating, pagination, etc.
+
+The $3x+1$ problem, also known as the Collatz conjecture~\cite{Collatz1937}, concerns
+the behavior of the map
+\[
+T(x) =
+\begin{cases}
+\displaystyle
+    \phantom{3x} \frac{x}{2} & \text {if } x \text{ is even}, \\[8pt]
+\displaystyle
+    3x+1,                    & \text{if $x$ is odd}.
+\end{cases}
+\]
+on the positive integers. It asserts that every positive integer eventually reaches $1$
+under iteration of $T$. Despite its elementary formulation, the conjecture has resisted
+proof for decades~\cite{Lagarias2010,Terras1976}. Extensive computational verification
+confirms convergence for very large ranges~\cite{OliveiraESilva2010}, but does not
+illuminate the global structure of trajectories.
+
+etc., etc....
+% High-level motivation
+% Shift from measure-theoretic to affine-symbolic viewpoint
+% Summary of main result and structure
+
+% ============================================================
+\section{Symbolic Encoding of Collatz Trajectories}
+\label{sec:division-counts}
+
+\subsection{Division Words}
+
+\begin{definition}[Division Word]
+A division word of length $m \ge 0$ is a sequence
+\[
+\omega = (d_0, \dots, d_{m-1}),
+\]
+where each $d_i \in \mathbb{N}$ represents the number of factors of $2$
+removed in the $i$-th iterate of the accelerated map
+\[
+f(x) = \frac{3x+1}{2^{v_2(3x+1)}}.
+\]
+\end{definition}
+
+\begin{remark}
+Since $f$ maps odd integers to odd integers, each $3f^i(x)+1$ is even,
+so $d_i \ge 1$ for all $i$.
+\end{remark}
+
+\begin{definition}[Realization]
+An integer $x \in \mathbb{N}$ realizes $\omega$ if
+\[
+d_i = v_2(3f^i(x)+1), \quad 0 \le i < m.
+\]
+\end{definition}
+
+\subsection{Total Division Count}
+
+\begin{definition}
+The total division count of a word $\omega$ is
+\[
+D(\omega) := \sum_{i=0}^{m-1} d_i.
+\]
+\end{definition}
+
+\begin{remark}
+The quantity $D(\omega)$ measures the total dyadic contraction
+associated with the symbolic path $\omega$.
+\end{remark}
+
+% ============================================================
+\section{Affine Representation of Division Words}
+
+\begin{definition}
+Each division word $\omega$ of length $m$ induces a formal affine map
+\[
+F_\omega(x) = \frac{3^m x + c(\omega)}{2^{D(\omega)}},
+\]
+obtained by symbolic composition of the accelerated map.
+\end{definition}
+
+\begin{proposition}
+The map $\omega \mapsto F_\omega$ defines a semigroup homomorphism
+from concatenation of division words to composition of affine maps.
+\end{proposition}
+
+\subsection{Example}
+
+Consider convergent segments with $m=4$ iterates of $f$.  
+The minimal total division count for $m=4$ is
+\[
+A020914(4) = 7.
+\]
+
+One admissible division word attaining this minimum is
+\[
+\omega = (1,1,1,4),
+\]
+for which
+\[
+D(\omega) = 1+1+1+4 = 7.
+\]
+
+Composing the accelerated map symbolically yields
+\[
+f_\omega(x)=\frac{3^4 x + c(\omega)}{2^7}
+           = \frac{81x + 65}{128},
+\]
+so the canonical affine constant for this word is
+\[
+c(\omega)=65.
+\]
+
+The integrality condition
+\[
+81x + 65 \equiv 0 \pmod{128}
+\]
+determines a unique residue class
+\[
+x \equiv 15 \pmod{128}.
+\]
+This congruence defines an affine constraint fiber with spacing $2^{7}$.
+
+\medskip
+
+\noindent
+\textbf{Interpretation.}
+The word $\omega = (1,1,1,4)$ means:
+
+\begin{itemize}
+    \item At each of the first three iterates of $f$, $3x+1$ contains exactly one factor of $2$.
+    \item At the fourth iterate of $f$, $3x+1$ contains four factors of $2$.
+\end{itemize}
+
+Under the accelerated map
+\[
+f(x)=\frac{3x+1}{2^{v_2(3x+1)}},
+\]
+all of these divisions occur within a single iterate. Thus $d_3=4$ means that
+the fourth iterate divides by $2^4$ in that step. The constant $c(\omega)$ is
+fixed entirely by this symbolic structure and ensures that precisely the
+integers in the residue class $x \equiv 15 \pmod{128}$ produce integer iterates
+under the affine form.
+
+\medskip
+
+This example illustrates that the behavior of trajectories is governed
+entirely by the symbolic data encoded in $\omega$ and its associated
+affine map. The admissible initial values are precisely those satisfying
+the induced congruence constraint, independent of any particular choice
+of representative.
+
+% ============================================================
+\section{Affine Symbolic Admissibility Grammar}
+
+\begin{remark}[Division Grammar as a Dynamical Encoding]
+Recall from Section~\ref{sec:division-counts} that a \emph{division word}
+$\omega=(d_0,\dots,d_{m-1})$ records the exact 2-adic valuation
+$d_i = v_2(3 x_i + 1)$, occurring at each iterate of the fully accelerated
+Collatz map.
+
+% The division-word grammar introduced in this section provides a symbolic
+% encoding of accelerated Collatz dynamics, following the symbolic approach
+% of Chamberland~\cite{Chamberland2003}. This encoding is not injective:
+% multiple positive integers can correspond to the same division word.
+% Specifically, distinct integers whose trajectories share the same sequence
+% of division counts after $m$ iterates of the accelerated map $f$ trace the
+% same division word, forming the arithmetic residue classes described in
+% Section~\ref{sec:division-counts}.
+
+Unlike a purely combinatorial encoding, division words retain essential
+dynamical information. Each division word $\omega=(d_0,\dots,d_{m-1})$
+determines the sequence of multiplicative factors of the linear coefficient
+\[
+r_i = \frac{3}{2^{d_i}},
+\]
+so that the contractive or expansive contribution of each iterate is
+preserved in the linear coefficient (with the affine term handled separately
+via $c(\omega)$). This structure enables quantitative control of admissible
+trajectories via affine growth and to formulate sufficient conditions for
+descent, even though individual trajectories are collapsed under the encoding.
+\end{remark}
+
+\subsection{Explicit Form of the Affine Constant}
+\begin{lemma}[Explicit Form of the Affine Constant]
+Let $\omega = (d_0,\dots,d_{m-1})$ be an admissible division word.  
+Then the affine map
+\[
+F_\omega(x) = \frac{3^m x + c(\omega)}{2^{D(\omega)}}
+\]
+has the explicit form
+\[
+c(\omega)
+=
+\sum_{j=0}^{m-1}
+3^{m-1-j}\cdot 2^{\sum_{i=0}^{j-1} d_i},
+\]
+where empty sums are defined as $0$.
+\end{lemma}
+
+\subsection{Injectivity of the Affine Encoding}
+\begin{lemma}[Injectivity of the Affine Encoding at Fixed Length]
+\label{lem:injectivity}
+Let $\omega = (d_0,\dots,d_{m-1})$ and $\omega' = (d'_0,\dots,d'_{m-1})$
+be admissible division words of the same length $m$. Let
+\[
+c(\omega)
+=
+\sum_{j=0}^{m-1}
+3^{m-1-j}\cdot 2^{D_j},
+\quad
+D_j = \sum_{i=0}^{j-1} d_i,
+\]
+and define $c(\omega')$ analogously.
+
+If $\omega \ne \omega'$, then
+\[
+c(\omega) \ne c(\omega').
+\]
+
+Equivalently, the map $\omega \mapsto c(\omega)$ is injective on admissible
+division words of fixed length $m$.
+\end{lemma}
+
+\begin{proof}
+Suppose $\omega \ne \omega'$, and let
+\[
+k = \min\{\, j : d_j \ne d'_j \,\}
+\]
+be the first index at which the two words differ. Then for all $j < k$,
+we have $D_j = D'_j$, while $D_k \ne D'_k$.
+
+Consider the difference
+\[
+\Delta := c(\omega) - c(\omega')
+=
+\sum_{j=0}^{m-1}
+3^{m-1-j}\bigl(2^{D_j} - 2^{D'_j}\bigr).
+\]
+The terms with $j<k$ cancel, so
+\[
+\Delta
+=
+3^{m-1-k}\bigl(2^{D_k} - 2^{D'_k}\bigr)
++
+\sum_{j=k+1}^{m-1}
+3^{m-1-j}\bigl(2^{D_j} - 2^{D'_j}\bigr).
+\]
+
+Let $\delta_k = \min(D_k, D'_k)$. Then
+\[
+2^{D_k} - 2^{D'_k}
+=
+2^{\delta_k}(2^a - 2^b),
+\]
+where one of $a,b$ is zero and $2^a - 2^b$ is odd. Hence
+\[
+v_2\!\left(3^{m-1-k}\bigl(2^{D_k} - 2^{D'_k}\bigr)\right)
+=
+\delta_k,
+\]
+since $3^{m-1-k}$ is odd.
+
+For $j>k$, both $D_j$ and $D'_j$ strictly exceed $\delta_k$, since the
+prefix sums increase by positive integers. Therefore
+\[
+v_2\!\left(3^{m-1-j}\bigl(2^{D_j} - 2^{D'_j}\bigr)\right)
+>
+\delta_k
+\quad \text{for all } j>k.
+\]
+
+It follows that $\Delta$ is a sum of one term with 2-adic valuation
+exactly $\delta_k$ and remaining terms of strictly higher 2-adic
+valuation. Hence
+\[
+v_2(\Delta) = \delta_k,
+\]
+and in particular $\Delta \ne 0$.
+
+Therefore $c(\omega) \ne c(\omega')$, completing the proof.
+\end{proof}
+
+This implies distinct division words induce distinct affine constraints.
+
+\subsection{Stepwise Realizability}
+
+\begin{theorem}[Stepwise Realizability of Division Words]
+\label{thm:stepwise-realizability}
+Let $\omega = (d_0,\dots,d_{m-1})$ be a division word, and define $c(\omega)$ by
+\[
+c(\omega)
+=
+\sum_{j=0}^{m-1}
+3^{m-1-j}\cdot 2^{\sum_{i=0}^{j-1} d_i}.
+\]
+
+Then the identity
+\[
+2^{D(\omega)} x_m = 3^m x_0 + c(\omega)
+\]
+holds if and only if the sequence $(x_0,\dots,x_m)$ satisfies the accelerated
+Collatz relations
+\[
+x_{i+1} = \frac{3x_i+1}{2^{d_i}}, \quad 0 \le i < m,
+\]
+with each intermediate step integral.
+
+In particular, the congruence
+\[
+3^m x_0 + c(\omega) \equiv 0 \pmod{2^{D(\omega)}}
+\]
+is equivalent to the existence of a trajectory realizing $\omega$.
+\end{theorem}
+
+\begin{remark}[Structural Interpretation]
+Each term in $c(\omega)$ corresponds to the additive contribution of a single
+``+1'' in the Collatz iteration, propagated forward by subsequent multiplications
+by $3$ and backward-scaled by preceding divisions by $2$.
+\end{remark}
+
+\subsection{Admissibility of Division Words}
+
+% \begin{definition}[Admissible Division Word]
+% \label{def:admissible-division-word}
+% Let \(\omega\) be a division word with $m$ iterates of $f$ and total division count
+% $D(\omega)$. Associated to $\omega$ is the affine map
+% \[
+% F_\omega(x) = \frac{3^m x + c(\omega)}{2^{D(\omega)}},
+% \]
+% where $c(\omega)$ is the canonical integer determined by $\omega$.
+
+% The division word $\omega$ is said to be \emph{admissible} if there exists at
+% least one integer $x$ such that $F_\omega(x)$ is an integer. Equivalently,
+% $\omega$ is admissible if the numerator $3^m x + c(\omega)$ is divisible by
+% $2^{D(\omega)}$ for at least one residue class of $x \bmod 2^{D(\omega)}$.
+% \end{definition}
+\begin{definition}[Admissibility]
+\label{def:admissible-division-word}
+A division word $\omega$ is admissible if the congruence
+\[
+3^m x + c(\omega) \equiv 0 \pmod{2^{D(\omega)}}
+\]
+has a solution.
+\end{definition}
+\begin{remark}
+Admissibility is therefore an arithmetic condition on the word $\omega$
+itself, expressed as a divisibility constraint on the associated affine
+map. When this condition holds, the set of all integers $x$ for which
+$F_\omega(x)$ is integral defines a unique congruence constraint modulo
+$2^{D(\omega)}$, corresponding to the residue class induced by $\omega$.
+\end{remark}
+
+\subsection{Minimal Division Count}
+
+\begin{lemma}[Minimal Division Count]
+For any admissible division word $\omega=(d_0,\dots,d_{m-1})$ of length $m$,
+\[
+d_0 + \cdots + d_{m-1} \;\ge\; A020914(m),
+\]
+where
+\[
+A020914(m) = \lceil m \log_2(3) \rceil.
+\]
+Equality holds if and only if $\omega$ achieves the minimal possible total
+division count among admissible words of length $m$.
+\end{lemma}
+
+\subsection{Convergent Division Word}
+
+\begin{definition}[Convergent Division Word]
+An admissible division word $\omega = (d_0,\dots,d_{m-1})$ is said to be
+\emph{convergent} (in the linear sense) if
+\[
+\frac{3^m}{2^{d_0+\cdots+d_{m-1}}} < 1.
+\]
+\end{definition}
+
+% ============================================================
+\section{Affine Constraint Fibers}
+
+\subsection{Congruence Stability of Division Words}
+
+\begin{theorem}[Congruence Stability of Division Words]
+Let $\omega$ be admissible and let $r_\omega$ satisfy
+\[
+r_\omega \equiv -c(\omega)\cdot (3^m)^{-1} \pmod{2^{D(\omega)}}.
+\]
+Then for all $x \equiv r_\omega \pmod{2^{D(\omega)}}$, the first $m$
+iterations of the accelerated Collatz map realize exactly the division word $\omega$.
+\end{theorem}
+
+\subsection{Residue Class Modulus}
+
+Fix a division word $\omega = (d_0,\dots,d_{m-1})$ of length $m$ that is admissible
+in the sense of Definition~\ref{def:admissible-division-word}. Let $D(\omega)$
+denote its total division count. By admissibility, $D(\omega) \ge A020914(m)$.
+
+\begin{lemma}[Residue Class Modulus]
+\label{lem:residue-modulus}
+Let $x,y \in \setN$ both realize the same division word $\omega$, i.e.,
+their trajectories under $f$ exhibit the division counts encoded by $\omega$
+for the first $m$ iterates of the accelerated map $f$. Then
+\[
+x \equiv y \pmod{2^{D(\omega)}}.
+\]
+\end{lemma}
+
+\begin{proof}
+For any integer $z$ realizing $\omega$, the $m$ iterates of the accelerated map
+$f$ encoded by $\omega$ induce the affine relation
+\[
+F_\omega(z) = \frac{3^m z + c(\omega)}{2^{D(\omega)}}.
+\]
+By admissibility, $F_\omega(z)\in\setN$ is integral. This integrality
+immediately implies that
+\[
+3^m z + c(\omega) \text{ is divisible by } 2^{D(\omega)}.
+\]
+
+If both $x$ and $y$ realize $\omega$, then
+\[
+3^m x + c(\omega) \equiv 0 \equiv 3^m y + c(\omega) \pmod{2^{D(\omega)}},
+\]
+which implies
+\[
+3^m(x-y) \equiv 0 \pmod{2^{D(\omega)}}.
+\]
+Since $3^m$ is invertible modulo $2^{D(\omega)}$, it follows that
+\[
+x \equiv y \pmod{2^{D(\omega)}}.
+\]
+\end{proof}
+
+\subsection{Residue Class Representation of Division Words}
+
+\begin{theorem}[Residue Class Representation of Division Words]
+\label{thm:cylinder}
+Let $\omega$ be an admissible division word of length $m$ with total division count $D(\omega)$.
+
+Then there exists a unique residue class
+\[
+r_\omega \pmod{2^{D(\omega)}}
+\]
+such that
+\[
+x \text{ realizes } \omega \iff x \equiv r_\omega \pmod{2^{D(\omega)}}.
+\]
+
+Equivalently, the set of all integers realizing $\omega$ is
+\[
+C_\omega = \{ r_\omega + k \cdot 2^{D(\omega)} : k \in \mathbb{N}_0 \}.
+\]
+
+% In particular, $C_\omega$ is infinite and has density $2^{-D(\omega)}$
+% within $\mathbb{N}$.
+\end{theorem}
+
+\begin{proof}
+From the affine representation,
+\[
+F_\omega(x) = \frac{3^m x + c(\omega)}{2^{D(\omega)}},
+\]
+integrality is equivalent to
+\[
+3^m x + c(\omega) \equiv 0 \pmod{2^{D(\omega)}}.
+\]
+
+Since $3^m$ is odd, it is invertible modulo $2^{D(\omega)}$, yielding
+\[
+x \equiv -c(\omega) \cdot (3^m)^{-1} \pmod{2^{D(\omega)}}.
+\]
+
+This determines a unique residue class.
+
+Conversely, any $x$ in this class satisfies the integrality condition,
+and therefore realizes the division word $\omega$.
+
+Thus admissible division words are in one-to-one correspondence with residue
+classes modulo powers of two. When viewed from a density perspective, these
+residue classes will be referred to as \emph{cylinders}.
+\end{proof}
+
+% ============================================================
+\section{Density Sparification via Affine Imbalance}
+
+\begin{proposition}[Cylinder Density]
+For any admissible word $\omega$,
+\[
+\mu(C_\omega) = 2^{-D(\omega)}.
+\]
+\end{proposition}
+
+\begin{remark}[Enumeration of Admissible Words]
+The number of distinct admissible division words with fixed total division
+count corresponds to \OEIS{A186009}. Each such word defines a distinct
+cylinder of density $2^{-D(\omega)}$, and these cylinders are disjoint.
+\end{remark}
+
+% ============================================================
+\section{Growth and Dominance}
+
+\subsection{Division Count Functional}
+
+\begin{definition}
+Define $D(\omega)$ and growth functional.
+\end{definition}
+
+\begin{definition}
+Define $G(\omega) = \log A_\omega$.
+\end{definition}
+
+\subsection{Subcritical Symbolic Growth}
+
+\begin{lemma}
+Admissible words satisfy subcritical growth relative to $2^{D(\omega)}$.
+\end{lemma}
+
+\subsection{Dominance Principle}
+
+\begin{theorem}
+Division growth dominates symbolic expansion.
+\end{theorem}
+
+% ============================================================
+\section{Exponential Sparsification}
+
+\begin{lemma}
+Affine constraint fibers refine at exponential scale $2^{D(\omega)}$.
+\end{lemma}
+
+\begin{theorem}
+Admissible initial conditions form a sparsifying subset of $\setN$.
+\end{theorem}
+
+% ============================================================
+\section{Density-One Descent}
+
+\begin{theorem}
+The set of integers that do not admit a finite descent prefix has density zero.
+\end{theorem}
+
+\begin{corollary}
+The set of integers that eventually decrease under iteration of $f$ has density one.
+\end{corollary}
+
+\begin{remark}
+Density emerges as a consequence of affine growth imbalance.
+\end{remark}
+
+% ============================================================
+\section{Discussion and Outlook}
+
+% Interpretation of result
+% Relation to classical approaches
+% Remaining gap (zero-density exceptional set)
+% Possible extensions
+
+% ============================================================
+\clearpage
+\bibliographystyle{unsrtnat}
+\bibliography{src/latex/references}
+
+\end{document}

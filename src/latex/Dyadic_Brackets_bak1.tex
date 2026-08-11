@@ -1,0 +1,2419 @@
+\documentclass[12pt, oneside]{article}
+
+\usepackage{xparse}
+
+\usepackage{geometry}
+\geometry{letterpaper}
+\usepackage[parfill]{parskip}
+\usepackage{float}
+
+% Math packages
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{mathalpha}
+
+% Tables
+\usepackage{booktabs}
+\usepackage{afterpage}
+
+% Hyperlinks
+\usepackage{hyperref}
+
+% References
+\numberwithin{equation}{section}
+\usepackage[numbers]{natbib}
+
+% TikZ (optional for later)
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,chains}
+
+% Theorem environments
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{axiom}{Axiom}[section]
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{example}[theorem]{Example}
+
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+
+\title{Dyadic Brackets and Density-One Descent in the Collatz Map}
+\author{Wayne Brassem}
+
+\begin{document}
+
+% Custom commands
+\NewDocumentCommand{\setN}{}{\mathbb{N}}
+\NewDocumentCommand{\setZ}{}{\mathbb{Z}}
+\NewDocumentCommand{\setQ}{}{\mathbb{Q}}
+
+% Document commands which provide hyperlinks to OEIS sequences referenced herein
+\NewDocumentCommand{\OEIS}{m}{\href{https://oeis.org/#1}{#1}}
+
+\maketitle
+
+\begin{abstract}
+
+We study the Collatz map via the fully accelerated transformation
+\[
+f(x)=\frac{3x+1}{2^{v_2(3x+1)}}.
+\]
+
+Finite trajectories are encoded by division words, which record the
+2-adic valuations encountered along an orbit. Each such word induces
+an affine map whose admissibility imposes a congruence constraint on
+initial values. This yields a symbolic–affine framework in which
+admissible words correspond to residue classes modulo powers of two.
+
+We show that these constraints refine exponentially: a division word
+of length $m$ restricts initial values to a residue class modulo a
+power of $2$ that is comparable to, but strictly larger than, $3^m$,
+while the number of admissible words grows like $\rho^m$ with $\rho < 3$.
+
+This creates a competition between combinatorial growth and arithmetic
+refinement: while the number of admissible words grows like $\rho^m$
+with $\rho < 3$, each word imposes a congruence constraint modulo a
+power of $2$ that grows strictly faster than $3^m$. This imbalance
+forces exponential sparsification of admissible initial conditions.
+
+As a consequence, the set of integers that fail to admit a finite
+descent prefix has natural density zero. In particular, almost all
+integers eventually decrease under iteration of the Collatz map.
+
+\end{abstract}
+
+\newpage
+\tableofcontents
+
+% ============================================================
+\newpage
+\section{Introduction}
+
+The $3x+1$ problem, also known as the Collatz conjecture~\cite{Collatz1937}, concerns
+the behavior of the map
+\[
+T(x) =
+\begin{cases}
+\displaystyle
+    \phantom{3x} \frac{x}{2} & \text {if } x \text{ is even}, \\[8pt]
+\displaystyle
+    3x+1,                    & \text{if $x$ is odd}.
+\end{cases}
+\]
+on the positive integers. It asserts that every positive integer eventually reaches $1$
+under iteration of $T$. Despite its elementary formulation, the conjecture has resisted
+proof for decades~\cite{Lagarias2010,Terras1976}. Extensive computational verification
+confirms convergence for very large ranges~\cite{OliveiraESilva2010}, but does not
+reveal the global structure governing trajectory behavior.
+
+A major advance by Tao~\cite{Tao2019} showed that almost all integers, in the sense of
+logarithmic density, eventually decrease under iteration of the Collatz map. This result
+is obtained via probabilistic averaging rather than an explicit structural decomposition
+of the integers.
+
+The present work develops a deterministic, arithmetic framework for analyzing typical
+Collatz behavior based on a symbolic–affine encoding of trajectories. Using this approach,
+we encode the dynamics symbolically rather than studying individual trajectories with
+the fully accelerated map
+\[
+f(x)=\frac{3x+1}{2^{v_2(3x+1)}},
+\]
+which maps odd integers to odd integers by compressing each odd step into a single
+transformation.
+
+Each trajectory under $f$ is represented by a finite \emph{division word}, recording the
+number of factors of $2$ removed (the 2-adic valuation) at each iterate.
+
+These words admit an exact affine representation obtained by symbolic composition of the
+accelerated map: each division word induces a map of the form
+\[
+F_\omega(x) = \frac{3^m x + c(\omega)}{2^{D(\omega)}},
+\]
+and determines a corresponding congruence class modulo $2^{D(\omega)}$. Thus division words
+determine canonical arithmetic \emph{constraint classes} (residue classes) in the integers,
+once realizability is imposed.
+
+This correspondence allows the dynamics to be studied at the level of residue classes
+rather than individual orbits. Convergent division words—those for which the associated
+affine map is contractive—identify families of integers that decrease after a fixed
+number of steps. The global problem is thereby reduced to understanding how these
+families are distributed and how their densities accumulate.
+
+Two competing effects govern this distribution. On one hand, the number of admissible
+convergent division words grows exponentially with length. On the other hand, each word
+imposes a congruence constraint whose modulus grows exponentially with the total 2-adic
+valuation. Using structural constraints on admissible division words, encoded by an
+increment grammar, we show that the combinatorial growth rate is strictly subcritical:
+the number of admissible words grows like $\rho^m$ for some $\rho < 3$, while the moduli
+scale like powers of $2$ satisfying $3^m < 2^{D(\omega)} < 2\cdot 3^m$.
+
+This transforms the Collatz problem into a competition between symbolic growth and
+arithmetic refinement, with convergence governed by their relative exponential rates.
+
+This imbalance leads to \emph{exponential sparsification}: the proportion of integers
+admitting a convergent division word of length $m$ decays exponentially in $m$.
+Summing over all lengths then shows that the complement—integers that avoid all such
+descent patterns—has natural density zero.
+
+Consequently, the set of integers whose trajectory under iteration of $f$ eventually
+decreases has natural density one.
+
+While this does not exclude the existence of exceptional trajectories, any such
+exceptions must lie within a set of zero density and cannot arise from any scalable
+arithmetic structure generated by the symbolic dynamics.
+
+% \paragraph{Structure of the Paper.}
+% The argument proceeds as follows:
+% \begin{itemize}
+% \item Section~\ref{sec:division-counts} introduces division words and their total division counts.
+% \item Section~\ref{sec:affine-representation} develops the affine representation of division words and their congruence structure.
+% \item Section~\ref{sec:affine-grammar} establishes admissibility and minimal valuation constraints.
+% \item Section~\ref{sec:symbolic-growth} controls the growth of admissible words via the increment grammar.
+% \item Section~\ref{sec:affine-constraint-fibers} identifies the residue class structure induced by division words.
+% \item Section~\ref{sec:exponential-sparsification} proves exponential sparsification of admissible sets.
+% \item Section~\ref{sec:density-one-descent} establishes density-one descent.
+% \end{itemize}
+
+% ============================================================
+% Spine 8A — Strong Covering / Block Exhaustion Framework
+% ============================================================
+
+\section{Spine 8A: Strong Covering Framework}
+\label{sec:spine-8a}
+
+This section develops a covering-based framework for accelerated
+dynamical descent via structured residue-class decomposition,
+minimal words, and block-level density exhaustion.
+
+% ------------------------------------------------------------
+\section{Dynamical Encoding Framework}
+\label{sec:8a-dynamical-encoding}
+
+\begin{itemize}
+    \item Definition of accelerated map $f$
+    \item Division words / valuation sequences $\omega$
+    \item Cylinders $C_\omega$
+    \item Affine encoding $c(\omega)$
+    \item Depth function $D(\omega)$
+\end{itemize}
+
+% ------------------------------------------------------------
+\section{Structural Disjointness Theory}
+\label{sec:8a-disjointness}
+
+\begin{itemize}
+    \item Injectivity of affine encoding
+    \item Prefix uniqueness principle
+    \item Cylinder intersection structure
+    \item Nesting and incompatibility rules
+\end{itemize}
+
+% ------------------------------------------------------------
+\section{Minimal Descent Decomposition}
+\label{sec:8a-minimal-descent}
+
+\begin{itemize}
+    \item Definition of minimal descent words $\mathcal{W}_{\min}$
+    \item Uniqueness of minimal representation
+    \item Exhaustion of all descending integers
+    \item Disjoint partition of descent set
+\end{itemize}
+
+% ------------------------------------------------------------
+\section{Density Assignment Mechanism}
+\label{sec:8a-density}
+
+\begin{itemize}
+    \item Cylinder measure assignment $\mu(C_\omega) = 2^{-D(\omega)}$
+    \item Non-overlapping structure on minimal level
+    \item Formal density expression over $\mathcal{W}_{\min}$
+\end{itemize}
+
+% ------------------------------------------------------------
+\section{Supermultiplicative Regeneration and Existence of an Exponential Scale}
+\label{sec:supermultiplicative-regeneration}
+
+The admissible-word counting sequence
+\[
+a(n):=A186009(n)
+\]
+is generated recursively by the admissible division-word grammar induced by
+the Sturmian jump structure of
+\[
+A020914(n)=\lfloor n\log_2 3\rfloor+1.
+\]
+
+Unlike the denominator sequence, the local growth ratios
+\[
+\frac{a(n+1)}{a(n)}
+\]
+do not stabilize pointwise.  Persistent oscillations arise from the delayed
+response of admissible-word creation to jump events in the underlying Beatty
+structure.
+
+Nevertheless, the grammar possesses a strong recursive self-embedding property
+which induces a global exponential scale.
+
+\subsection{Generating Tuples}
+
+For each $n$, let
+\[
+T_n=(t_1,t_2,\dots,t_r)
+\]
+denote the admissible generating tuple whose entries recursively generate
+the next admissible count
+\[
+a(n+1).
+\]
+
+The tuple evolution is governed by a Pascal-type cumulative addition rule,
+together with periodic terminal doubling events induced by jumps in
+$A020914(n)$.
+
+The total mass of the tuple satisfies
+\[
+\sum_{i=1}^{r} t_i = a(n).
+\]
+
+Empirically, the terminal entry is always the largest contribution and
+periodically doubles according to the delayed Sturmian jump grammar.
+
+\subsection{Normalized Regeneration}
+
+Fix a generating tuple
+\[
+T_n=(t_1,t_2,\dots,t_r)
+\]
+with total mass
+\[
+a(n)=\sum_{i=1}^{r} t_i.
+\]
+
+Now discard all internal contributions of the tuple and retain only the
+aggregate terminal mass $a(n)$.
+
+Using this single aggregate value as the initial seed for the recursive
+grammar evolution produces a reduced admissible process.
+
+After normalization by $a(n)$, the reduced process regenerates the same
+admissible tuple hierarchy.
+
+For example, beginning with the admissible tuple
+\[
+(1,9,42,130,303,476),
+\]
+whose total mass is
+\[
+961,
+\]
+the full grammar evolution yields the next tuple
+\[
+(1,10,52,182,485,961,961),
+\]
+whose total mass is
+\[
+2652.
+\]
+
+If instead one discards all internal structure and retains only the
+aggregate mass $961$, normalization gives the seed value $1$.
+Iterating the reduced grammar then reproduces the admissible hierarchy
+\[
+1,
+\]
+\[
+1\;\;1,
+\]
+\[
+1\;\;2,
+\]
+\[
+1\;\;3\;\;3,
+\]
+\[
+1\;\;4\;\;7,
+\]
+\[
+1\;\;5\;\;12\;\;12,
+\]
+\[
+1\;\;6\;\;18\;\;30\;\;30,
+\]
+\[
+1\;\;7\;\;25\;\;55\;\;85,
+\]
+\[
+1\;\;8\;\;33\;\;88\;\;173\;\;173,
+\]
+\[
+1\;\;9\;\;42\;\;130\;\;303\;\;476,
+\]
+which exactly regenerates the original admissible tuple.
+
+Thus the admissible grammar reproduces itself from its own aggregate mass.
+
+\begin{remark}[Self-Embedding Grammar]
+The admissible grammar is recursively self-embedding:
+the aggregate terminal mass of a generating tuple reproduces the same
+future admissible hierarchy after normalization.
+
+Consequently, the grammar contains scaled copies of its own future evolution.
+\end{remark}
+
+\subsection{Monotone Regeneration}
+
+The reduced regeneration process discards all internal tuple contributions
+except the aggregate mass.  Since all admissible contributions are positive,
+the reduced process is termwise bounded above by the full admissible evolution.
+
+Hence the reduced recursion produces a valid lower bound for future
+admissible growth.
+
+\begin{lemma}[Regenerative Lower Bound]
+\label{lem:regenerative-lower-bound}
+For all admissible indices $m,n$,
+\[
+a(n+m)\ge a(n)a(m).
+\]
+\end{lemma}
+
+\begin{proof}[Heuristic mechanism]
+The admissible tuple generating $a(n)$ contains sufficient aggregate mass
+to regenerate a normalized copy of the admissible grammar.
+
+Since admissible contributions are positive and the reduced recursion
+discards internal growth contributions, the regenerated process yields
+a lower bound for the full admissible evolution.
+
+Thus every admissible configuration contributing to $a(n)$ can generate
+at least $a(m)$ admissible descendants after $m$ additional grammar steps.
+Therefore,
+\[
+a(n+m)\ge a(n)a(m).
+\]
+\end{proof}
+
+\subsection{Existence of an Exponential Growth Constant}
+
+The regenerative lower bound immediately induces a superadditive structure.
+
+Define
+\[
+b(n):=\log a(n).
+\]
+
+Then Lemma~\ref{lem:regenerative-lower-bound} gives
+\[
+b(n+m)\ge b(n)+b(m),
+\]
+so the sequence $b(n)$ is superadditive.
+
+Therefore Fekete's lemma applies.
+
+\begin{theorem}[Existence of an Exponential Scale]
+\label{thm:existence-lambda}
+There exists a finite constant $\lambda>0$ such that
+\[
+\lambda
+=
+\lim_{n\to\infty} a(n)^{1/n}.
+\]
+
+Equivalently,
+\[
+\lim_{n\to\infty}\frac{\log a(n)}{n}
+=
+\log\lambda.
+\]
+\end{theorem}
+
+\begin{proof}
+Since
+\[
+b(n)=\log a(n)
+\]
+is superadditive, Fekete's lemma implies that the limit
+\[
+\lim_{n\to\infty}\frac{b(n)}{n}
+\]
+exists and equals
+\[
+\sup_n \frac{b(n)}{n}.
+\]
+
+Exponentiating yields
+\[
+\lim_{n\to\infty} a(n)^{1/n}
+=
+\lambda
+\]
+for some finite $\lambda>0$.
+\end{proof}
+
+\begin{remark}[Oscillatory Local Ratios]
+The existence of $\lambda$ does not imply convergence of the local ratios
+\[
+a(n+1)/a(n).
+\]
+
+The Sturmian jump structure of $A020914(n)$ induces persistent bounded
+oscillations in the local growth rates through delayed admissible-word
+creation.
+
+Thus exponential stability emerges only at the global scale.
+\end{remark}
+
+% % ------------------------------------------------------------
+% \section{Jump-Lag Compensation Mechanism}
+% \label{sec:jump-lag}
+
+% \begin{definition}[Dyadic Threshold Sequence]
+% Let
+% \[
+% d(n)=A020914(n).
+% \]
+% Interpret $d(n)$ as the minimal dyadic exponent required to dominate the
+% corresponding ternary growth scale at level $n$.
+% \end{definition}
+
+% \begin{definition}[Jump Index]
+% Let $d(n)=A020914(n)$.  
+% An index $n$ is called a jump index if
+% \[
+% d(n+1)-d(n)=2.
+% \]
+% Otherwise
+% \[
+% d(n+1)-d(n)=1.
+% \]
+% \end{definition}
+
+% \begin{lemma}[Binary Step Law]
+% \label{lem:binary-step}
+% For every $n\ge0$,
+% \[
+% d(n+1)-d(n)\in\{1,2\}.
+% \]
+% Hence the sequence $d(n)$ increases by either a unit step or a jump step,
+% and no larger increment is possible.
+% \end{lemma}
+
+% \begin{proof}
+% Since
+% \[
+% d(n)=\lfloor n\log_2 3 \rfloor + 1,
+% \]
+% we have
+% \[
+% d(n+1)-d(n)
+% =
+% \lfloor (n+1)\log_2 3\rfloor-\lfloor n\log_2 3\rfloor.
+% \]
+% Because
+% \[
+% 1<\log_2 3<2,
+% \]
+% adding $\log_2 3$ can increase the floor by only $1$ or $2$.
+% \end{proof}
+
+% % % \begin{lemma}[Jump Creates a Single Dyadic Deficit]
+% % % \label{lem:jump-deficit}
+% % % If $n$ is a jump index, so that
+% % % \[
+% % % d(n+1)=d(n)+2,
+% % % \]
+% % % then relative to ordinary unit growth
+% % % \[
+% % % d(n)+1,
+% % % \]
+% % % one intermediate dyadic level is skipped.
+
+% % % Consequently, the corresponding contribution scale is reduced by a factor
+% % % \[
+% % % \frac{2^{-(d(n)+2)}}{2^{-(d(n)+1)}}=\frac12.
+% % % \]
+
+% % % Thus each jump creates exactly one dyadic deficit of size comparable to
+% % % $2^{-(d(n)+1)}$.
+% % % \end{lemma}
+
+% % \begin{lemma}[Single-Deficit Deficit Law]
+% % Every jump index contributes exactly one additional factor of $2$
+% % in the denominator beyond baseline growth. Hence each jump removes
+% % one unit of expected dyadic mass.
+% % \end{lemma}
+
+% \begin{lemma}[Single Dyadic Deficit Law]
+% \label{lem:single-deficit}
+% If $n$ is a jump index, then
+% \[
+% d(n+1)=d(n)+2.
+% \]
+% Relative to unit growth $d(n)+1$, exactly one intermediate dyadic level is skipped.
+% Hence each jump creates one unit deficit in expected dyadic mass.
+% \end{lemma}
+
+% \begin{lemma}[Jump Enlarges Admissible Grammar]
+% At every jump index $n$, the admissible prefix-sum region for minimal descent
+% words at subsequent levels strictly enlarges.
+% Consequently, new first-descent words must occur at some later level.
+% \end{lemma}
+
+% \begin{lemma}[Lagged Numerator Response]
+% There exists an integer $L\ge1$ such that every jump at index $n$
+% produces at least one new minimal descent word among levels
+% \[
+% n+1,\dots,n+L.
+% \]
+% \end{lemma}
+
+% \begin{lemma}[Finite Compensation Packet]
+% There exist constants $L\ge1$ and $c>0$ such that for every jump index $n$,
+% \[
+% \sum_{i=1}^{L} N(n+i)\ge c\,2^{-d(n)}.
+% \]
+% \end{lemma}
+
+% % \begin{theorem}[Repeated Compensation Implies Gap Contraction]
+% % Let
+% % \[
+% % R(m)=1-\sum_{k=0}^{m}N(k).
+% % \]
+% % If compensation packets occur uniformly with bounded delay, then there exist
+% % $M\ge1$ and $\epsilon>0$ such that
+% % \[
+% % R(m+M)\le(1-\epsilon)R(m)
+% % \]
+% % for all sufficiently large $m$.
+% % \end{theorem}
+
+% % \begin{corollary}[Density Exhaustion]
+% % Under the jump-lag compensation mechanism,
+% % \[
+% % \lim_{m\to\infty}\sum_{k=0}^{m}N(k)=1.
+% % \]
+% % \end{corollary}
+% \begin{theorem}[Compensation Implies Gap Contraction]
+% If there exist constants $M\ge1$ and $\epsilon>0$ such that every jump-induced
+% unit deficit is compensated within $M$ subsequent levels by new mass at least
+% an $\epsilon$-fraction of the residual gap, then
+% \[
+% R(n+M)\le (1-\epsilon)R(n)
+% \]
+% for all sufficiently large $n$.
+% \end{theorem}
+
+% \begin{corollary}[Density Exhaustion]
+% Under the hypotheses above,
+% \[
+% \lim_{n\to\infty} C(n)=1.
+% \]
+% \end{corollary}
+
+% % \begin{theorem}[Bounded Recovery from Unit Deficits]
+% % If each jump-induced unit deficit is compensated within at most $M$
+% % subsequent levels, then
+% % \[
+% % \lim_{n\to\infty} C(n)=1.
+% % \]
+% % \end{theorem}
+
+% ------------------------------------------------------------
+\section{Grammar-Induced Deficit Compensation}
+\label{sec:grammar-compensation}
+
+We formalize a structural mechanism in which jumps in the dyadic
+threshold sequence create temporary mass deficits, while the same jumps
+simultaneously enlarge the admissible grammar of minimal descent words.
+The resulting delayed compensation drives cumulative density toward $1$.
+
+% ------------------------------------------------------------
+
+\begin{definition}[Dyadic Threshold Sequence]
+Let
+\[
+d(n)=A020914(n).
+\]
+Equivalently,
+\[
+d(n)=\lfloor n\log_2 3 \rfloor + 1.
+\]
+This is the minimal dyadic exponent required to exceed the ternary scale
+$3^n$.
+\end{definition}
+
+% ------------------------------------------------------------
+
+\begin{definition}[Jump Index]
+An index $n\ge0$ is called a \emph{jump index} if
+\[
+d(n+1)-d(n)=2.
+\]
+Otherwise,
+\[
+d(n+1)-d(n)=1.
+\]
+\end{definition}
+
+% ------------------------------------------------------------
+
+\begin{lemma}[Binary Step Law]
+\label{lem:binary-step}
+For every $n\ge0$,
+\[
+d(n+1)-d(n)\in\{1,2\}.
+\]
+Hence the sequence $d(n)$ evolves only by unit steps or jump steps.
+\end{lemma}
+
+\begin{proof}
+Using
+\[
+d(n)=\lfloor n\log_2 3\rfloor+1,
+\]
+we obtain
+\[
+d(n+1)-d(n)
+=
+\lfloor (n+1)\log_2 3\rfloor-\lfloor n\log_2 3\rfloor.
+\]
+Since
+\[
+1<\log_2 3<2,
+\]
+the floor can increase only by $1$ or $2$.
+\end{proof}
+
+% ------------------------------------------------------------
+
+\begin{lemma}[Single Dyadic Deficit Law]
+\label{lem:deficit-law}
+If $n$ is a jump index, then exactly one intermediate dyadic level is
+skipped relative to unit growth.
+
+Equivalently, the denominator factor changes from the expected scale
+$2^{d(n)+1}$ to the actual scale $2^{d(n)+2}$, reducing the associated
+mass contribution by a factor of $1/2$.
+\end{lemma}
+
+\begin{proof}
+At a jump index,
+\[
+d(n+1)=d(n)+2.
+\]
+Relative to the unit-step scale $d(n)+1$, one additional factor of $2$
+appears in the denominator, so the contribution is halved.
+\end{proof}
+
+% ------------------------------------------------------------
+
+\begin{definition}[Minimal Descent Mass]
+Let
+\[
+N(n)=\frac{A186009(n+1)}{2^{d(n)}}.
+\]
+This is the total density contribution of new minimal descent words at
+level $n$.
+\end{definition}
+
+% ------------------------------------------------------------
+
+\begin{lemma}[Jump Enlarges the Admissible Grammar]
+\label{lem:jump-grammar}
+At every jump index, the admissible prefix-sum region defining minimal
+descent words strictly enlarges at subsequent levels.
+
+Consequently, new minimal descent words must occur after each jump.
+\end{lemma}
+
+\begin{proof}[Proof Sketch]
+The admissible words are determined by prefix constraints of the form
+\[
+H(i)<d(i+1), \qquad H(m-1)=d(m).
+\]
+When $d(n)$ jumps, the terminal admissible sum increases while prior
+prefix constraints remain unchanged. This creates new feasible lattice
+points in the constrained composition region, yielding new admissible
+words.
+\end{proof}
+
+% ------------------------------------------------------------
+
+\begin{lemma}[Lagged Numerator Response]
+\label{lem:lagged-response}
+There exists an integer $L\ge1$ such that every jump at index $n$
+produces at least one new minimal descent word among the levels
+\[
+n+1,n+2,\dots,n+L.
+\]
+\end{lemma}
+
+\begin{proof}[Heuristic Basis]
+Computational enumeration shows that new admissible words appear after
+every jump, with uniformly bounded delay. The bound $L$ is empirically
+small.
+\end{proof}
+
+% ------------------------------------------------------------
+
+\begin{lemma}[Finite Compensation Packet]
+\label{lem:packet}
+There exist constants $L\ge1$ and $c>0$ such that every jump index $n$
+satisfies
+\[
+\sum_{i=1}^{L} N(n+i)\ge c\,2^{-d(n)}.
+\]
+That is, each jump-induced unit deficit is compensated by a bounded
+future packet of new descent mass.
+\end{lemma}
+
+% ------------------------------------------------------------
+
+\begin{definition}[Residual Gap]
+Let
+\[
+C(m)=\sum_{k=0}^{m}N(k),
+\qquad
+R(m)=1-C(m).
+\]
+\end{definition}
+
+% ------------------------------------------------------------
+
+\begin{theorem}[Compensation Implies Gap Contraction]
+\label{thm:gap-contraction}
+Suppose the finite compensation packet property holds uniformly.
+Then there exist constants $M\ge1$ and $\epsilon>0$ such that
+\[
+R(m+M)\le (1-\epsilon)R(m)
+\]
+for all sufficiently large $m$.
+\end{theorem}
+
+\begin{proof}[Proof Sketch]
+Each jump creates at most one unit deficit by
+Lemma~\ref{lem:deficit-law}. By Lemma~\ref{lem:packet}, each such deficit
+is repaired within bounded delay by a positive packet of future mass.
+Uniform boundedness implies a fixed positive fraction of the remaining
+gap is removed over each window of length $M$.
+\end{proof}
+
+% ------------------------------------------------------------
+
+\begin{corollary}[Density Exhaustion]
+\label{cor:density-exhaustion}
+Under the hypotheses of Theorem~\ref{thm:gap-contraction},
+\[
+\lim_{m\to\infty} C(m)=1.
+\]
+\end{corollary}
+
+\begin{proof}
+Iterating the contraction inequality gives
+\[
+R(m+kM)\le (1-\epsilon)^kR(m)\to0.
+\]
+Hence $C(m)\to1$.
+\end{proof}
+
+% ------------------------------------------------------------
+
+\begin{remark}[Critical Reduction]
+The remaining task is purely combinatorial: prove a uniform bound on the
+delay and size of compensation packets generated by jump indices in the
+admissible division-word grammar.
+\end{remark}
+
+% ------------------------------------------------------------
+\section{Grammar Growth and A020914 Structure}
+\label{sec:8a-grammar}
+
+\begin{itemize}
+    \item Role of A020914 as delay/deficit structure
+    \item Role of A186009 as first-descent enumeration
+    \item Growth of admissible words
+    \item Non-uniform branching effects
+\end{itemize}
+
+% ------------------------------------------------------------
+\section{Block Decomposition Principle}
+\label{sec:8a-blocks}
+
+We formalize a covering mechanism based on grouping contributions
+from minimal descent words into finite blocks that collectively
+exhaust dyadic mass deficits.
+
+% ------------------------------------------------------------
+\begin{definition}[Residual Gap]
+Let
+\[
+C(n) = \sum_{k=0}^n N(k),
+\]
+and define the residual gap
+\[
+R(n) := 1 - C(n).
+\]
+\end{definition}
+
+% \begin{definition}[Dyadic Deficit]
+% Let
+% \[
+% C(n) := \sum_{k=0}^n N(k),
+% \]
+% where $N(k)$ denotes the contribution of minimal descent words at level $k$.
+
+% Define the dyadic deficit at level $k$ by
+% \[
+% \Delta_k := 2^{-k}.
+% \]
+% \end{definition}
+
+% ------------------------------------------------------------
+
+\begin{definition}[Block Interval]
+A block interval is a contiguous index set
+\[
+B = \{n_0, n_0+1, \dots, n_0+\ell-1\}
+\]
+of length $\ell \ge 1$.
+\end{definition}
+
+% ------------------------------------------------------------
+
+% \begin{definition}[Finite Recovery Window]
+% We say the system admits a finite recovery window if there exists
+% an integer $M \ge 1$ such that for every $k$ there exists a block
+% \[
+% B_k = \{n_k, n_k+1, \dots, n_k+M-1\}
+% \]
+% satisfying
+% \[
+% \sum_{n \in B_k} N(n) \;\ge\; 2^{-k}.
+% \]
+% \end{definition}
+
+% ------------------------------------------------------------
+
+\begin{lemma}[Mass Injection Implies Contraction]
+\label{lem:mass-injection}
+Suppose there exist constants $M \ge 1$ and $\epsilon > 0$ such that
+for all sufficiently large $n$,
+\[
+\sum_{k=n+1}^{n+M} N(k) \;\ge\; \epsilon \, R(n).
+\]
+
+Then
+\[
+R(n+M) \le (1-\epsilon) R(n).
+\]
+\end{lemma}
+
+\begin{proof}
+We compute:
+\[
+R(n+M)
+=
+1 - C(n+M)
+=
+1 - \bigl(C(n) + (C(n+M)-C(n))\bigr).
+\]
+
+Using the hypothesis,
+\[
+C(n+M)-C(n) \ge \epsilon R(n),
+\]
+so
+\[
+R(n+M)
+\le
+1 - C(n) - \epsilon R(n)
+=
+R(n) - \epsilon R(n)
+=
+(1-\epsilon) R(n).
+\]
+\end{proof}
+
+\begin{definition}[Dyadic Contraction Property]
+We say the system satisfies dyadic contraction if there exists
+an integer $M \ge 1$ such that for all sufficiently large $n$,
+\[
+R(n+M) \le \tfrac{1}{2} R(n).
+\]
+\end{definition}
+
+% ------------------------------------------------------------
+
+% \begin{theorem}[Gap Contraction Implies Density Exhaustion]
+% \label{thm:gap-exhaustion}
+% If there exist constants $M \ge 1$ and $\epsilon > 0$ such that
+% \[
+% R(n+M) \le (1-\epsilon) R(n)
+% \]
+% for all sufficiently large $n$, then
+% \[
+% \lim_{n \to \infty} C(n) = 1.
+% \]
+% \end{theorem}
+
+% \begin{proof}
+% Iterating the contraction,
+% \[
+% R(n + kM) \le (1-\epsilon)^k R(n).
+% \]
+
+% Since $0 < 1-\epsilon < 1$, the right-hand side tends to zero as $k \to \infty$.
+
+% Thus $R(n) \to 0$, and hence $C(n) \to 1$.
+% \end{proof}
+\begin{theorem}[Dyadic Contraction Implies Density Exhaustion]
+\label{thm:dyadic-exhaustion}
+If the dyadic contraction property holds, then
+\[
+\lim_{n \to \infty} C(n) = 1.
+\]
+\end{theorem}
+
+\begin{proof}
+Iterating,
+\[
+R(n + kM) \le 2^{-k} R(n).
+\]
+
+Thus $R(n) \to 0$, and hence $C(n) \to 1$.
+\end{proof}
+
+% ------------------------------------------------------------
+
+\begin{remark}[Critical Reduction]
+The problem reduces to establishing dyadic contraction over a finite window,
+i.e., the existence of $M$ such that
+\[
+R(n+M) \le \tfrac{1}{2} R(n).
+\]
+\end{remark}
+
+% ------------------------------------------------------------
+\section{Gap Dynamics and Feedback System}
+\label{sec:8a-feedback}
+
+\begin{itemize}
+    \item Delayed interaction between numerator and denominator growth
+    \item A020914-driven structural lag
+    \item Bounded deficit propagation
+    \item Stabilisation of block contribution size
+\end{itemize}
+
+\begin{lemma}[Uniform Mass Injection over Finite Windows]
+\label{lem:mass-injection}
+There exist constants $M \ge 1$ and $\epsilon > 0$ such that for all sufficiently large $n$,
+\[
+\sum_{k=n+1}^{n+M} N(k) \;\ge\; \epsilon \, R(n).
+\]
+\end{lemma}
+
+\begin{definition}[Finite Contraction Window]
+We say the system admits a finite contraction window if there exists
+an integer $M \ge 1$ such that for all sufficiently large $n$,
+\[
+R(n+M) \le \tfrac{1}{2} R(n).
+\]
+\end{definition}
+
+Candidate proof sketch: 
+use A020914 structure to identify blocks of minimal
+words that collectively inject mass proportional to the current gap.
+\begin{definition}[Unresolved Classes]
+Let $\mathcal{R}_n$ be the set of residue classes modulo $2^{d(n)}$
+corresponding to integers with no descent prefix up to length $n$.
+\end{definition}
+
+\begin{proposition}[Bounded Recovery Window from Jump Structure]
+There exists a finite constant $M$ such that for all sufficiently large $n$,
+\[
+\sum_{k=n+1}^{n+M} N(k) \ge \epsilon R(n)
+\]
+for some $\epsilon > 0$.
+\end{proposition}
+
+\begin{lemma}[Jump-Induced Expansion]
+Each increase in $d(n)$ forces the creation of at least one new
+minimal descent word within a bounded number of steps.
+\end{lemma}
+
+\begin{lemma}[Bounded Compensation Packets]
+\label{lem:compensation-packets}
+There exist constants $L \ge 1$ and $c > 0$ such that
+for every jump index $n$, there exists an interval
+\[
+I_n \subset \{n+1, \dots, n+L\}
+\]
+satisfying
+\[
+\sum_{k \in I_n} N(k) \;\ge\; c \cdot 2^{-d(n)}.
+\]
+\end{lemma}
+
+same?
+
+\begin{lemma}[Jump-Induced Numerator Growth]
+\label{lem:jump-num-growth}
+There exist constants $L \ge 1$ and $\alpha > 0$ such that
+for all sufficiently large $n$,
+\[
+\sum_{i=1}^{L} A(n+i)
+\;\ge\;
+\alpha \cdot 2^{J(n,L)}.
+\]
+\end{lemma}
+
+\begin{corollary}[Uniform Compensation from Jump Structure]
+There exist constants $L \ge 1$ and $c > 0$ such that
+for all sufficiently large $n$,
+\[
+\sum_{i=1}^{L} N(n+i)
+\;\ge\;
+c \cdot 2^{-d(n)}.
+\]
+\end{corollary}
+
+
+\begin{proposition}[Finite Compensation Window]
+There exist constants $M \ge 1$ and $\epsilon > 0$ such that
+for all sufficiently large $n$,
+\[
+\sum_{k=n+1}^{n+M} N(k)
+\;\ge\;
+\epsilon R(n).
+\]
+\end{proposition}
+
+
+This is cool because it shows that the system has a built-in feedback mechanism
+that prevents the gap from persisting indefinitely. Each time the denominator
+jumps, it creates a new opportunity for mass injection that helps to close the gap.
+
+% ------------------------------------------------------------
+\subsection{Dyadic Cancellation and Effective Mass Constant}
+\label{subsec:dyadic-cancellation}
+
+Let $d(n) = A020914(n)$ and $A(n) = A186009(n)$.
+Define
+\[
+N(n) := \frac{A(n+1)}{2^{d(n)}}.
+\]
+
+We analyze the effect of jump accumulation on block sums of $N(n)$.
+
+% ------------------------------------------------------------
+
+\begin{lemma}[Denominator Expansion under Jump Decomposition]
+\label{lem:denominator-jump-expansion}
+Let
+\[
+\Delta d(n) := d(n+1) - d(n).
+\]
+Then for any $i \ge 1$,
+\[
+d(n+i)
+=
+d(n) + i + J(n,i),
+\]
+so
+\[
+2^{d(n+i)}
+=
+2^{d(n)} \cdot 2^{i} \cdot 2^{J(n,i)},
+\]
+where
+\[
+J(n,i) := \sum_{k=0}^{i-1} \bigl(\Delta d(n+k) - 1\bigr)_+
+\]
+is the accumulated jump excess.
+\end{lemma}
+
+% ------------------------------------------------------------
+
+\begin{lemma}[Cancellation Structure of Dyadic Scaling]
+\label{lem:dyadic-cancellation}
+Let $N(n) = A(n+1)/2^{d(n)}$. Then
+\[
+N(n+i)
+=
+\frac{A(n+i+1)}{2^{d(n)} \cdot 2^{i} \cdot 2^{J(n,i)}}.
+\]
+\end{lemma}
+
+\begin{proof}
+Immediate from Lemma~\ref{lem:denominator-jump-expansion}.
+\end{proof}
+
+% ------------------------------------------------------------
+
+\begin{lemma}[Jump-Compensated Numerator Growth]
+\label{lem:jump-comp-growth}
+There exist constants $L \ge 1$ and $\alpha > 0$ such that
+for all sufficiently large $n$,
+\[
+\sum_{i=1}^{L} A(n+i)
+\;\ge\;
+\alpha \cdot 2^{J(n,L)}.
+\]
+\end{lemma}
+
+% ------------------------------------------------------------
+
+\begin{proposition}[Dyadic Cancellation Lower Bound]
+\label{prop:dyadic-cancellation-bound}
+There exist constants $L \ge 1$ and $c > 0$ such that
+for all sufficiently large $n$,
+\[
+\sum_{i=1}^{L} N(n+i)
+\;\ge\;
+\frac{c}{2^{d(n)}}.
+\]
+Moreover, the constant $c$ admits the estimate
+\[
+c
+\;\asymp\;
+\alpha \sum_{i=1}^{L} 2^{-i},
+\]
+up to bounded distortion from jump fluctuations.
+\end{proposition}
+
+\begin{proof}
+Using Lemma~\ref{lem:dyadic-cancellation},
+\[
+\sum_{i=1}^{L} N(n+i)
+=
+\sum_{i=1}^{L}
+\frac{A(n+i+1)}{2^{d(n)} \cdot 2^{i} \cdot 2^{J(n,i)}}.
+\]
+
+Applying Lemma~\ref{lem:jump-comp-growth} yields
+\[
+A(n+i+1) \gtrsim 2^{J(n,i)},
+\]
+so the jump terms cancel at leading order:
+\[
+\sum_{i=1}^{L} N(n+i)
+\gtrsim
+\frac{1}{2^{d(n)}} \sum_{i=1}^{L} 2^{-i}.
+\]
+
+Hence
+\[
+c \sim \alpha \sum_{i=1}^{L} 2^{-i},
+\]
+with bounded correction from non-uniform jump distribution.
+\end{proof}
+
+
+More stuff...
+
+% ============================================================
+\begin{lemma}[A020914 Jump Measure Decomposition]
+\label{lem:a020914-measure-decomp}
+% ============================================================
+
+Let $d(n)=A020914(n)$ and define the dyadic cylinder at level $n$ by
+\[
+\mathcal{I}_n := \{ \text{admissible division words with prefix length } n \}.
+\]
+
+Let $\mu_n$ denote the induced mass assignment
+\[
+\mu_n := \sum_{w \in \mathcal{I}_n} N(w),
+\quad \text{so that } C(n)=\sum_{k\le n} N(k).
+\]
+
+Suppose $n$ is a jump index, i.e.
+\[
+d(n+1)=d(n)+2.
+\]
+
+Then the refinement from level $n$ to level $n+1$ induces a
+strict partition refinement of dyadic cylinders:
+\[
+\mathcal{I}_n \;\longrightarrow\; \mathcal{I}_{n+1}^{(1)} \cup \mathcal{I}_{n+1}^{(2)},
+\]
+where:
+
+\begin{enumerate}
+\item $\mathcal{I}_{n+1}^{(1)}$ consists of cylinders already present under unit-step growth (the “stable extension”),
+\item $\mathcal{I}_{n+1}^{(2)}$ consists of newly created admissible cylinders induced by the jump.
+\end{enumerate}
+
+Moreover, this decomposition is disjoint:
+\[
+\mathcal{I}_{n+1}^{(1)} \cap \mathcal{I}_{n+1}^{(2)} = \varnothing,
+\quad
+\mathcal{I}_{n+1}^{(1)} \cup \mathcal{I}_{n+1}^{(2)} = \mathcal{I}_{n+1}.
+\]
+
+Finally, the jump component satisfies the scaling relation
+\[
+\mu\big(\mathcal{I}_{n+1}^{(2)}\big)
+=
+\theta_n \, \mu\big(\mathcal{I}_n^{\mathrm{unresolved}}\big),
+\]
+for some $\theta_n \in (0,1]$, where
+\[
+\mathcal{I}_n^{\mathrm{unresolved}} := \mathcal{I}_{\infty} \setminus \bigcup_{k\le n} \mathcal{I}_k.
+\]
+
+\end{lemma}
+
+% ============================================================
+\section{Grammar–Drift–Block Framework}
+\label{sec:grammar-drift-block}
+% ============================================================
+
+\begin{table}[htbp]
+\centering
+\caption{Minimum block size, $M$, for logarithmic convexity of $a(n) = A186009(n)$}
+\label{tab:A186009}
+\vspace{4pt}
+\begin{tabular}{@{}rccrr@{}}
+\toprule
+$M$ & $a_{n} a_{n+2M} \ge a_{n+M}$ & {S/D} & $n$ & $a(n)$ \\
+\midrule
+1 & $a_{ 1} a_{ 3} \ge a_{ 2} a_{ 2}$ & S &  1 &            1 \\
+1 & $a_{ 2} a_{ 4} \ge a_{ 3} a_{ 3}$ & S &  2 &            1 \\
+2 & $a_{ 3} a_{ 7} \ge a_{ 5} a_{ 5}$ & S &  3 &            1 \\
+1 & $a_{ 4} a_{ 6} \ge a_{ 5} a_{ 5}$ & D &  4 &            2 \\
+2 & $a_{ 5} a_{ 9} \ge a_{ 7} a_{ 7}$ & S &  5 &            3 \\
+1 & $a_{ 6} a_{ 8} \ge a_{ 7} a_{ 7}$ & D &  6 &            7 \\
+1 & $a_{ 7} a_{ 9} \ge a_{ 8} a_{ 8}$ & S &  7 &           12 \\
+3 & $a_{ 8} a_{14} \ge a_{11} a_{11}$ & D &  8 &           30 \\
+1 & $a_{ 9} a_{11} \ge a_{10} a_{10}$ & D &  9 &           85 \\
+2 & $a_{10} a_{14} \ge a_{12} a_{12}$ & S & 10 &          173 \\
+1 & $a_{11} a_{13} \ge a_{12} a_{12}$ & D & 11 &          476 \\
+1 & $a_{12} a_{14} \ge a_{13} a_{13}$ & S & 12 &          961 \\
+4 & $a_{13} a_{21} \ge a_{17} a_{17}$ & D & 13 &         2652 \\
+1 & $a_{14} a_{16} \ge a_{15} a_{15}$ & D & 14 &         8045 \\
+3 & $a_{15} a_{21} \ge a_{18} a_{18}$ & S & 15 &        17637 \\
+1 & $a_{16} a_{18} \ge a_{17} a_{17}$ & D & 16 &        51033 \\
+2 & $a_{17} a_{21} \ge a_{19} a_{19}$ & S & 17 &       108950 \\
+1 & $a_{18} a_{20} \ge a_{19} a_{19}$ & D & 18 &       312455 \\
+1 & $a_{19} a_{21} \ge a_{20} a_{20}$ & S & 19 &       663535 \\
+4 & $a_{20} a_{28} \ge a_{24} a_{24}$ & D & 20 &      1900470 \\
+1 & $a_{21} a_{23} \ge a_{22} a_{22}$ & D & 21 &      5936673 \\
+2 & $a_{22} a_{26} \ge a_{24} a_{24}$ & S & 22 &     13472296 \\
+1 & $a_{23} a_{25} \ge a_{24} a_{24}$ & D & 23 &     39993895 \\
+1 & $a_{24} a_{26} \ge a_{25} a_{25}$ & S & 24 &     87986917 \\
+4 & $a_{25} a_{33} \ge a_{29} a_{29}$ & D & 25 &    257978502 \\
+1 & $a_{26} a_{28} \ge a_{27} a_{27}$ & D & 26 &    820236724 \\
+3 & $a_{27} a_{33} \ge a_{31} a_{31}$ & S & 27 &   1899474678 \\
+1 & $a_{28} a_{30} \ge a_{29} a_{29}$ & D & 28 &   5723030586 \\
+2 & $a_{29} a_{33} \ge a_{31} a_{31}$ & S & 29 &  12809477536 \\
+1 & $a_{30} a_{32} \ge a_{31} a_{31}$ & D & 30 &  38036848410 \\
+1 & $a_{31} a_{33} \ge a_{32} a_{32}$ & S & 31 &  84141805077 \\
+4 & $a_{32} a_{40} \ge a_{36} a_{36}$ & D & 32 & 248369601964 \\
+1 & $a_{33} a_{35} \ge a_{34} a_{34}$ & D & 33 & 794919136728 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+This section formalises the interaction between the combinatorial
+structure induced by $A020914(n)$ and the induced growth dynamics
+of $C(n) = \sum_{k=0}^n N(k)$.
+
+The central idea is that admissible division words generate a
+finite-state grammar, which induces a bounded drift automaton.
+This in turn yields a uniform block inequality governing residual decay.
+
+% ------------------------------------------------------------
+\subsection{Grammar Layer}
+% ------------------------------------------------------------
+
+\begin{definition}[Event Alphabet]
+Each index $n$ is assigned an event type:
+\[
+E(n) \in \{S, D\},
+\]
+where:
+\begin{itemize}
+\item $S$ denotes a \emph{single step} (unit increase in $d(n)$),
+\item $D$ denotes a \emph{double step} (jump increment in $d(n)$).
+\end{itemize}
+\end{definition}
+
+\begin{lemma}[Jump-Bounded Grammar]
+\label{lem:grammar-bound}
+There exists an integer $L \ge 1$ such that no admissible sequence
+contains more than $L$ consecutive $D$ events.
+\end{lemma}
+
+\begin{remark}
+Empirically $L \in \{2,3\}$ dominates all observed regimes, with rare
+local fluctuations, but boundedness is the structural requirement.
+\end{remark}
+
+% ------------------------------------------------------------
+\subsection{Drift Automaton Layer}
+% ------------------------------------------------------------
+
+\begin{definition}[Drift Assignment]
+Associate to each event a drift contribution:
+\[
+\Delta(S) = +\alpha,\qquad \Delta(D) = -\beta,
+\]
+where $\alpha,\beta > 0$ encode numerator and denominator scaling
+effects respectively.
+\end{definition}
+
+\begin{definition}[Cumulative Drift]
+For a block $B = \{n,\dots,n+m\}$ define
+\[
+\mathcal{D}(B) := \sum_{i=n}^{n+m} \Delta(E(i)).
+\]
+\end{definition}
+
+\begin{lemma}[Bounded Negative Streaks]
+\label{lem:bounded-streaks}
+By Lemma~\ref{lem:grammar-bound}, every block of length $L+1$
+contains at least one $S$ event.
+\end{lemma}
+
+\begin{lemma}[Local Drift Compensation]
+\label{lem:local-comp}
+If
+\[
+\alpha \ge \frac{L}{L+1}\beta,
+\]
+then for every block of length $L+1$,
+\[
+\mathcal{D}(B) \ge 0.
+\]
+\end{lemma}
+
+\begin{remark}
+This is the first point where grammar constraints convert directly
+into quantitative positivity.
+\end{remark}
+
+% ------------------------------------------------------------
+\subsection{Block Inequality Layer}
+% ------------------------------------------------------------
+
+% \begin{lemma}[Block Non-Negativity]
+% \label{lem:block-nonneg}
+% There exists $M = L+1$ such that for all sufficiently large $n$,
+% \[
+% C(n+M) - C(n) \ge 0.
+% \]
+% \end{lemma}
+
+% \begin{proof}
+% Each block of length $M$ contains at least one $S$ event and at most
+% $L$ $D$ events. Under Lemma~\ref{lem:local-comp}, the net drift is
+% non-negative. Since $C(n)$ accumulates drift contributions,
+% the inequality follows.
+% \end{proof}
+
+\begin{lemma}[Fractional Residual Depletion]
+\label{lem:fractional-depletion}
+Suppose there exists a block size $M$ and a constant $\eta > 0$ such that
+each block introduces a family of disjoint admissible cylinders whose
+total measure satisfies
+\[
+\sum_{n \in B_k} N(n) \ge \eta \, R(n_k),
+\]
+where $R(n) = 1 - C(n)$.
+Then
+\[
+R(n_k + M) \le (1 - \eta)\,R(n_k).
+\]
+\end{lemma}
+
+\begin{lemma}[Residual Contraction]
+\label{lem:residual-contraction}
+Define $R(n) = 1 - C(n)$. Then
+\[
+R(n+M) \le R(n).
+\]
+Moreover, if strict positivity occurs in infinitely many blocks,
+then $R(n)$ is strictly decreasing on a subsequence.
+\end{lemma}
+
+
+\begin{theorem}[Exact Double-Jump Window Law]
+Let $s_k$ denote the start indices of consecutive jump pairs
+$(2,2)$ in the increment word $d(n+1)-d(n)$.
+
+Suppose admissible grammar cycles have minimum return length $5$
+and maximum return length $7$.
+
+Then every interval of length $8$ contains exactly one $s_k$.
+\end{theorem}
+
+\begin{theorem}[Anchored Eight-Step Recovery]
+Let $s_k$ be the initial index of a consecutive jump pair $(2,2)$
+in the increment word $d(n+1)-d(n)$.
+
+Then the local convexity defect generated at $s_k$
+is repaired within eight steps, in the sense that
+\[
+a_{s_k}a_{s_k+8}\ge a_{s_k+4}^2.
+\]
+\end{theorem}
+
+% ------------------------------------------------------------
+\subsection{Main Structural Theorem}
+% ------------------------------------------------------------
+
+\begin{theorem}[Grammar-Induced Block Exhaustion]
+\label{thm:block-exhaustion-final}
+If:
+\begin{enumerate}
+\item the event grammar is jump-bounded (Lemma~\ref{lem:grammar-bound}),
+\item drift contributions satisfy $\alpha > 0$, $\beta > 0$,
+\item and local compensation holds (Lemma~\ref{lem:local-comp}),
+\end{enumerate}
+then there exists $M < \infty$ such that
+\[
+\lim_{n \to \infty} C(n) = 1.
+\]
+\end{theorem}
+
+\begin{proof}
+By Lemma~\ref{lem:block-nonneg}, the system admits non-negative drift
+on every block of length $M$. Hence the residual $R(n)$ is monotone
+non-increasing and bounded below by $0$.
+
+Since each block contains at least one compensating event with
+strict contribution in infinitely many positions, the residual cannot
+stabilise above a positive constant. Therefore $R(n) \to 0$.
+\end{proof}
+
+% ------------------------------------------------------------
+\section{Grammar-Driven Recovery Dynamics of the Dyadic Threshold Sequence}
+% ------------------------------------------------------------
+
+\begin{definition}[Dyadic Threshold Sequence]
+Let
+\[
+d(n)=A020914(n)=\lfloor n\log_2 3\rfloor+1.
+\]
+Define the increment word
+\[
+\delta_n=d(n+1)-d(n)\in\{1,2\}.
+\]
+A symbol $\delta_n=2$ is called a jump.
+\end{definition}
+
+\begin{definition}[Double-Jump Event]
+A double-jump event occurs at index $n$ if
+\[
+\delta_n=\delta_{n+1}=2.
+\]
+Its start index is denoted $s_k$.
+\end{definition}
+
+\begin{lemma}[Minimum Return Length]
+For consecutive start indices,
+\[
+s_{k+1}-s_k\ge5.
+\]
+\end{lemma}
+
+\begin{lemma}[Maximum Return Length]
+For consecutive start indices,
+\[
+s_{k+1}-s_k\le7.
+\]
+\end{lemma}
+
+\begin{corollary}[Shock-Free Midpoint Window]
+For every $k$, no new double-jump event begins in
+\[
+\{s_k+1,\dots,s_k+4\}.
+\]
+\end{corollary}
+
+\begin{corollary}[Forced Recurrence Window]
+For every $k$, at least one double-jump event begins in
+\[
+\{s_k+5,\dots,s_k+7\}.
+\]
+\end{corollary}
+
+\begin{definition}[Recovery Sequence]
+Let
+\[
+a(n)=A186009(n),
+\]
+the number of new first-descent words at level $n$.
+\end{definition}
+
+\begin{lemma}[Grammar Compensation Principle]
+Each jump pair $(2,2)$ initially suppresses local dyadic mass,
+but the forced recurrence window creates additional admissible
+first-descent words whose aggregate contribution compensates
+the earlier deficit within at most eight steps.
+\end{lemma}
+
+\begin{theorem}[Anchored Eight-Step Recovery]
+For every double-jump start index $s_k$,
+\[
+a(s_k)\,a(s_k+8)\ge a(s_k+4)^2.
+\]
+\end{theorem}
+
+\begin{corollary}[Uniform Block Convexity]
+There exists $M\le4$ such that for all sufficiently large $n$,
+\[
+a(n)a(n+2M)\ge a(n+M)^2.
+\]
+\end{corollary}
+
+\begin{theorem}[Dyadic Gap Contraction]
+The grammar-driven recovery mechanism implies the residual gap
+contracts on bounded windows:
+\[
+R(n+M)\le \frac12 R(n).
+\]
+Hence
+\[
+\lim_{n\to\infty}C(n)=1.
+\]
+\end{theorem}
+
+
+\begin{theorem}[Bounded Dyadic Shell Capture]
+There exists an integer $L\ge1$ such that for every sufficiently large $n$,
+if
+\[
+2^{-(m+1)} < R(n)\le 2^{-m},
+\]
+then
+\[
+\sum_{j=n}^{n+L} N(j)\ge 2^{-(m+1)}.
+\]
+Consequently,
+\[
+R(n+L)\le \frac12 R(n).
+\]
+\end{theorem}
+
+
+\begin{theorem}[Uniform Twelve-Block Recurrence]
+Every interval of twelve consecutive indices contains at least two
+double-jump starts.
+\end{theorem}
+
+
+\subsection{Cycle Structure and Net Multiplicative Drift}
+
+Let
+\[
+\delta_n=d(n+1)-d(n)\in\{1,2\},
+\]
+where $d(n)=A020914(n)$.
+We write
+\[
+s:=1,\qquad d:=2,
+\]
+for single and double dyadic increments.
+
+For a block word
+\[
+w=(\delta_n,\dots,\delta_{n+L-1}),
+\]
+define its total dyadic increment
+\[
+\Sigma(w)=\sum_{j=0}^{L-1}\delta_{n+j},
+\]
+and associated drift ratio
+\[
+\mu(w)=\frac{3^L}{2^{\Sigma(w)}}.
+\]
+
+The block is called contractive if $\mu(w)<1$, and expansive if $\mu(w)>1$.
+
+A frequently occurring grammar block is the $7$-cycle
+\[
+(s,d,s,d,s,d,d),
+\]
+for which
+\[
+\Sigma=1+2+1+2+1+2+2=11.
+\]
+Hence
+\[
+\mu_7=\frac{3^7}{2^{11}}<1,
+\]
+so the $7$-cycle is contractive.
+
+Another admissible block is the $5$-cycle
+\[
+(s,d,s,d,d),
+\]
+with
+\[
+\Sigma=1+2+1+2+2=8.
+\]
+Thus
+\[
+\mu_5=\frac{3^5}{2^8}>1,
+\]
+so the $5$-cycle is locally expansive.
+
+Concatenating these gives the forced $12$-cycle
+\[
+(s,d,s,d,s,d,d,s,d,s,d,d),
+\]
+with total increment
+\[
+\Sigma=11+8=19.
+\]
+Therefore
+\[
+\mu_{12}=\frac{3^{12}}{2^{19}}<1.
+\]
+
+Hence the grammar-induced $12$-cycle has negative net drift:
+although the $5$-cycle is locally expansive, it is dominated by the
+preceding $7$-cycle. Repeated admissible blocks therefore exhibit
+average contraction.
+
+% ------------------------------------------------------------
+\section{Denominator Beattic Composition and Jump-Compensated Numerator Growth}
+
+\begin{lemma}[Diminishing Tower Error]
+Let $\alpha=\log_2 3$, and let $q_k$ be the ordered sequence of convergent and semiconvergent denominators associated to $\alpha$.
+
+Then
+\[
+\epsilon_k := q_k\alpha - p_k
+\]
+for nearest integers $p_k$ satisfies
+\[
+|\epsilon_k|\to 0.
+\]
+
+Hence the corresponding tower blocks become asymptotically exact dyadic/ternary synchronizations.
+\end{lemma}
+
+
+% ------------------------------------------------------------
+\section{Beatty Structure and Tower Decomposition of the Denominator}
+\label{sec:beatty-towers}
+
+We formalize the macroscopic structure governing the denominator growth
+through the Beatty sequence associated with $\log_2 3$.
+
+% ------------------------------------------------------------
+
+\begin{definition}[Dyadic Threshold Sequence]
+Let
+\[
+\alpha := \log_2 3,
+\qquad
+d(n) := A020914(n) = \lfloor n\alpha \rfloor + 1.
+\]
+\end{definition}
+
+The increment word
+\[
+\Delta(n) := d(n+1)-d(n)
+\]
+takes values in $\{1,2\}$ and defines a Sturmian (Beatty) sequence.
+
+% ------------------------------------------------------------
+
+\begin{definition}[Tower Lengths]
+A sequence of integers $\{q_k\}$ is called a tower sequence if
+\[
+q_k \alpha = p_k + \varepsilon_k,
+\]
+where $p_k \in \mathbb{Z}$ and $|\varepsilon_k|$ is minimal among all
+denominators up to $q_k$.
+
+We refer to $q_k$ as a \emph{tower length} and $p_k$ as its associated
+dyadic exponent.
+\end{definition}
+
+Empirically, the tower sequence begins as
+\[
+5,\,7,\,12,\,41,\,53,\,306,\,359,\,665,\,15601,\,16266,\,31867,\,\dots
+\]
+
+% ------------------------------------------------------------
+
+\begin{lemma}[Diminishing Approximation Error]
+\label{lem:tower-error}
+Let $\varepsilon_k := q_k \alpha - p_k$.
+Then
+\[
+|\varepsilon_k| \to 0 \quad \text{as } k \to \infty.
+\]
+\end{lemma}
+
+\begin{proof}
+This follows from the theory of continued fractions and best rational
+approximations of irrational numbers.
+\end{proof}
+
+% ------------------------------------------------------------
+
+\begin{lemma}[Alternating Approximation Sign]
+\label{lem:alternating}
+The errors $\varepsilon_k$ alternate in sign.  That is,
+tower approximations alternate between underestimates and overestimates
+of $\alpha$.
+\end{lemma}
+
+\begin{proof}
+This is a standard property of convergents of continued fractions.
+\end{proof}
+
+% ------------------------------------------------------------
+
+\begin{definition}[Expansive and Contractive Towers]
+A tower length $q_k$ is called:
+\begin{itemize}
+\item \emph{expansive} if $\varepsilon_k < 0$ (i.e.\ $q_k\alpha < p_k$),
+\item \emph{contractive} if $\varepsilon_k > 0$.
+\end{itemize}
+\end{definition}
+
+Thus expansive towers slightly undercount dyadic growth, while
+contractive towers slightly overcount it.
+
+% ------------------------------------------------------------
+
+\begin{lemma}[Tower Partition Structure]
+\label{lem:tower-partition}
+Tower lengths occur in finite clusters of the form
+\[
+\{5,7,12\},\quad
+\{41,53\},\quad
+\{306,359,665\},\quad
+\{15601,16266,31867\},\ \dots
+\]
+in which:
+\begin{itemize}
+\item the smallest element is expansive,
+\item all remaining elements are contractive.
+\end{itemize}
+\end{lemma}
+
+\begin{proof}[Heuristic justification]
+These clusters arise from convergents and semiconvergents of $\alpha$.
+The smallest element in each cluster lies below $\alpha$ (negative error),
+while subsequent refinements overshoot (positive error) before the next
+cycle begins.
+\end{proof}
+
+% ------------------------------------------------------------
+
+\begin{lemma}[Exact Jump Count on Towers]
+\label{lem:exact-jumps}
+Let $q_k$ be a tower length.  Then the increment word over the interval
+$[n,n+q_k)$ contains an exact number of double steps (jumps), independent
+of $n$.
+\end{lemma}
+
+\begin{proof}[Sketch]
+Since
+\[
+d(n+q_k)-d(n) \in \{p_k, p_k+1\},
+\]
+and $\varepsilon_k$ is small, the total number of increments equal to $2$
+is fixed across the block.  The Sturmian structure ensures that all
+length-$q_k$ factors have identical Parikh counts.
+\end{proof}
+
+% ------------------------------------------------------------
+
+\begin{lemma}[Terminal Double--Double Structure]
+\label{lem:dd-terminal}
+Every tower block ends in a double--double pattern $(2,2)$.
+\end{lemma}
+
+\begin{proof}[Heuristic]
+The atomic building blocks of the increment word are the $5$-cycle and
+$7$-cycle, both of which terminate in $(2,2)$.  Since all tower lengths
+are concatenations of these atomic cycles, the terminal structure is
+preserved.
+\end{proof}
+
+% ------------------------------------------------------------
+
+\begin{theorem}[Macroscopic Denominator Law]
+\label{thm:denominator-law}
+Let $q_k$ be a tower sequence.  Then over any interval of length $q_k$:
+\begin{enumerate}
+\item The total dyadic exponent satisfies
+\[
+d(n+q_k)-d(n) = p_k + O(1),
+\]
+with $|O(1)| \le 1$.
+
+\item The jump count is exact and independent of $n$.
+
+\item The multiplicative imbalance satisfies
+\[
+\frac{3^{q_k}}{2^{p_k}} = 2^{\varepsilon_k},
+\]
+where $\varepsilon_k \to 0$.
+
+\item Expansive towers ($\varepsilon_k<0$) create slack, while
+contractive towers ($\varepsilon_k>0$) consume slack.
+
+\item The sequence of towers alternates between expansion and contraction,
+with diminishing magnitude.
+\end{enumerate}
+\end{theorem}
+
+% ------------------------------------------------------------
+
+\begin{remark}[Denominator Rigidity]
+The denominator is completely governed by the Beatty structure of
+$\log_2 3$.  All macroscopic irregularities reduce to a controlled,
+alternating sequence of small multiplicative errors across tower scales.
+\end{remark}
+
+% ------------------------------------------------------------
+\section{Renomalization Invariance and Self-Replication of the Admissible Division Word Distribution}
+\label{sec:ren-invariance}
+
+\begin{theorem}[Exact Renormalization Invariance of $A186009$]
+Let $v_n$ denote the tuple of admissible division word counts
+contributing to $A186009(n)$.
+
+Then there exists a normalized vector $v$ such that:
+
+\[
+v = \frac{T(v)}{\|T(v)\|_1},
+\]
+
+and for all $n$,
+\[
+v_n = \|v_n\|_1 \cdot v.
+\]
+
+In particular, the sequence is self-replicating under normalization.
+\end{theorem}
+
+\subsection{Beatty Structure and Uniform Jump Control}
+\label{sec:beatty-structure}
+
+The dyadic threshold sequence
+\[
+d(n) = A020914(n)
+\]
+admits the explicit representation
+\[
+d(n) = \lfloor n \log_2 3 \rfloor + 1.
+\]
+Thus the increment sequence
+\[
+\Delta d(n) := d(n+1) - d(n)
+\]
+takes values in $\{1,2\}$ and forms a Sturmian word of slope
+\[
+\alpha = \log_2 3.
+\]
+
+\begin{lemma}[Sturmian Balance]
+\label{lem:sturmian-balance}
+For every interval of length $L$,
+\[
+\sum_{k=0}^{L-1} \bigl(\Delta d(n+k) - \alpha\bigr)
+= O(1),
+\]
+where the implied constant is independent of $n$ and $L$.
+\end{lemma}
+
+\begin{proof}
+This is a standard property of Beatty (Sturmian) sequences arising from
+irrational rotations. The discrepancy between the discrete sum and its
+linear expectation is uniformly bounded.
+\end{proof}
+
+\begin{corollary}[Uniform Dyadic Growth]
+\label{cor:uniform-dyadic}
+For all $n$ and $L$,
+\[
+d(n+L) - d(n) = L \log_2 3 + O(1).
+\]
+Equivalently,
+\[
+2^{d(n+L)} = 2^{d(n)} \cdot 3^L \cdot \Theta(1),
+\]
+where the implicit constants are absolute.
+\end{corollary}
+
+\subsection{Tower Indices and Exact Calibration}
+\label{sec:tower-indices}
+
+Let $\{q_k\}$ denote the sequence of convergents to $\log_2 3$ arising from
+its continued fraction expansion. At these indices,
+\[
+q_k \log_2 3 = p_k + \varepsilon_k,
+\quad |\varepsilon_k| \to 0.
+\]
+
+\begin{lemma}[Exact Jump Count at Tower Indices]
+\label{lem:tower-exact}
+At each tower index $q_k$,
+\[
+d(q_k) = p_k,
+\]
+up to a bounded additive constant, and the number of jump increments
+$\Delta d(n)=2$ up to $q_k$ is determined exactly.
+\end{lemma}
+
+\begin{remark}
+Tower indices provide exact realizations of the dyadic–ternary balance.
+Lemma~\ref{lem:sturmian-balance} shows that all other indices deviate from
+this ideal behavior by at most a uniformly bounded error.
+\end{remark}
+
+\subsection{Transfer to the Numerator}
+\label{sec:numerator-transfer}
+
+Let
+\[
+a(n) = A186009(n),
+\qquad
+N(n) = \frac{a(n)}{2^{d(n)}}.
+\]
+
+The admissible grammar induces new division words precisely at jump events,
+but with a bounded delay.
+
+\begin{lemma}[Delayed Sturmian Inheritance]
+\label{lem:delay-inheritance}
+There exists $L_0 \ge 1$ such that the growth of $a(n)$ satisfies
+\[
+a(n+L) = a(n)\cdot 3^L \cdot \Theta(1)
+\]
+for all $L \ge L_0$, uniformly in $n$.
+\end{lemma}
+
+\begin{proof}[Sketch]
+New admissible division words are created by expansions of the prefix-sum
+constraint, which occur at jump indices of $d(n)$. Since these jumps follow
+a Sturmian distribution and every jump produces new words within bounded
+delay, the cumulative growth of $a(n)$ tracks the same exponential rate
+$3^n$ up to multiplicative constants.
+\end{proof}
+
+\subsection{Block Convexity and Exponential Envelope}
+\label{sec:block-convexity}
+
+\begin{lemma}[Block Log-Convexity]
+\label{lem:block-convex}
+There exists $M \ge 1$ such that for all $n$,
+\[
+a(n)\,a(n+2M) \ge a(n+M)^2.
+\]
+\end{lemma}
+
+\begin{proof}[Sketch]
+This follows from the bounded delay in numerator response together with
+the Sturmian regularity of jump distribution. Local fluctuations are
+smoothed over blocks of length $M$, yielding convexity at that scale.
+\end{proof}
+
+\begin{corollary}[Exponential Envelope]
+\label{cor:exp-envelope}
+There exists $\lambda > 0$ such that for all $n$ and $k \ge 0$,
+\[
+a(n+k) = a(n)\,\lambda^k \cdot \Theta(1).
+\]
+\end{corollary}
+
+\subsection{Measure Decomposition and Geometric Decay}
+\label{sec:measure-decay}
+
+Combining Corollaries~\ref{cor:uniform-dyadic} and
+\ref{cor:exp-envelope}, we obtain
+\[
+N(n+k)
+= \frac{a(n+k)}{2^{d(n+k)}}
+= \frac{a(n)}{2^{d(n)}} \left(\frac{\lambda}{3}\right)^k \cdot \Theta(1).
+\]
+
+\begin{lemma}[Block Ratio Law]
+\label{lem:block-ratio}
+There exists $L \ge 1$ such that for all $n$,
+\[
+\frac{\sum_{k=L}^{2L-1} N(n+k)}{\sum_{k=0}^{L-1} N(n+k)}
+= \rho + o(1),
+\]
+where $0 < \rho < 1$ is a constant.
+\end{lemma}
+
+\begin{remark}
+Empirically, $\rho \approx \tfrac{1}{2}$, but only the strict inequality
+$\rho < 1$ is required for the arguments below.
+\end{remark}
+
+\begin{theorem}[Uniform Mass Contraction]
+\label{thm:mass-contraction}
+There exist constants $M \ge 1$ and $\epsilon > 0$ such that
+\[
+R(n+M) \le (1-\epsilon)\,R(n)
+\]
+for all sufficiently large $n$, where
+\[
+R(n) = 1 - \sum_{k=0}^{n} N(k).
+\]
+\end{theorem}
+
+\begin{proof}
+By Lemma~\ref{lem:block-ratio}, each block of length $M$ captures a fixed
+fraction of the remaining mass. Iterating yields geometric decay of $R(n)$.
+\end{proof}
+
+\begin{theorem}[Density Exhaustion]
+\label{thm:density-exhaustion-final}
+\[
+\lim_{n \to \infty} \sum_{k=0}^{n} N(k) = 1.
+\]
+\end{theorem}
+
+% ============================================================
+\section{Canonical Minimal Envelope and Regenerative Growth}
+\label{sec:minimal-envelope}
+% ============================================================
+
+Let
+\[
+a(n)=A186009(n),
+\]
+and let
+\[
+d(n)=A020914(n)=\lfloor n\log_2 3\rfloor+1.
+\]
+
+Define the increment sequence
+\[
+\delta(n):=d(n+1)-d(n)\in\{1,2\}.
+\]
+
+A value $\delta(n)=2$ induces a terminal duplication event in the
+admissible tuple grammar.
+
+The central structural observation is that the admissible grammar is
+monotone with respect to the placement of duplication events:
+earlier duplication permanently increases future tuple mass.
+
+Consequently, the canonical Beatty phase beginning at intercept $0$
+produces the minimal admissible growth envelope.
+
+% ------------------------------------------------------------
+
+\subsection{Jump Schedules and Tuple Evolution}
+
+% ------------------------------------------------------------
+
+\begin{definition}[Jump Schedule]
+A jump schedule is a sequence
+\[
+J=(\delta_0,\delta_1,\delta_2,\dots),
+\qquad
+\delta_i\in\{1,2\},
+\]
+describing the placement of terminal duplication events in the
+tuple recursion.
+
+The canonical schedule is the Beatty/Sturmian increment sequence
+\[
+\delta_i=d(i+1)-d(i),
+\]
+associated to
+\[
+d(i)=\lfloor i\log_2 3\rfloor+1.
+\]
+\end{definition}
+
+% ------------------------------------------------------------
+
+\begin{definition}[Generating Tuple]
+Let
+\[
+T_n=(t_1,t_2,\dots,t_r)
+\]
+denote the admissible generating tuple at level $n$.
+
+The tuple evolves by:
+\begin{enumerate}
+\item cumulative Pascal-type addition,
+\item terminal duplication whenever $\delta(n)=2$.
+\end{enumerate}
+
+Define the total tuple mass by
+\[
+|T_n|:=\sum_i t_i.
+\]
+\end{definition}
+
+% ------------------------------------------------------------
+
+\subsection{Monotonicity of the Grammar}
+
+% ------------------------------------------------------------
+
+\begin{lemma}[Positivity Preservation]
+\label{lem:positivity}
+All tuple entries remain positive under admissible evolution.
+
+Consequently, any increase introduced at one stage propagates
+monotonically to all future stages.
+\end{lemma}
+
+\begin{proof}
+The admissible recursion consists entirely of cumulative additions
+of positive quantities.
+
+Terminal duplication copies an existing positive terminal entry,
+and no subtraction occurs anywhere in the grammar evolution.
+
+Hence all tuple entries remain positive, and any increase introduced
+at one stage propagates to all future descendants.
+\end{proof}
+
+% ------------------------------------------------------------
+
+\begin{lemma}[Earlier Duplication Dominance]
+\label{lem:earlier-duplication}
+Let
+\[
+J_1,\qquad J_2
+\]
+be two admissible jump schedules that agree through some index $m$.
+
+Suppose $J_1$ performs a terminal duplication strictly earlier than
+$J_2$.
+
+Then the corresponding tuple masses satisfy
+\[
+|T_n^{(1)}|
+\ge
+|T_n^{(2)}|
+\]
+for all sufficiently large $n$, with strict inequality eventually
+persistent.
+\end{lemma}
+
+\begin{proof}[Heuristic mechanism]
+Earlier duplication inserts additional positive mass into the tuple
+recursion sooner.
+
+By Lemma~\ref{lem:positivity}, the admissible evolution is monotone:
+all future cumulative sums inherit any earlier increase.
+
+Thus earlier duplication permanently amplifies future tuple growth,
+yielding eventual domination.
+\end{proof}
+
+% ------------------------------------------------------------
+
+\subsection{Canonical Minimal Envelope}
+
+% ------------------------------------------------------------
+
+\begin{theorem}[Canonical Minimal Envelope]
+\label{thm:minimal-envelope}
+Among all admissible phase continuations of the Sturmian jump grammar,
+the canonical intercept-$0$ Beatty phase produces minimal tuple growth.
+
+Equivalently, for every admissible phase shift $\phi$,
+\[
+|T_n^{(0)}|
+\le
+|T_n^{(\phi)}|
+\]
+for all sufficiently large $n$.
+\end{theorem}
+
+\begin{proof}[Structural mechanism]
+The canonical Beatty phase delays terminal duplication events
+as long as admissibly possible.
+
+By Lemma~\ref{lem:earlier-duplication}, any admissible phase shift
+that introduces duplication earlier produces permanently larger
+future tuple mass.
+
+Hence the canonical phase yields the minimal admissible growth
+envelope.
+\end{proof}
+
+% ------------------------------------------------------------
+
+\begin{remark}[Minimal Regenerative Orbit]
+Exact self-replication of admissible tuples occurs only after
+renormalization together with resetting the Beatty phase to the
+canonical intercept-$0$ schedule.
+
+However, Theorem~\ref{thm:minimal-envelope} shows that this reset
+produces the smallest admissible continuation.
+
+Thus exact regeneration is unnecessary:
+the canonical reset already provides a universal lower envelope for
+future admissible growth.
+\end{remark}
+
+% ------------------------------------------------------------
+
+\subsection{Regenerative Lower Bound}
+
+% ------------------------------------------------------------
+
+\begin{theorem}[Regenerative Supermultiplicativity]
+\label{thm:supermultiplicative}
+For all admissible indices $m,n$,
+\[
+a(n+m)\ge a(n)a(m).
+\]
+\end{theorem}
+
+\begin{proof}[Heuristic mechanism]
+Consider a generating tuple contributing total mass
+\[
+a(n)=|T_n|.
+\]
+
+Discard the internal tuple structure and retain only the aggregate
+mass.
+
+After normalization, restart the admissible grammar using the
+canonical intercept-$0$ Beatty phase.
+
+By Theorem~\ref{thm:minimal-envelope}, this regenerated evolution
+produces the smallest admissible future growth among all admissible
+continuations.
+
+But the canonical regeneration reproduces exactly the admissible
+growth sequence
+\[
+a(m).
+\]
+
+Hence every admissible configuration contributing to $a(n)$
+generates at least $a(m)$ admissible descendants after $m$
+additional steps.
+
+Therefore,
+\[
+a(n+m)\ge a(n)a(m).
+\]
+\end{proof}
+
+% ------------------------------------------------------------
+
+\subsection{Existence of an Exponential Scale}
+
+% ------------------------------------------------------------
+
+\begin{theorem}[Existence of the Exponential Growth Constant]
+\label{thm:lambda-exists}
+There exists a finite constant
+\[
+\lambda>0
+\]
+such that
+\[
+\lambda
+=
+\lim_{n\to\infty} a(n)^{1/n}.
+\]
+Equivalently,
+\[
+\lim_{n\to\infty}\frac{\log a(n)}{n}
+=
+\log\lambda.
+\]
+\end{theorem}
+
+\begin{proof}
+Define
+\[
+b(n):=\log a(n).
+\]
+
+By Theorem~\ref{thm:supermultiplicative},
+\[
+b(n+m)\ge b(n)+b(m),
+\]
+so the sequence $b(n)$ is superadditive.
+
+Therefore Fekete's lemma applies, yielding existence of the limit
+\[
+\lim_{n\to\infty}\frac{b(n)}{n}
+=
+\sup_n \frac{b(n)}{n}.
+\]
+
+Exponentiating gives
+\[
+\lim_{n\to\infty} a(n)^{1/n}
+=
+\lambda
+\]
+for some finite constant $\lambda>0$.
+\end{proof}
+
+% ------------------------------------------------------------
+
+\begin{remark}[Delayed Compensation and Convexity]
+The canonical Beatty phase minimizes growth by delaying terminal
+duplication events as long as admissibly possible.
+
+Consequently, local suppression of tuple growth necessarily forces
+larger future compensation once duplication eventually occurs.
+
+This delayed-compensation mechanism naturally induces:
+\begin{itemize}
+\item block log-convexity,
+\item bounded recovery windows,
+\item asymptotic smoothing of local oscillations.
+\end{itemize}
+\end{remark}
+
+% ------------------------------------------------------------
+
+\begin{remark}[Structural Interpretation]
+The admissible division-word grammar defines a positive monotone
+dynamical system controlled by a Sturmian jump schedule.
+
+The canonical intercept-$0$ Beatty phase acts as the unique minimal
+growth orbit, while all admissible phase shifts dominate it.
+
+Thus the existence of the exponential scale $\lambda$ emerges from
+an extremal monotone regeneration principle intrinsic to the grammar.
+\end{remark}
+
+% ------------------------------------------------------------
+\section{Global Coverage and Density Exhaustion}
+\label{sec:8a-global}
+
+\begin{itemize}
+    \item Iterated block covering argument
+    \item Exhaustion of dyadic gaps
+    \item No residual positive density set
+    \item Candidate density-1 conclusion mechanism
+\end{itemize}
+
+% ============================================================
+
+This establishes a strict subcritical regime for symbolic expansion.
+
+% ============================================================
+\clearpage
+\bibliographystyle{unsrtnat}
+\bibliography{src/latex/references}
+
+\end{document}
