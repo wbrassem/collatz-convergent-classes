@@ -212,25 +212,34 @@ A division word of length $m \ge 1$ is a sequence
 \[
 \omega = (d_0, \dots, d_{m-1}),
 \]
-where each $d_i \in \mathbb{N}$ is the 2-adic valuation
+where each $d_i \in \mathbb{N}$.
+\end{definition}
+
+\begin{definition}[Admissible Division Word]
+A division word
 \[
-v_2(3f^i(x)+1)
+\omega = (d_0,\dots,d_{m-1})
 \]
-of the corresponding step in the accelerated Collatz map
+is admissible if
 \[
-f(x) = \frac{3x+1}{2^{v_2(3x+1)}}.
+d_i \ge 1,
+\qquad 0 \le i < m.
 \]
 \end{definition}
 
-\begin{remark}
-Since $f$ maps odd integers to odd integers, each $3f^i(x)+1$ is even,
-so $d_i \ge 1$ for all $i$.
-\end{remark}
-
 \begin{definition}[Realization]
-An odd integer $x \in \mathbb{N}$ realizes the division word $\omega$ if
+An odd integer $x \in \mathbb{N}$ realizes the division word
 \[
-d_i = v_2(3f^i(x)+1), \quad 0 \le i < m.
+\omega=(d_0,\dots,d_{m-1})
+\]
+if
+\[
+d_i = v_2(3f^i(x)+1),
+\qquad 0 \le i < m,
+\]
+where
+\[
+f(x)=\frac{3x+1}{2^{v_2(3x+1)}}.
 \]
 \end{definition}
 
@@ -239,7 +248,8 @@ Every odd integer \(x\) induces a unique infinite valuation sequence
 \[
 (v_2(3x+1),\, v_2(3f(x)+1),\, v_2(3f^2(x)+1),\dots),
 \]
-of which a division word is a finite prefix.
+For every \(m\ge1\), its first \(m\) entries form the unique division
+word of length \(m\) realized by x.
 \end{remark}
 
 % ------------------------------------------------------------
@@ -264,6 +274,25 @@ D(\omega) := \sum_{i=0}^{m-1} d_i.
 \]
 \end{definition}
 
+\begin{lemma}
+For every admissible division word $\omega$,
+\[
+|\omega| \le D(\omega).
+\]
+\end{lemma}
+
+\begin{proof}
+Since $d_i\ge1$ for every $0\le i<|\omega|$,
+\[
+D(\omega)
+=\sum_{i=0}^{|\omega|-1} d_i
+\ge
+\sum_{i=0}^{|\omega|-1}1
+=
+|\omega|.
+\]
+\end{proof}
+
 \begin{remark}
 The two basic numerical invariants of a division word are its length
 \(|\omega|\), which records the number of accelerated Collatz steps, and
@@ -279,23 +308,50 @@ both the affine dynamics and the symbolic geometry developed below.
 % ============================================================
 
 \begin{definition}[Affine Map]
-Each (not necessarily realizable) division word \(\omega\) of length \(m\)
-determines a formal affine map
+Each division word \(\omega\), whether or not it is realizable, determines
+a formal affine map
 \[
-F_\omega(x)=\frac{3^m x+c(\omega)}{2^{D(\omega)}},
+F_\omega : \mathbb Q \to \mathbb Q, \qquad
+F_\omega(x)
+=
+\frac{3^{|\omega|}x+c(\omega)}
+     {2^{D(\omega)}},
 \]
-obtained by symbolic composition of the accelerated Collatz map.
+obtained by symbolic composition of the accelerated Collatz steps encoded
+by \(\omega\). Thus the word \(\omega\) determines its length \(|\omega|\),
+its total division count \(D(\omega)\), and its affine constant \(c(\omega)\),
+and hence determines the formal map \(F_\omega\).
+
+The rational domain is used because an arbitrary formal division word need
+not prescribe powers of \(2\) that divide the corresponding numerators
+exactly. Thus the symbolic affine map is defined independently of
+realizability. When a natural number \(x\) realizes \(\omega\), the prescribed
+divisions are exact and \(F_\omega(x)\) agrees with the corresponding
+iterate of the fully accelerated Collatz map.
 \end{definition}
 
 \begin{remark}
-The quantity \(D(\omega)\) records the total exponent of 2 removed along
-the trajectory segment encoded by \(\omega\). It determines the modulus
-\(2^{D(\omega)}\) appearing in the associated affine representation above.
+The quantity \(D(\omega)\) records the total exponent of \(2\) prescribed by
+the symbolic segment encoded by \(\omega\). When \(\omega\) is realized, this
+is the total exponent of \(2\) removed along the corresponding trajectory
+segment.
 
-A division word is called \emph{realizable} if it is realized by at least one
-odd integer. In later sections we use the synonymous term
-\emph{admissible} when emphasizing the arithmetic structure of realizable
-division words.
+The quantity \(2^{D(\omega)}\) is the denominator appearing in the formal
+affine representation
+\[
+F_\omega(x)
+=
+\frac{3^{|\omega|}x+c(\omega)}{2^{D(\omega)}},
+\]
+and consequently determines the modulus of the associated formal
+integrality condition
+\[
+3^{|\omega|}x+c(\omega)\equiv0 \pmod{2^{D(\omega)}}.\]
+Exact realizability may impose additional congruence conditions beyond
+this formal integrality constraint.
+
+A division word is called \emph{realizable} if it is realized by at least
+one odd integer.
 \end{remark}
 
 % ------------------------------------------------------------
@@ -314,7 +370,7 @@ composition of their affine maps: the affine map associated with
 a concatenated word is exactly the composition of the affine maps
 associated with its constituent words.
 
-Furthermore, if $C_\omega$ denotes the set of integers
+Furthermore, if $C_\omega$ denotes the set of natural numbers
 realizing the word $\omega$, then
 \[
 C_{\omega\eta}\subseteq C_\omega .
@@ -326,25 +382,28 @@ sets.
 \begin{proof}
 Write
 \[
-F_\omega(x) = \frac{3^{m}x+c(\omega)}{2^{D(\omega)}},
+F_\omega(x) = \frac{3^{|\omega|}x+c(\omega)}{2^{D(\omega)}},
 \]
 and similarly
 \[
-F_\eta(x) = \frac{3^{n}x+c(\eta)}{2^{D(\eta)}}.
+F_\eta(x) = \frac{3^{|\eta|}x+c(\eta)}{2^{D(\eta)}}.
 \]
 Then
 \[
-F_\eta(F_\omega(x)) = \frac{ 3^n \left( \frac{3^m x+c(\omega)} {2^{D(\omega)}} \right)+c(\eta) } {2^{D(\eta)}}.
+F_\eta(F_\omega(x)) = \frac{ 3^{|\eta|} \left( \frac{3^{|\omega|} x+c(\omega)} {2^{D(\omega)}} \right)+c(\eta) } {2^{D(\eta)}}.
 \]
 Rearranging gives
 \[
-F_\eta(F_\omega(x)) = \frac{ 3^{m+n}x+3^n c(\omega)+2^{D(\omega)}c(\eta) } {2^{D(\omega)+D(\eta)}}.
+F_\eta(F_\omega(x)) = \frac{ 3^{|\omega|+|\eta|}x+3^{|\eta|} c(\omega)+2^{D(\omega)}c(\eta) } {2^{D(\omega)+D(\eta)}}.
 \]
 The denominator and ternary exponents add under concatenation, while
 the affine constant combines according to the usual affine composition
-rule. Therefore this map is precisely the affine representation associated
-with the concatenated word
-$\omega\eta$.
+rule:
+\[
+c(\omega\eta) = 3^{|\eta|} c(\omega)+2^{D(\omega)}c(\eta).
+\]
+Therefore this map is precisely the affine representation associated
+with the concatenated word $\omega\eta$.
 
 For the inclusion of realization sets, any integer realizing $\omega\eta$
 must first realize the prefix $\omega$ before realizing the appended word
@@ -355,10 +414,21 @@ C_{\omega\eta}\subseteq C_\omega .
 \]
 \end{proof}
 
+\begin{lemma}[Affine Representation of a Realized Word]
+If \(x\) realizes a division word \(\omega\), then
+\[
+F_\omega(x)=f^{|\omega|}(x). 
+\]
+In particular, although \(F_\omega\) is defined formally over \(\mathbb Q\)
+for every division word, its value on a realization is an integer and
+coincides with the corresponding finite segment of the fully accelerated
+Collatz trajectory.
+\end{lemma}
+
 \begin{definition}[Contractive and Expansive Affine Maps]
 Let $\omega$ be a realizable division word of length $m$. Since
 \[
-F_\omega(x)=f^m(x)
+F_\omega(x)=f^{|\omega|}(x)
 \]
 for every realization of $\omega$, the affine map $F_\omega$ is called
 \begin{itemize}
@@ -367,14 +437,30 @@ for every realization of $\omega$, the affine map $F_\omega$ is called
 \end{itemize}
 \end{definition}
 
-\begin{remark}
-Contractivity refers only to the finite trajectory encoded by
-\(\omega\). Thus
+\begin{remark}[No Dichotomy Assumed]
+The preceding definitions do not assert that every realizable division word
+is either contractive or expansive. At this stage it remains possible that
+a realizable word $\omega$ has realizations $x$ and $y$ for which
 \[
-F_\omega(x)=f^m(x)<x,
+F_\omega(x)<x
+\qquad\text{and}\qquad
+F_\omega(y)\ge y.
 \]
-but no conclusion is drawn about the behavior of later iterates or
-eventual convergence to \(1\).
+Such a word would satisfy neither definition.
+
+Thus any later classification of realizable division words into contractive
+and expansive classes requires an additional argument showing that the sign
+of $F_\omega(x)-x$ is uniform over all realizations of a fixed word.
+\end{remark}
+
+\begin{remark}[Contractivity of a Finite Trajectory]
+Contractivity refers only to the finite trajectory encoded by \(\omega\).
+If \(F_\omega\) is contractive, then for every realization \(x\),
+\[
+F_\omega(x)=f^{|\omega|}(x)<x,
+\]
+This refers only to the finite trajectory encoded by \(\omega\); no conclusion
+is drawn about the behavior of later iterates or eventual convergence to \(1\).
 \end{remark}
 
 % ------------------------------------------------------------
@@ -383,9 +469,13 @@ eventual convergence to \(1\).
 
 \begin{remark}[Division Words as a Dynamical Encoding]
 Recall from Section~\ref{sec:division-counts} that a \emph{division word}
-$\omega=(d_0,\dots,d_{m-1})$ records the exact 2-adic valuation
-$d_i = v_2(3 x_i + 1)$, occurring at each iterate of the fully accelerated
-Collatz map.
+$\omega=(d_0,\dots,d_{m-1})$ prescribes a finite sequence of division counts.
+When \(\omega\) is realized by a trajectory \(x_0,x_1,\dots\), its entries
+are the exact \(2\)-adic valuations
+\[
+d_i = v_2(3 x_i + 1)
+\]
+occurring at each iterate of the fully accelerated Collatz map.
 
 Division words retain the dynamical information needed to reconstruct the
 affine representation. Each division word $\omega=(d_0,\dots,d_{m-1})$
@@ -416,7 +506,7 @@ where empty sums are defined as $0$.
 \end{lemma}
 
 \begin{proof}
-Iterating the accelerated map symbolically gives
+Composing the symbolic steps prescribed by the division word gives
 \[
 x_{i+1}=\frac{3x_i+1}{2^{d_i}}.
 \]
@@ -459,103 +549,195 @@ preceding divisions.
 \subsection{Dyadic-Ternary Balance}
 % ------------------------------------------------------------
 
-The symbolic dynamics of a division word are governed by the balance
-between the cumulative ternary growth \(3^m\) and the cumulative dyadic
-contraction \(2^{D(\omega)}\). For a division word \(\omega\) of length
-\(m\), the associated affine map has linear coefficient
+The symbolic dynamics of a division word are governed in part by the balance
+between the cumulative ternary factor \(3^{|\omega|}\) and the cumulative
+dyadic factor \(2^{D(\omega)}\). For a division word \(\omega\), the associated
+affine map
 \[
-\frac{3^m}{2^{D(\omega)}}.
+F_\omega(x)
+=
+\frac{3^{|\omega|}x+c(\omega)}
+     {2^{D(\omega)}}
 \]
 
-The linear coefficient determines the asymptotic behavior of the affine map:
-\begin{itemize}
-    \item if \(2^{D(\omega)} < 3^m\): expansive slope.
-    \item if \(2^{D(\omega)} > 3^m\): contractive slope.
-\end{itemize}
-
-This naturally introduces the Beatty threshold sequence
+has linear coefficient
 \[
-B(m)=\lfloor m\log_2 3\rfloor+1,
+\lambda_\omega
+=
+\frac{3^{|\omega|}}{2^{D(\omega)}}.
 \]
-which is the OEIS sequence \OEIS{A020914}.  This is the minimal integer \(k\) satisfying
+
+Thus
+\[
+2^{D(\omega)}<3^{|\omega|}
+\]
+corresponds to a linear coefficient greater than \(1\), whereas
+\[
+2^{D(\omega)}>3^{|\omega|}
+\]
+corresponds to a linear coefficient less than \(1\). The latter
+condition should be distinguished from contractivity of the affine
+map itself. For every nonempty division word \(\omega\), the affine
+constant satisfies
+\[
+c(\omega)>0.
+\]
+Consequently, a linear coefficient less than \(1\) determines the
+asymptotic slope of the affine map but does not by itself imply that
+\[
+F_\omega(x)<x
+\]
+for every realization \(x\). The linear coefficient itself, however,
+admits a strict dichotomy for every nonempty division word. Indeed,
+\[
+2^{D(\omega)}\neq 3^{|\omega|}.
+\]
+If \(D(\omega)>0\), then \(2^{D(\omega)}\) is even whereas
+\(3^{|\omega|}\) is odd. If \(D(\omega)=0\), then
+\(2^{D(\omega)}=1\), while \(3^{|\omega|}>1\) because
+\(|\omega|>0\). Hence exactly one of
+\[
+2^{D(\omega)}<3^{|\omega|}
+\qquad\text{or}\qquad
+2^{D(\omega)}>3^{|\omega|}
+\]
+holds, and therefore
+\[
+\lambda_\omega>1
+\qquad\text{or}\qquad
+\lambda_\omega<1,\]
+respectively.
+
+This slope dichotomy should not be confused with a dichotomy between
+expansive and contractive affine maps. The positive affine constant can
+affect the sign of \(F_\omega(x)-x\), so a subunit linear coefficient does
+not alone establish contractivity on the realizations of \(\omega\).
+
+The boundary between the two slope regimes is described by the dyadic
+threshold associated with a word length \(m\),
+\[
+B(m)=\lfloor m\log_2 3\rfloor+1.
+\]
+
+Equivalently, \(B(m)\) is the least natural number \(k\) satisfying
 \[
 2^k>3^m.
 \]
 
-Consequently, \(B(m)=A020914(m)\) represents the minimal total division count
-for which the affine slope becomes strictly contractive.
+The sequence \(B(m)\) is OEIS sequence \OEIS{A020914}. Thus,
+for a division word \(\omega\),
+\[
+B(|\omega|)\le D(\omega)
+\quad\Longleftrightarrow\quad
+2^{D(\omega)}>3^{|\omega|}.\]
+
+Therefore \(B(|\omega|)\) is exactly the minimum total division count for
+which the linear coefficient of \(F_\omega\) is strictly less than \(1\).
 
 % ------------------------------------------------------------
 \subsection{Example}
 % ------------------------------------------------------------
 
-Consider convergent segments with $m=4$ iterates of $f$.  
-The minimal total division count for $m=4$ is
+Consider division words of length \(m=4\). The dyadic threshold is
 \[
-A020914(4) = 7.
+B(4)=A020914(4)=7,
 \]
-
-One realizable division word attaining this minimum is
+so a total division count \(D(\omega)=7\) is the minimum for which the
+linear coefficient of the associated affine map is strictly less than \(1\). 
+Consider the formal division word
 \[
-\omega = (1,1,1,4),
+\omega=(1,1,1,4),
 \]
 for which
 \[
-D(\omega) = 1+1+1+4 = 7.
+D(\omega)=1+1+1+4=7.
 \]
+Its affine constant is
+\[
+c(\omega)=65,
+\]
+and hence
+\[
+F_\omega(x) = \frac{3^4x+c(\omega)}{2^7} = \frac{81x+65}{128}.
+\]
+The congruence
+\[
+81x+65\equiv0\pmod{128}
+\]
+ensures that the formal affine expression is integral. It determines the
+residue class
+\[
+x\equiv15\pmod{128}.
+\]
+This condition alone, however, does not guarantee that \(\omega\) is
+realized by the fully accelerated Collatz map, because realization requires
+each prescribed division count to be the exact \(2\)-adic valuation at the
+corresponding step.
 
-Composing the accelerated map according to $\omega$ yields
+For example, \(x=15\) satisfies the congruence modulo \(128\), but its
+accelerated orbit begins
 \[
-f_\omega(x)=\frac{3^4 x + c(\omega)}{2^7}
-           = \frac{81x + 65}{128},
+15\longmapsto23\longmapsto35\longmapsto53\longmapsto5.
 \]
-
-The integrality condition
+At the fourth step,
 \[
-81x + 65 \equiv 0 \pmod{128}
+3\cdot53+1=160=2^5\cdot5,
 \]
-determines a unique residue class
+so the corresponding valuation is \(5\), not \(4\). The formal division
+prescribed by \(\omega\) instead gives
 \[
-x \equiv 15 \pmod{128}.
+\frac{3\cdot53+1}{2^4}=10,
 \]
-This congruence determines a unique residue class modulo $2^7$, and
-defines the arithmetic constraint associated with the division word.
-In Section~\ref{sec:cylinder-geometry}, these congruence classes will
-be identified with the cylinder representation of admissible words.
+which is integral but even. Thus \(15\) satisfies the formal integrality
+condition without realizing the division word \((1,1,1,4)\). Exact
+realization in particular requires the quotient after the prescribed four
+divisions to be odd. This additional parity condition is
+\[
+\frac{81x+65}{128}\equiv1\pmod2,
+\]
+or equivalently,
+\[
+81x+65\equiv128\pmod{256}.
+\]
+Solving this strengthened congruence gives
+\[
+x\equiv143\pmod{256}.
+\]
+For \(x=143\), the accelerated orbit is
+\[
+143\longmapsto215\longmapsto323\longmapsto485\longmapsto91,
+\]
+and the successive \(2\)-adic valuations are exactly
+\[
+(1,1,1,4).
+\]
+Thus \(143\) genuinely realizes the division word \(\omega\).
 
 \medskip
 
 \noindent
 \textbf{Interpretation}
 
-The word $\omega = (1,1,1,4)$ records three successive divisions by 2,
-followed by a division by \(2^4\). The affine representation packages
-this symbolic information into a single arithmetic transformation together
-with its associated congruence condition.
+The example distinguishes two related arithmetic conditions. The
+congruence modulo \(2^{D(\omega)}\) guarantees that the symbolic affine
+composition is integral, while exact realization requires the prescribed
+powers of \(2\) to be maximal at every step.
 
-Thus $d_3=4$ means that the fourth iterate removes exactly four factors of \(2\).
-The constant $c(\omega)$ is fixed entirely by this symbolic structure and
-ensures that precisely the integers in the residue class $x \equiv 15 \pmod{128}$
-realize the affine transformation associated with $\omega$.
-
-This example illustrates that the behavior of trajectories is governed
-entirely by the symbolic data encoded in $\omega$ and its associated
-affine map. The initial values that realize a given word are precisely
-those satisfying the induced congruence constraint, independent of any
-particular choice of representative.
-
-The affine representation converts symbolic trajectory data into explicit
-arithmetic constraints modulo powers of two, allowing realizable trajectories
-to be studied through congruence geometry rather than direct iteration.
-
-\medskip
-
-\noindent
-The affine representation is purely symbolic: it associates an affine
-transformation with every formal division word. The following sections
-determine which formal words are realizable under the accelerated Collatz
-map by developing the admissible division grammar and proving its
-equivalence to realizability.
+In this example, imposing the necessary final-parity condition contributes
+one additional congruence constraint, refining
+\[
+x\equiv15\pmod{128}
+\]
+to
+\[
+x\equiv143\pmod{256}.
+\]
+Thus the affine representation converts symbolic trajectory data into
+explicit congruence conditions, but integrality of the formal affine map
+must be distinguished from exact realizability under the fully accelerated
+Collatz map. The following sections develop the additional conditions
+required to characterize realizable division words and their associated
+cylinders.
 
 
 % ============================================================

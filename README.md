@@ -169,6 +169,44 @@ This script:
 
 ------------------------------------------------------------
 
+## Lean prover
+
+A Lean formalization is maintained alongside the LaTeX development to
+machine-check the proof logic. The Lean project is located under
+`/src/lean`.
+
+The top-level `Collatz.lean` file imports the formalization developed in
+`/src/lean/Collatz`, whose source files broadly mirror the mathematical
+development in the LaTeX document.
+
+The formalization depends on Mathlib. Mathlib itself is not stored in this
+repository; the checked-in Lean/Lake project files specify the required
+environment and dependencies.
+
+After cloning the repository, change to the Lean project directory:
+
+```bash
+cd src/lean
+```
+
+Fetch the required dependencies:
+
+```bash
+lake update
+```
+
+Then build and verify the complete Lean formalization:
+
+```bash
+lake build
+```
+
+A successful build verifies all Lean definitions, lemmas, and theorems
+currently included in the project.
+
+
+------------------------------------------------------------
+
 ## 📄 License
 
 To be determined.  
