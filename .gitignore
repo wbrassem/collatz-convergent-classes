@@ -17,6 +17,9 @@ data/*.csv
 figures/*.pdf
 figures/*.png
 
+# Lean files and directories
+/src/lean/MIL/
+
 # Ignore everything in build
 build/*
 
