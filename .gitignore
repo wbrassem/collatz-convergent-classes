@@ -18,7 +18,11 @@ figures/*.pdf
 figures/*.png
 
 # Lean files and directories
+/src/lean/.github/
+/src/lean/.lake/
 /src/lean/MIL/
+/src/lean/LeanMathTest/
+/src/lean/main.lean
 
 # Ignore everything in build
 build/*
