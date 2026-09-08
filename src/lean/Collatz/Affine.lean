@@ -37,37 +37,44 @@ realized trajectories
         ▼
  `affine_map_realized`
 
-For a division word `ω` of length `m`, symbolic composition of the
-accelerated Collatz steps produces an affine expression of the form
+For a division word `ω`, symbolic composition of the accelerated Collatz
+steps produces an affine expression of the form
 
 `F_ω(x) = (3^|ω| * x + c(ω)) / 2^(D(ω))`
 
-where `D(ω)` is the total division count and `c(ω)` is an integer
-determined by the entries of `ω`.
+where `D(ω)` is the total division count and `c(ω)` is the natural-number
+affine constant determined by the entries of `ω`. The formal affine map
+itself is defined over `ℚ`, since arbitrary symbolic division words need
+not prescribe exact natural-number divisions.
 
-The affine representation is defined formally for arbitrary division
-words; the word need not be realized by an actual Collatz trajectory.
-Realizability is therefore a separate dynamical condition imposed on
-the symbolic affine data.
+The affine representation is defined for every formal division word; the
+word need not be realized by an actual Collatz trajectory. Realizability is
+therefore a separate dynamical condition imposed on the symbolic affine
+data. When a natural number realizes `ω`, the formal affine map agrees with
+the corresponding finite segment of the fully accelerated Collatz
+trajectory.
 
-This module develops the structural properties of this representation,
-including:
+This module develops the structural properties of the affine
+representation, including:
 
 * the behavior of affine data under concatenation and passage to prefixes;
-* an explicit formula for the affine constant `c(ω)`;
-* the relationship between the powers `3^|ω|` and `2^(D(ω))`;
-* concrete examples illustrating the affine construction.
+* the recursive and explicit forms of the affine constant `c(ω)`;
+* the equivalence of those two affine-constant representations;
+* the dyadic-ternary threshold governing whether the affine slope is below
+  or above `1`;
+* the bridge from realized symbolic words to actual accelerated Collatz
+  iterates.
 
-The affine representation provides the algebraic bridge between symbolic
-division words and the congruence structure developed in subsequent
-sections.
+The affine representation provides the algebraic foundation for the
+integrality, exact-realization, and congruence structure developed in
+subsequent modules.
 
 -/
 
 /- BigOperators required for summation in the explicit formula for the affine constant -/
 open scoped BigOperators
 
-/- Create a namespace for all lemmas and definitions. -/
+/- Open the Collatz namespace. -/
 namespace Collatz
 
 /-- One formal Collatz step using the prescribed division count `d`. -/
@@ -87,35 +94,22 @@ def affine_constant : division_word → ℕ
   | d :: ω =>
       3 ^ ω.length + 2 ^ d * affine_constant ω
 
-/- #eval affine_constant [1, 2] should be
-    3^1 + 2^1 * (3^0 + 2^2 * 0) =
-    3 + 2 * (1 + 4 * 0) =
-    3 + 2 * 1 = 3 + 2 = 5
--/
-#eval affine_constant [1, 2] -- should be 5
-
-/- #eval affine_constant [1, 1, 1, 4] should be
-    3^3 + 2^1 * (3^2 + 2^1 * (3^1 + 2^1 * (3^0 + 2^4 * 0))) =
-    27 + 2 * (9 + 2 * (3 + 2 * (1 + 16 * 0))) =
-    27 + 2 * (9 + 2 * 5) = 27 + 2 * (9 + 10) =
-    27 + 2 * 19 = 27 + 38 = 65
--/
-#eval affine_constant [1, 1, 1, 4] -- should be 65
-
 /-- The formal affine map associated with a division word. -/
 def affine_map (ω : division_word) (x : ℚ) : ℚ :=
   ((3 : ℚ) ^ ω.length * x + (affine_constant ω : ℚ)) /
     (2 : ℚ) ^ total_division_count ω
 
-/-- The recursively composed symbolic action of a division word agrees
-    with its closed-form affine representation.
+/--
+The recursively composed symbolic action of a division word agrees
+with its closed-form affine representation.
 
-    This theorem is purely algebraic: it holds for every division word,
-    whether or not the word is realizable by an actual Collatz trajectory.
-    The proof proceeds by induction on the word. In the inductive step,
-    the head symbolic step is composed with the affine representation of
-    the tail, and the resulting rational expression is normalized to the
-    affine form for the complete word. -/
+This theorem is purely algebraic: it holds for every division word,
+whether or not the word is realizable by an actual Collatz trajectory.
+The proof proceeds by induction on the word. In the inductive step,
+the head symbolic step is composed with the affine representation of
+the tail, and the resulting rational expression is normalized to the
+affine form for the complete word.
+-/
 theorem word_action_eq_affine_map
     (ω : division_word) (x : ℚ) :
     word_action ω x = affine_map ω x := by
@@ -157,8 +151,10 @@ theorem word_action_eq_affine_map
       /- The remaining equality is a polynomial identity. -/
       ring
 
-/-- Acting by a concatenated division word is the same as first acting by
-    the prefix word and then by the appended word. -/
+/--
+Acting by a concatenated division word is the same as first acting by
+the prefix word and then by the appended word.
+-/
 lemma word_action_append
     (ω η : division_word) (x : ℚ) :
     /- The catenation of ω and η is the same is taking
@@ -187,8 +183,10 @@ theorem affine_map_append
   /- word_action ω x = affine_map ω x -/
   rw [word_action_eq_affine_map]
 
-/-- The affine constant of a concatenated division word satisfies the
-    affine composition law. -/
+/--
+The affine constant of a concatenated division word satisfies the
+affine composition law.
+-/
 lemma affine_constant_append
     (ω η : division_word) :
     affine_constant (ω ++ η) =
@@ -219,8 +217,10 @@ lemma affine_constant_append
     /- The remaining equality is a commutative semiring identity. -/
     ring
 
-/-- The first `m` generated division counts are the first `m` entries
-    of any longer generated division-count word. -/
+/--
+The first `m` generated division counts are the first `m` entries
+of any longer generated division-count word.
+-/
 lemma division_counts_take
     (x m n : ℕ) :
     (division_counts x (m + n)).take m =
@@ -246,8 +246,10 @@ lemma division_counts_take
           division_counts (fully_accelerated x) m
       exact ih (fully_accelerated x)
 
-/-- Any realization of a concatenated division word also realizes
-    its left-hand prefix. -/
+/--
+Any realization of a concatenated division word also realizes
+its left-hand prefix.
+-/
 theorem realizes_append_left
     {x : ℕ} {ω η : division_word}
     (h : realizes x (ω ++ η)) :
@@ -261,13 +263,15 @@ theorem realizes_append_left
      generated word recovers the first `ω.length` division counts. -/
   simpa [List.length_append, division_counts_take] using ht
 
-/-- A symbolic step using the actual division count of `x` agrees with
-    one fully accelerated Collatz step after coercion to `ℚ`.
+/--
+A symbolic step using the actual division count of `x` agrees with
+one fully accelerated Collatz step after coercion to `ℚ`.
 
-    The symbolic step is defined using division in `ℚ`, whereas
-    `fully_accelerated` uses natural-number division. The definition of
-    `division_count` guarantees that the required power of two divides
-    `3*x + 1` exactly, so these two forms of division agree after coercion. -/
+The symbolic step is defined using division in `ℚ`, whereas
+`fully_accelerated` uses natural-number division. The definition of
+`division_count` guarantees that the required power of two divides
+`3*x + 1` exactly, so these two forms of division agree after coercion.
+-/
 lemma symbolic_step_division_count
     (x : ℕ) :
     symbolic_step (division_count x) (x : ℚ) =
@@ -299,16 +303,18 @@ lemma symbolic_step_division_count
     /- The denominator is a power of 2, and is therefore nonzero. -/
   · positivity
 
-/-- If a natural number `x` realizes the division word `ω`, then the
-    symbolic action encoded by `ω` agrees, after coercion to `ℚ`, with
-    `ω.length` actual iterations of the fully accelerated Collatz map.
+/--
+If a natural number `x` realizes the division word `ω`, then the
+symbolic action encoded by `ω` agrees, after coercion to `ℚ`, with
+`ω.length` actual iterations of the fully accelerated Collatz map.
 
-    This is the dynamical bridge between the formal symbolic action and
-    the actual Collatz trajectory. The proof proceeds by induction on the
-    realized word. In the inductive step, realization of `d :: ω` splits
-    into the statement that `d` is the actual division count at `x` and
-    the statement that the tail `ω` is realized starting from
-    `fully_accelerated x`. -/
+This is the dynamical bridge between the formal symbolic action and
+the actual Collatz trajectory. The proof proceeds by induction on the
+realized word. In the inductive step, realization of `d :: ω` splits
+into the statement that `d` is the actual division count at `x` and
+the statement that the tail `ω` is realized starting from
+`fully_accelerated x`.
+-/
 theorem word_action_realized
     {x : ℕ} {ω : division_word}
     (h : realizes x ω) :
@@ -358,13 +364,15 @@ theorem word_action_realized
       simp only [List.length_cons, Function.iterate_succ_apply]
 
 
-/-- If `x` realizes the division word `ω`, then the formal affine map
-    associated with `ω` agrees, after coercion to `ℚ`, with the actual
-    `ω.length`-step fully accelerated Collatz trajectory starting at `x`.
+/--
+If `x` realizes the division word `ω`, then the formal affine map
+associated with `ω` agrees, after coercion to `ℚ`, with the actual
+`ω.length`-step fully accelerated Collatz trajectory starting at `x`.
 
-    This follows immediately by combining the algebraic identity
+This follows immediately by combining the algebraic identity
 `word_action_eq_affine_map` with the dynamical bridge
-`word_action_realized`. -/
+`word_action_realized`.
+-/
 theorem affine_map_realized
     {x : ℕ} {ω : division_word}
     (h : realizes x ω) :
@@ -381,9 +389,6 @@ def prefix_division_count
     (ω : division_word) (j : ℕ) : ℕ :=
   total_division_count (ω.take j)
 
-#eval prefix_division_count [1, 2, 3] 0 -- should be 0
-#eval prefix_division_count [1, 2, 3] 3 -- should be 6
-
 /-- The explicit summation formula for the affine constant of `ω`. -/
 def explicit_affine_constant
     (ω : division_word) : ℕ :=
@@ -391,14 +396,14 @@ def explicit_affine_constant
     3 ^ (ω.length - 1 - j) *
       2 ^ prefix_division_count ω j
 
-#eval explicit_affine_constant [1, 1, 1, 4] -- should be 65
+/--
+Prepending a division count `d` shifts every positive prefix count by one.
 
-/-- Prepending a division count `d` shifts every positive prefix count by one.
-
-    The first `j + 1` entries of `d :: ω` consist of the head `d`
-    followed by the first `j` entries of `ω`. Therefore their total
-    division count is `d` plus the corresponding prefix division count
-    of the tail. -/
+The first `j + 1` entries of `d :: ω` consist of the head `d`
+followed by the first `j` entries of `ω`. Therefore their total
+division count is `d` plus the corresponding prefix division count
+of the tail.
+-/
 lemma prefix_division_count_cons_succ
     (d : ℕ) (ω : division_word) (j : ℕ) :
     prefix_division_count (d :: ω) (j + 1) =
@@ -410,19 +415,18 @@ lemma prefix_division_count_cons_succ
      longer prefix is the head `d` plus the sum of the tail prefix. -/
   simp
 
-#check Finset.sum_range_succ
-#check Finset.sum_range_succ_comm
+/--
+Split a finite sum over `0, ..., n` into its initial term and a
+reindexed sum over the remaining terms.
 
-/-- Split a finite sum over `0, ..., n` into its initial term and a
-    reindexed sum over the remaining terms.
+This is the "peel off the first term" counterpart to
+`Finset.sum_range_succ`, which naturally peels off the last term:
+∑ j=0 to n f(j) = f(0) + ∑ j=0 to n-1 f(j+1)
 
-    This is the "peel off the first term" counterpart to
-    `Finset.sum_range_succ`, which naturally peels off the last term:
-    ∑ j=0 to n f(j) = f(0) + ∑ j=0 to n-1 f(j+1)
-
-    The shifted form is useful when a recursive construction separates
-    the contribution at index zero from the contributions associated
-    with the tail of a sequence. -/
+The shifted form is useful when a recursive construction separates
+the contribution at index zero from the contributions associated
+with the tail of a sequence.
+-/
 lemma sum_range_succ_shift
     {M : Type*} [AddCommMonoid M]
     (f : ℕ → M) (n : ℕ) :
@@ -446,17 +450,19 @@ lemma sum_range_succ_shift
       /- The two sides now differ only by reassociation of addition. -/
       simp [add_assoc]
 
-/-- The explicit affine constant satisfies the same head-tail recurrence as
-    the recursively defined affine constant.
+/--
+The explicit affine constant satisfies the same head-tail recurrence as
+the recursively defined affine constant.
 
-    For a word `d :: ω`, the index-zero term of the explicit sum contributes
-    exactly `3 ^ ω.length`. Every remaining term corresponds to an index of
-    the tail `ω`. By `prefix_division_count_cons_succ`, its prefix division
-    count acquires an additional initial contribution `d`, so its dyadic factor
-    contains a common factor `2 ^ d`. Thus cₑₓₚ(d :: ω) = 3^|ω| + 2^d cₑₓₚ(ω).
+For a word `d :: ω`, the index-zero term of the explicit sum contributes
+exactly `3 ^ ω.length`. Every remaining term corresponds to an index of
+the tail `ω`. By `prefix_division_count_cons_succ`, its prefix division
+count acquires an additional initial contribution `d`, so its dyadic factor
+contains a common factor `2 ^ d`. Thus cₑₓₚ(d :: ω) = 3^|ω| + 2^d cₑₓₚ(ω).
 
-    This recurrence is the key step used later to prove that the recursive
-    and explicit definitions of the affine constant are identical. -/
+This recurrence is the key step used later to prove that the recursive
+and explicit definitions of the affine constant are identical.
+-/
 lemma explicit_affine_constant_cons
     (d : ℕ) (ω : division_word) :
     explicit_affine_constant (d :: ω) =
@@ -512,20 +518,22 @@ lemma explicit_affine_constant_cons
      multiplication. -/
   ring
 
-/-- The recursively defined affine constant agrees with its explicit
-    prefix-sum formula.
+/--
+The recursively defined affine constant agrees with its explicit
+prefix-sum formula.
 
-    The proof uses the fact that both constructions satisfy the same
-    head-tail recurrence. For the empty word both constants are zero.
-    For a nonempty word `d :: ω`, the recursive definition gives
-    c(d :: ω) = 3^|ω| + 2^d c(ω), while `explicit_affine_constant_cons`
-    establishes the identical recurrence for the explicit prefix-sum
-    formula. The induction hypothesis then identifies the constants
-    associated with the tail.
+The proof uses the fact that both constructions satisfy the same
+head-tail recurrence. For the empty word both constants are zero.
+For a nonempty word `d :: ω`, the recursive definition gives
+c(d :: ω) = 3^|ω| + 2^d c(ω), while `explicit_affine_constant_cons`
+establishes the identical recurrence for the explicit prefix-sum
+formula. The induction hypothesis then identifies the constants
+associated with the tail.
 
-    Consequently, the recursive definition used to construct the affine
-    map and the explicit summation formula are two representations of the
-    same affine constant. -/
+Consequently, the recursive definition used to construct the affine
+map and the explicit summation formula are two representations of the
+same affine constant.
+-/
 theorem affine_constant_eq_explicit
     (ω : division_word) :
     affine_constant ω = explicit_affine_constant ω := by
@@ -548,15 +556,17 @@ theorem affine_constant_eq_explicit
 def dyadic_threshold (m : ℕ) : ℕ :=
   (3 ^ m).log2 + 1
 
-/-- The dyadic threshold `dyadic_threshold m` characterizes exactly those
-    exponents `k` for which the dyadic factor `2 ^ k` exceeds the ternary
-    factor `3 ^ m`.
+/--
+The dyadic threshold `dyadic_threshold m` characterizes exactly those
+exponents `k` for which the dyadic factor `2 ^ k` exceeds the ternary
+factor `3 ^ m`.
 
-    Equivalently, B(m) ≤ K ↔ 3^m < 2^k.
+Equivalently, B(m) ≤ K ↔ 3^m < 2^k.
 
-    Thus `dyadic_threshold m` is not merely a boundary value: every
-    exponent at or above the threshold gives strict dyadic dominance,
-    and every exponent below it fails to do so. -/
+Thus `dyadic_threshold m` is not merely a boundary value: every
+exponent at or above the threshold gives strict dyadic dominance,
+and every exponent below it fails to do so.
+-/
 theorem dyadic_threshold_le_iff
     (m k : ℕ) :
     dyadic_threshold m ≤ k ↔
@@ -590,21 +600,23 @@ theorem dyadic_threshold_le_iff
        which is precisely the threshold inequality. -/
     omega
 
-/-- For a division word `ω`, its total division count reaches the dyadic
-    threshold exactly when its cumulative dyadic factor exceeds its
-    cumulative ternary factor.
+/--
+For a division word `ω`, its total division count reaches the dyadic
+threshold exactly when its cumulative dyadic factor exceeds its
+cumulative ternary factor.
 
-    Specializing `dyadic_threshold_le_iff` to `m = ω.length` and
-    `k = total_division_count ω` gives B(|ω|) ≤ D(ω) ↔ 3^|ω| < 2^(D(ω)).
+Specializing `dyadic_threshold_le_iff` to `m = ω.length` and
+`k = total_division_count ω` gives B(|ω|) ≤ D(ω) ↔ 3^|ω| < 2^(D(ω)).
 
-    Thus the threshold condition can be expressed either combinatorially,
-    as a lower bound on the total division count, or multiplicatively,
-    as strict dyadic dominance over the ternary factor.
+Thus the threshold condition can be expressed either combinatorially,
+as a lower bound on the total division count, or multiplicatively,
+as strict dyadic dominance over the ternary factor.
 
-    Equivalently, this is precisely the condition under which the linear
-    coefficient 3^|ω| / 2^(D(ω)) of the affine map is strictly less than one.
-    This statement concerns the linear coefficient only; it does not by itself
-    assert that the affine map is contractive on its realizations. -/
+Equivalently, this is precisely the condition under which the linear
+coefficient 3^|ω| / 2^(D(ω)) of the affine map is strictly less than one.
+This statement concerns the linear coefficient only; it does not by itself
+assert that the affine map is contractive on its realizations.
+-/
 theorem dyadic_threshold_le_total_iff
     (ω : division_word) :
     dyadic_threshold ω.length ≤ total_division_count ω ↔
@@ -617,13 +629,15 @@ theorem dyadic_threshold_le_total_iff
     ω.length
     (total_division_count ω)
 
-/-- The affine constant of every nonempty division word is strictly positive.
+/--
+The affine constant of every nonempty division word is strictly positive.
 
-    The empty word is the unique degenerate case, with `affine_constant [] = 0`.
-    For a nonempty word `d :: ω`, the recursive definition gives
-      c(d :: ω) = 3^|ω| + 2^d c(ω),
-    whose first term is already strictly positive and whose second term is
-    nonnegative. Hence the entire affine constant is positive. -/
+The empty word is the unique degenerate case, with `affine_constant [] = 0`.
+For a nonempty word `d :: ω`, the recursive definition gives
+  c(d :: ω) = 3^|ω| + 2^d c(ω),
+whose first term is already strictly positive and whose second term is
+nonnegative. Hence the entire affine constant is positive.
+-/
 lemma affine_constant_pos
     {ω : division_word}
     (hω : 0 < ω.length) :
@@ -639,16 +653,18 @@ lemma affine_constant_pos
       that the full sum is therefore strictly positive. -/
       simp [affine_constant]
 
-/-- The dyadic threshold is the least natural exponent whose power of two
-    strictly exceeds `3 ^ m`.
+/--
+The dyadic threshold is the least natural exponent whose power of two
+strictly exceeds `3 ^ m`.
 
-    In set-theoretic form, `dyadic_threshold m` is the least element of
-    k ∈ ℕ : 3^m < 2^k.
+In set-theoretic form, `dyadic_threshold m` is the least element of
+k ∈ ℕ : 3^m < 2^k.
 
-    This packages the minimality statement implicit in
-    `dyadic_threshold_le_iff` into the exact order-theoretic form used by
-    the paper: `B(m)` is the smallest exponent at which strict dyadic
-    dominance begins. -/
+This packages the minimality statement implicit in
+`dyadic_threshold_le_iff` into the exact order-theoretic form used by
+the paper: `B(m)` is the smallest exponent at which strict dyadic
+dominance begins.
+-/
 theorem dyadic_threshold_isLeast
       (m : ℕ) :
       IsLeast
@@ -675,17 +691,19 @@ theorem dyadic_threshold_isLeast
     exact
       (dyadic_threshold_le_iff m k).mpr hk
 
-/-- The integer dyadic threshold agrees with the real-logarithmic
-    floor formula used in the paper.
+/--
+The integer dyadic threshold agrees with the real-logarithmic
+floor formula used in the paper.
 
-    The threshold is defined intrinsically by
-    `Nat.log2 (3 ^ m) + 1`, avoiding real arithmetic in the basic
-    threshold theory. This theorem connects that discrete definition to
-    the equivalent expression B(m) = ⌊ m log₂ 3 ⌋ + 1.
+The threshold is defined intrinsically by
+`Nat.log2 (3 ^ m) + 1`, avoiding real arithmetic in the basic
+threshold theory. This theorem connects that discrete definition to
+the equivalent expression B(m) = ⌊ m log₂ 3 ⌋ + 1.
 
-    Thus the integer threshold characterized by
-    `dyadic_threshold_le_iff` is the same sequence described by the
-    familiar logarithmic formula. -/
+Thus the integer threshold characterized by
+`dyadic_threshold_le_iff` is the same sequence described by the
+familiar logarithmic formula.
+-/
 theorem dyadic_threshold_eq_floor_log
     (m : ℕ) :
     dyadic_threshold m =
@@ -712,35 +730,39 @@ theorem dyadic_threshold_eq_floor_log
      The expressions inside the two natural floors are now identical. -/
   rw [Real.logb_pow]
 
-/-- The linear coefficient, or slope, of the affine map associated with
-    a division word `ω`.
+/--
+The linear coefficient, or slope, of the affine map associated with
+a division word `ω`.
 
-    The numerator `3 ^ ω.length` records the cumulative ternary growth,
-    while the denominator `2 ^ total_division_count ω` records the
-    cumulative dyadic division. Thus
-      affine_slope ω = 3^|ω| / 2^D(ω).
+The numerator `3 ^ ω.length` records the cumulative ternary growth,
+while the denominator `2 ^ total_division_count ω` records the
+cumulative dyadic division. Thus
+  affine_slope ω = 3^|ω| / 2^D(ω).
 
-    The slope is defined over `ℚ`, consistently with the formal affine
-    map, so it is defined for every division word independently of
-    realizability. -/
+The slope is defined over `ℚ`, consistently with the formal affine
+map, so it is defined for every division word independently of
+realizability.
+-/
 def affine_slope (ω : division_word) : ℚ :=
   (3 : ℚ) ^ ω.length /
     (2 : ℚ) ^ total_division_count ω
 
-/-- The affine slope is strictly less than one exactly when the total
-    division count reaches the dyadic threshold for the word length.
+/--
+The affine slope is strictly less than one exactly when the total
+division count reaches the dyadic threshold for the word length.
 
-    Since affine_slope(ω) = 3^|ω| / 2^D(ω), the inequality
-    `affine_slope ω < 1` is equivalent to strict dyadic dominance,
-    3^|ω| < 2^D(ω).
+Since affine_slope(ω) = 3^|ω| / 2^D(ω), the inequality
+`affine_slope ω < 1` is equivalent to strict dyadic dominance,
+3^|ω| < 2^D(ω).
 
-    By `dyadic_threshold_le_total_iff`, this in turn is equivalent to
-    B(|ω|) ≤ D(ω).
+By `dyadic_threshold_le_total_iff`, this in turn is equivalent to
+B(|ω|) ≤ D(ω).
 
-    The proof crosses between two numeric domains: `affine_slope` is defined
-    over `ℚ`, while the dyadic-threshold theorem is stated intrinsically over
-    `ℕ`. The casts between the corresponding power inequalities are handled
-    explicitly with `exact_mod_cast`. -/
+The proof crosses between two numeric domains: `affine_slope` is defined
+over `ℚ`, while the dyadic-threshold theorem is stated intrinsically over
+`ℕ`. The casts between the corresponding power inequalities are handled
+explicitly with `exact_mod_cast`.
+-/
 theorem affine_slope_lt_one_iff
   (ω : division_word) :
   affine_slope ω < 1 ↔
@@ -769,17 +791,19 @@ theorem affine_slope_lt_one_iff
        affine slope. -/
     exact_mod_cast hnat
 
-/-- For every nonempty division word, the cumulative dyadic and ternary
-    factors are unequal.
+/--
+For every nonempty division word, the cumulative dyadic and ternary
+factors are unequal.
 
-    The only common value of a power of `2` and a power of `3` in `ℕ`
-    is `1 = 2 ^ 0 = 3 ^ 0`. The hypothesis `0 < ω.length` excludes the
-    zero ternary exponent.
+The only common value of a power of `2` and a power of `3` in `ℕ`
+is `1 = 2 ^ 0 = 3 ^ 0`. The hypothesis `0 < ω.length` excludes the
+zero ternary exponent.
 
-    More explicitly, if `total_division_count ω = 0`, then the dyadic
-    factor is `1` while `3 ^ ω.length > 1`. If the total division count
-    is nonzero, then `2 ^ total_division_count ω` is divisible by `2`,
-    whereas `3 ^ ω.length` is odd. Hence equality is impossible. -/
+More explicitly, if `total_division_count ω = 0`, then the dyadic
+factor is `1` while `3 ^ ω.length > 1`. If the total division count
+is nonzero, then `2 ^ total_division_count ω` is divisible by `2`,
+whereas `3 ^ ω.length` is odd. Hence equality is impossible.
+-/
 lemma dyadic_ternary_ne
     {ω : division_word}
     (hω : 0 < ω.length) :
@@ -824,21 +848,23 @@ lemma dyadic_ternary_ne
       exact hdiv
     exact hnotdiv hdiv'
 
-/-- The affine slope of every nonempty division word is strictly separated
-    from one.
+/--
+The affine slope of every nonempty division word is strictly separated
+from one.
 
-    Since affine_slope(ω) = 3^|ω| / 2^D(ω), equality with `1` would force
-    3^|ω| = 2^D(ω).
+Since affine_slope(ω) = 3^|ω| / 2^D(ω), equality with `1` would force
+3^|ω| = 2^D(ω).
 
-    The theorem `dyadic_ternary_ne` excludes this equality for every
-    nonempty division word. Hence the affine slope cannot equal one.
+The theorem `dyadic_ternary_ne` excludes this equality for every
+nonempty division word. Hence the affine slope cannot equal one.
 
-    Because `ℚ` is linearly ordered, the remaining possibilities are
-    therefore exhaustive:
-        affine_slope(ω) < 1 or 1 < affine_slope(ω).
+Because `ℚ` is linearly ordered, the remaining possibilities are
+therefore exhaustive:
+    affine_slope(ω) < 1 or 1 < affine_slope(ω).
 
-    This establishes a strict slope dichotomy only; it does not assert a
-    corresponding dichotomy between contractive and expansive affine maps. -/
+This establishes a strict slope dichotomy only; it does not assert a
+corresponding dichotomy between contractive and expansive affine maps.
+-/
 theorem affine_slope_lt_or_gt_one
     {ω : division_word}
     (hω : 0 < ω.length) :
