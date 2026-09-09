@@ -189,7 +189,7 @@ The argument proceeds as follows:
 \begin{itemize}
 \item Section~\ref{sec:division-counts} introduces division words and their total division counts.
 \item Section~\ref{sec:affine-representation} develops the affine representation of division words and their congruence structure.
-\item Section~\ref{sec:stepwise-realizability-admissibility} establishes the stepwise realizability of admissible division words and the unique residue lifting property.
+\item Section~\ref{sec:exact-realizability-residue} establishes the stepwise realizability of admissible division words and the unique residue lifting property.
 \item Section~\ref{sec:cylinder-geometry} defines the geometry of contractive cylinders.
 \item Section~\ref{sec:symbolic-growth} discusses competition between symbolic entropy and dyadic growth.
 \item Section~\ref{sec:measure-collapse} establishes the collapse of measure for disjoint cylinders.
@@ -208,27 +208,40 @@ The argument proceeds as follows:
 % ------------------------------------------------------------
 
 \begin{definition}[Division Word]
-A division word of length $m \ge 1$ is a sequence
+A division word is a finite sequence
 \[
-\omega = (d_0, \dots, d_{m-1}),
+\omega=(d_0,\dots,d_{m-1}),
 \]
-where each $d_i \in \mathbb{N}$.
+where \(m\ge 0\) and each
+\[
+d_i\in\mathbb{N}.
+\]
+The case \(m=0\) is the empty division word, denoted by \(\varnothing\).
+\end{definition}
+
+\begin{definition}[Valid Division Word]
+A division word
+\[
+\omega=(d_0,\dots,d_{m-1})
+\]
+is \emph{valid} if it is nonempty, equivalently if
+\[
+m\ge 1.
+\]
 \end{definition}
 
 \begin{definition}[Admissible Division Word]
 A division word
 \[
-\omega = (d_0,\dots,d_{m-1})
+\omega=(d_0,\dots,d_{m-1})
 \]
-is admissible if
+is \emph{admissible} if it is valid and
 \[
-d_i \ge 1,
-\qquad 0 \le i < m.
-\]
+d_i\ge 1, \qquad 0\le i<m.\]
 \end{definition}
 
 \begin{definition}[Realization]
-An odd integer $x \in \mathbb{N}$ realizes the division word
+A natural number \(x\in\mathbb{N}\) realizes the division word
 \[
 \omega=(d_0,\dots,d_{m-1})
 \]
@@ -244,12 +257,19 @@ f(x)=\frac{3x+1}{2^{v_2(3x+1)}}.
 \end{definition}
 
 \begin{remark}
-Every odd integer \(x\) induces a unique infinite valuation sequence
+Every \(x\in\mathbb{N}\) induces a unique infinite valuation sequence
 \[
-(v_2(3x+1),\, v_2(3f(x)+1),\, v_2(3f^2(x)+1),\dots),
+\bigl(
+v_2(3x+1),\,
+v_2(3f(x)+1),\,
+v_2(3f^2(x)+1),\dots
+\bigr).
 \]
-For every \(m\ge1\), its first \(m\) entries form the unique division
-word of length \(m\) realized by x.
+
+For every \(m\ge0\), its first \(m\) entries form a division word of length
+\(m\) realized by \(x\). For \(m=0\), this is the empty division word.
+If \(x\) is odd, then every entry of each nonempty generated division
+word is positive, so each such word is admissible.
 \end{remark}
 
 % ------------------------------------------------------------
@@ -293,6 +313,31 @@ D(\omega)
 \]
 \end{proof}
 
+\begin{lemma}
+For every \(x\in\mathbb{N}\), the fully accelerated Collatz iterate
+\[
+f(x)=\frac{3x+1}{2^{v_2(3x+1)}}
+\]
+is odd.
+\end{lemma}
+
+\begin{proof}
+By definition, \(2^{v_2(3x+1)}\) is the full power of \(2\) dividing
+\(3x+1\). Dividing by this factor leaves its odd part.
+\end{proof}
+
+\begin{lemma}
+If \(x\in\mathbb{N}\) is odd, then
+\[
+v_2(3x+1)\ge 1.
+\]
+\end{lemma}
+
+\begin{proof}
+If \(x\) is odd, then \(3x\) is odd, so \(3x+1\) is even. Hence
+\(2\mid(3x+1)\), and therefore \(v_2(3x+1)\ge1\).
+\end{proof}
+
 \begin{remark}
 The two basic numerical invariants of a division word are its length
 \(|\omega|\), which records the number of accelerated Collatz steps, and
@@ -307,27 +352,65 @@ both the affine dynamics and the symbolic geometry developed below.
 \label{sec:affine-representation}
 % ============================================================
 
-\begin{definition}[Affine Map]
-Each division word \(\omega\), whether or not it is realizable, determines
-a formal affine map
+\begin{definition}[Symbolic Step]
+
+For a prescribed division count \(d\in\mathbb{N}\), define the
+\emph{symbolic step}
 \[
-F_\omega : \mathbb Q \to \mathbb Q, \qquad
+S_d:\mathbb{Q}\to\mathbb{Q},
+\qquad
+S_d(x):=\frac{3x+1}{2^d}.
+\]
+This operation is defined formally for every \(d\in\mathbb{N}\) and
+\(x\in\mathbb{Q}\). No divisibility or realizability condition is imposed
+at this stage. When \(d=v_2(3x+1)\) for a natural number \(x\), the
+symbolic step agrees with one step of the fully accelerated Collatz map.
+\end{definition}
+
+\begin{definition}[Affine Map]
+Each division word
+\[
+\omega=(d_0,\dots,d_{m-1}),
+\qquad m\ge0,
+\]
+determines an affine constant \(c(\omega)\in\mathbb{N}\), defined
+recursively by
+\[
+c(\varnothing)=0,
+\]
+and, for \(m\ge1\),
+\[
+c(d_0,\dots,d_{m-1})
+=
+3^{m-1}
++
+2^{d_0}\,
+c(d_1,\dots,d_{m-1}).
+\]
+The associated formal affine map is
+\[
+F_\omega:\mathbb{Q}\to\mathbb{Q},
+\qquad
 F_\omega(x)
 =
 \frac{3^{|\omega|}x+c(\omega)}
-     {2^{D(\omega)}},
+     {2^{D(\omega)}}.
 \]
-obtained by symbolic composition of the accelerated Collatz steps encoded
-by \(\omega\). Thus the word \(\omega\) determines its length \(|\omega|\),
-its total division count \(D(\omega)\), and its affine constant \(c(\omega)\),
-and hence determines the formal map \(F_\omega\).
-
 The rational domain is used because an arbitrary formal division word need
 not prescribe powers of \(2\) that divide the corresponding numerators
-exactly. Thus the symbolic affine map is defined independently of
-realizability. When a natural number \(x\) realizes \(\omega\), the prescribed
-divisions are exact and \(F_\omega(x)\) agrees with the corresponding
-iterate of the fully accelerated Collatz map.
+exactly. Thus \(F_\omega\) is defined independently of realizability.
+
+For the empty word,
+\[
+F_{\varnothing}(x)=x,
+\]
+since
+\[
+|\varnothing|=D(\varnothing)=c(\varnothing)=0.
+\]
+When a natural number \(x\) realizes \(\omega\), the prescribed symbolic
+steps are exact and \(F_\omega(x)\) agrees with the corresponding iterate
+of the fully accelerated Collatz map.
 \end{definition}
 
 \begin{remark}
@@ -351,7 +434,7 @@ Exact realizability may impose additional congruence conditions beyond
 this formal integrality constraint.
 
 A division word is called \emph{realizable} if it is realized by at least
-one odd integer.
+one natural number.
 \end{remark}
 
 % ------------------------------------------------------------
@@ -741,8 +824,8 @@ cylinders.
 
 
 % ============================================================
-\section{Stepwise Realizability and Admissibility}
-\label{sec:stepwise-realizability-admissibility}
+\section{Exact Realizability and Residue Structure}
+\label{sec:exact-realizability-residue}
 % ============================================================
 
 % ------------------------------------------------------------
@@ -751,46 +834,136 @@ cylinders.
 
 \begin{theorem}[Affine Stepwise Identity]
 \label{thm:affine-stepwise-identity}
-Let $\omega = (d_0,\dots,d_{m-1})$ be a division word, and define $c(\omega)$ by
-\[
-c(\omega)
-=
-\sum_{j=0}^{m-1}
-3^{m-1-j}\cdot 2^{\sum_{i=0}^{j-1} d_i}.
-\]
 
-% Suppose the successive divisions by \(2^{d_i}\) are all exact, so that
-Suppose
+Let
 \[
-v_2(3x+1) = d_i, \qquad 0 \le i < m.
+\omega=(d_0,\dots,d_{m-1})
 \]
-% f(x)=\frac{3x+1}{2^{v_2(3x+1)}},
-% v_2(3f^j(x)+1)=d_j, \qquad 0\le j<m.
-Equivalently,
+be a division word, and let
 \[
-x_{i+1} = \frac{3x_i+1}{2^{d_i}}, \qquad 0\le i<m.
+c(\omega) = \sum_{j=0}^{m-1} 3^{m-1-j}\cdot 2^{\sum_{i=0}^{j-1}d_i}.
+\]
+Starting from \(x_0\in\mathbb Q\), define the formal symbolic sequence
+\[
+x_{i+1} = \frac{3x_i+1}{2^{d_i}},
+\qquad
+0\le i<m.
 \]
 Then
 \[
-2^{D(\omega)} x_m = 3^m x_0 + c(\omega).
+2^{D(\omega)}x_m = 3^m x_0+c(\omega).
 \]
 \end{theorem}
 
-\begin{corollary}[Stepwise Integrality Criterion]
-The sequence $(x_0,\dots,x_m)$ is an integer trajectory
-under the accelerated Collatz relations if and only if
+\begin{proof}
+Iterating the symbolic recurrence
 \[
-3^m x_0 + c(\omega) \equiv 0 \pmod{2^{D(\omega)}}.
+x_{i+1}=\frac{3x_i+1}{2^{d_i}}
 \]
-\end{corollary}
+over the word \(\omega=(d_0,\dots,d_{m-1})\) gives
+\[
+x_m=\frac{3^m x_0+c(\omega)}{2^{D(\omega)}}.
+\]
+Multiplying by \(2^{D(\omega)}\) yields
+\[
+2^{D(\omega)}x_m=3^m x_0+c(\omega).
+\]
+\end{proof}
+
+\begin{remark}
+The preceding identity is purely algebraic. No realizability or exact
+\(2\)-adic valuation hypothesis is required: the entries of \(\omega\)
+prescribe formal divisions, and the intermediate values may lie in
+\(\mathbb Q\).
+
+When \(\omega\) is realized by an actual accelerated Collatz trajectory,
+the prescribed divisions are exact and the symbolic sequence agrees with
+the corresponding finite trajectory.
+\end{remark}
+
+\begin{theorem}[Prefix Congruence Propagation]
+\label{thm:prefix-congruence-propagation}
+
+Let \(\omega=(d_0,\dots,d_{m-1})\) be a division word and let
+\(x\in\mathbb N\). Suppose
+\[
+3^m x+c(\omega) \equiv0 \pmod{2^{D(\omega)}}.
+\]
+For \(0\le j\le m\), let
+\[
+\omega_{\le j}=(d_0,\dots,d_{j-1})
+\]
+denote the prefix of length \(j\). Then
+\[
+3^j x+c(\omega_{\le j}) \equiv0 \pmod{2^{D(\omega_{\le j})}}.
+\]
+Thus divisibility of the full affine numerator by its prescribed dyadic
+factor forces the corresponding divisibility condition at every prefix.
+\end{theorem}
+
+
+\begin{proof}
+Fix \(j\) with \(0\le j\le m\), and write
+\[
+\omega=\omega_{\le j}\eta
+\]
+for the decomposition of \(\omega\) into its prefix of length \(j\) and
+the remaining suffix \(\eta\).
+
+By the concatenation formula for the affine constant,
+\[
+c(\omega) = 3^{|\eta|}c(\omega_{\le j}) + 2^{D(\omega_{\le j})}c(\eta),
+\]
+while
+\[
+m=j+|\eta|.
+\]
+Hence
+\[
+3^m x+c(\omega) = 3^{|\eta|} \bigl(3^j x+c(\omega_{\le j})\bigr) + 2^{D(\omega_{\le j})}c(\eta).
+\]
+By hypothesis,
+\[
+3^m x+c(\omega)\equiv0\pmod{2^{D(\omega)}}.
+\]
+Since all division counts are natural numbers,
+\[
+D(\omega_{\le j})\le D(\omega),
+\]
+the same expression is congruent to \(0\) modulo
+\(2^{D(\omega_{\le j})}\). The second term above is already divisible by
+\(2^{D(\omega_{\le j})}\), so
+\[
+3^{|\eta|} \bigl(3^j x+c(\omega_{\le j})\bigr) \equiv0 \pmod{2^{D(\omega_{\le j})}}.
+\]
+Because \(3^{|\eta|}\) is odd, it is coprime to
+\(2^{D(\omega_{\le j})}\), and therefore may be cancelled modulo this
+power of \(2\). Thus
+\[
+3^j x+c(\omega_{\le j}) \equiv0 \pmod{2^{D(\omega_{\le j})}}.
+\]
+Since \(j\) was arbitrary, the affine integrality condition holds for
+every prefix of \(\omega\).
+\end{proof}
+
+
 
 \begin{remark}[Structural Interpretation]
-Each term in $c(\omega)$ records the propagated contribution of a
-single additive ``+1'' created during iteration. Earlier contributions
-accumulate additional powers of $3$ through forward propagation and
-additional powers of $2$ through delayed subsequent divisions by powers
-of two, producing a fully time-ordered encoding of the trajectory in a
-single affine constant.
+The prefix result shows that the global affine congruence is not merely an
+endpoint condition. Its dyadic divisibility propagates backward through
+the nested affine structure and constrains every prefix of the symbolic
+word.
+
+This conclusion concerns divisibility by the prescribed powers of \(2\).
+It does not yet assert that those powers are the exact \(2\)-adic
+valuations occurring under the fully accelerated Collatz map. Exact
+realizability requires an additional parity condition developed below.
+
+The affine constant \(c(\omega)\) records the propagated contribution of
+each additive ``\(+1\)'' introduced during symbolic iteration. Earlier
+contributions acquire additional powers of \(3\) under forward
+propagation, while the powers of \(2\) encode the time-ordered placement
+of the prescribed divisions.
 \end{remark}
 
 % ------------------------------------------------------------
@@ -799,9 +972,7 @@ single affine constant.
 
 \begin{lemma}[Exact Valuation Congruence]
 \label{lem:exact-valuation-congruence}
-Let \(x\) be an odd integer and let \(d\ge1\).
-
-Then
+Let \(x,d\in\mathbb N\). Then
 \[
 v_2(3x+1)=d
 \]
@@ -811,46 +982,46 @@ if and only if
 \]
 Equivalently,
 \[
-3x+1 = 2^d(2k+1)
+3x+1=2^d q
 \]
-for some integer \(k\).
+for some odd natural number \(q\).
 \end{lemma}
 
 \begin{proof}
-Suppose first that
+The congruence
 \[
-v_2(3x+1)=d.
+3x+1\equiv 2^d \pmod{2^{d+1}}
 \]
-Then by definition,
+holds if and only if
 \[
-3x+1 = 2^d y,
+3x+1=2^d q
 \]
-where \(y\) is odd. Writing
+for some odd natural number \(q\). Indeed, writing \(q=2k+1\) gives
 \[
-y=2k+1,
+3x+1 = 2^d(2k+1) = 2^{d+1}k+2^d.
 \]
-gives
+If
 \[
-3x+1 = 2^d(2k+1) = 2^{d+1}k+2^d,
+v_2(3x+1)=d,
 \]
-and therefore
+then by the defining factorization of the \(2\)-adic valuation,
 \[
-3x+1 \equiv 2^d \pmod{2^{d+1}}.
+3x+1=2^d q
 \]
-
-Conversely, suppose that
+with \(q\) odd, and therefore the congruence follows.  Conversely, if
 \[
-3x+1 \equiv 2^d \pmod{2^{d+1}}.
+3x+1=2^d q
 \]
-Then there exists an integer \(k\) such that
-\[
-3x+1 = 2^{d+1}k+2^d = 2^d(2k+1).
-\]
-Since \(2k+1\) is odd, exactly \(d\) factors of \(2\) divide \(3x+1\). Hence
+with \(q\) odd, then exactly \(d\) factors of \(2\) divide \(3x+1\). Hence
 \[
 v_2(3x+1)=d.
 \]
 \end{proof}
+
+For a division word \(\omega\), define its realization set by
+\[
+R_\omega = \{x\in\mathbb{N} : x \text{ realizes } \omega\}.
+\]
 
 \begin{corollary}[Local Valuation Refinement]
 \label{cor:local-refinement}
@@ -858,37 +1029,194 @@ Let
 \[
 \omega=(d_0,\dots,d_{m-1})
 \]
-be an admissible division word and let
+be an admissible division word, let \(x\in\mathbb N\), and for
+\(0\le j\le m\) let
 \[
 \omega_j=(d_0,\dots,d_{j-1})
 \]
-denote its prefixes. For each \(j\), the condition
+denote the prefix of length \(j\).
+For each \(0\le j<m\), the exact valuation condition
 \[
-v_2(3f^j(x)+1)=d_j
+v_2\!\left(3f^j(x)+1\right)=d_j
 \]
-is equivalent to the congruence
+is equivalent to
 \[
 3f^j(x)+1 \equiv 2^{d_j} \pmod{2^{d_j+1}}.
 \]
 
-Consequently, each additional valuation constraint refines the realization
-set of the prefix \(\omega_j\) to a smaller realization set associated with
-the extended prefix
+Consequently, if \(x\) realizes the longer prefix
+\(\omega_{j+1}\), then \(x\) also realizes \(\omega_j\). Hence the
+corresponding realization sets satisfy
 \[
-\omega_{j+1}.
+R_{\omega_{j+1}} \subseteq R_{\omega_j}.
 \]
 
-Thus admissible division words generate a nested sequence of arithmetic
-constraints, and extensions of division words correspond to successive
-refinements of residue classes.
+Thus exact valuation constraints are imposed one accelerated step at a
+time, and extension of a realized division-word prefix gives a nested
+refinement of its realization set.
 \end{corollary}
 
+\begin{proof}
+The equivalence
+\[
+v_2\!\left(3f^j(x)+1\right)=d_j \quad\Longleftrightarrow\quad
+3f^j(x)+1 \equiv 2^{d_j} \pmod{2^{d_j+1}}
+\]
+is Lemma~\ref{lem:exact-valuation-congruence} applied to the natural
+number \(f^j(x)\).
+
+If \(x\) realizes \(\omega_{j+1}\), then by definition its first
+\(j+1\) division counts are
+\[
+d_0,\dots,d_j.
+\]
+
+Therefore its first \(j\) division counts are
+\[
+d_0,\dots,d_{j-1},
+\]
+so \(x\) realizes the prefix \(\omega_j\). Hence
+\[
+R_{\omega_{j+1}}\subseteq R_{\omega_j}.
+\]
+\end{proof}
+
 \begin{remark}
-The corollary formalizes the local nature of admissibility. Exact
-valuation constraints are imposed one step at a time and depend only on
-the current accelerated iterate. Consequently, realizability propagates
-forward recursively through the valuation sequence rather than being
-determined solely by a terminal congruence condition.
+This corollary describes the local, stepwise structure of realization.
+Each new entry of a division word imposes one additional exact
+\(2\)-adic valuation condition on the current accelerated iterate.
+
+The theorem below shows that, for admissible division words, these local
+conditions are equivalently encoded by a single global affine congruence
+modulo \(2^{D(\omega)+1}\).
+\end{remark}
+
+\begin{theorem}[Exact Realization Criterion]
+\label{thm:exact-realization-criterion}
+Let
+\[
+\omega=(d_0,\dots,d_{m-1})
+\]
+be an admissible division word, and let \(x\in\mathbb N\). Then \(x\)
+realizes \(\omega\) if and only if
+\[
+3^m x+c(\omega) \equiv 2^{D(\omega)} \pmod{2^{D(\omega)+1}}.
+\]
+Equivalently, for an admissible division word, the full sequence of exact
+\(2\)-adic valuation conditions defining realization is encoded by the
+single global affine congruence modulo \(2^{D(\omega)+1}\).
+\end{theorem}
+
+\begin{proof}
+Suppose first that \(x\) realizes \(\omega\). Apply the affine stepwise
+identity to the realized trajectory \(x_i=f^i(x)\). Then
+\[
+3^m x+c(\omega) = 2^{D(\omega)}f^m(x).
+\]
+Since \(\omega\) is admissible, it is nonempty, so \(m\ge1\). Every
+positive iterate of the fully accelerated Collatz map is odd. Hence
+\(f^m(x)\) is odd, and therefore
+\[
+f^m(x)\equiv1\pmod2.
+\]
+Multiplying by \(2^{D(\omega)}\) gives
+\[
+3^m x+c(\omega) \equiv 2^{D(\omega)} \pmod{2^{D(\omega)+1}},
+\]
+which proves the forward implication.
+
+For the converse, we prove the following stronger statement by induction
+on \(n\): for every finite division word \(\eta=(e_0,\dots,e_{n-1})\) whose
+entries are positive, including \(n=0\), and for every \(x\in\mathbb N\),
+the exact congruence implies that \(x\) is odd and realizes \(\eta\).
+
+We proceed by induction on \(n\), with both \(\eta\) and the starting value
+\(x\) arbitrary subject to these hypotheses.
+\[
+D(\eta)=0,
+\qquad
+c(\eta)=0,
+\]
+and the congruence reduces to
+\[
+x\equiv1\pmod2.
+\]
+Thus \(x\) is odd. The empty word is realized structurally, so the claim
+holds.  Now suppose
+\[
+\eta=(e_0,e_1,\dots,e_{n-1})
+\]
+is nonempty, and let
+\[
+\eta'=(e_1,\dots,e_{n-1})
+\]
+denote its tail. Reducing the exact congruence modulo
+\(2^{D(\eta)}\) first gives
+\[
+3^n x+c(\eta) \equiv0\pmod{2^{D(\eta)}}.
+\]
+By prefix congruence propagation, the one-term prefix \((e_0)\) therefore
+satisfies
+\[
+3x+1\equiv0\pmod{2^{e_0}}.
+\]
+Hence there exists \(y\in\mathbb N\) such that
+\[
+3x+1=2^{e_0}y.
+\]
+Using the recursive affine identity
+\[
+c(\eta) = 3^{n-1} + 2^{e_0}c(\eta')
+\]
+and
+\[
+D(\eta)=e_0+D(\eta'),
+\]
+we obtain
+\[
+3^n x+c(\eta) = 2^{e_0} \left(  3^{n-1}y+c(\eta')  \right).
+\]
+Substituting this into the exact congruence and cancelling the common
+factor \(2^{e_0}\) yields
+\[
+3^{n-1}y+c(\eta') \equiv 2^{D(\eta')} \pmod{2^{D(\eta')+1}}.
+\]
+Every entry of \(\eta'\) is positive, so the induction hypothesis applies.
+Thus \(y\) is odd and realizes \(\eta'\).
+
+Since
+\[
+3x+1=2^{e_0}y
+\]
+with \(y\) odd, the exact \(2\)-adic valuation of \(3x+1\) is
+\[
+v_2(3x+1)=e_0.
+\]
+Consequently,
+\[
+f(x)=y.
+\]
+Moreover, \(e_0\ge1\), so \(3x+1\) is even, which forces \(x\) to be odd.
+Since \(y=f(x)\) realizes the tail \(\eta'\), the starting value \(x\)
+realizes the complete word \(\eta\).
+
+This proves the stronger induction statement. Applying it to the
+admissible word \(\omega\) proves the reverse implication and completes
+the theorem.
+\end{proof}
+
+\begin{remark}
+The distinction between the two affine congruences is therefore exact:
+\[
+3^m x+c(\omega)\equiv0\pmod{2^{D(\omega)}}
+\]
+expresses formal integrality, whereas
+\[
+3^m x+c(\omega) \equiv2^{D(\omega)} \pmod{2^{D(\omega)+1}}
+\]
+is equivalent, for admissible \(\omega\), to realization of the entire
+division word. The additional dyadic bit records the oddness remaining
+after the prescribed power \(2^{D(\omega)}\) has been removed.
 \end{remark}
 
 \begin{theorem}[Residue Lifting Theorem]
@@ -897,235 +1225,274 @@ Let
 \[
 \omega=(d_0,\dots,d_{m-1})
 \]
-be an admissible division word.  Then there exists a unique residue class
+be an admissible division word, and for
 \[
-r_\omega \pmod{2^{D(\omega)}}
+1\le j\le m
 \]
-consisting precisely of the integers realizing \(\omega\).  Moreover, if
+let
 \[
 \omega_j=(d_0,\dots,d_{j-1})
 \]
-denotes the prefix of length \(j\), then the corresponding residue classes satisfy
+denote its prefix of length \(j\). Then for every such \(j\), there exists
+a unique residue class
 \[
-r_{\omega_{j+1}}
-\equiv
-r_{\omega_j}
-\pmod{2^{D(\omega_j)}}.
+r_{\omega_j} \pmod{2^{D(\omega_j)+1}}
+\]
+consisting precisely of the natrual numbers realizing \(\omega_j\).
+Equivalently, there is a unique representative
+\[
+0\le r_{\omega_j}<2^{D(\omega_j)+1}
+\]
+such that
+\[
+x \text{ realizes } \omega_j
+\quad\Longleftrightarrow\quad
+x\equiv r_{\omega_j} \pmod{2^{D(\omega_j)+1}}.
 \]
 
-Thus each additional valuation constraint uniquely refines the residue
-class of its prefix.
+Moreover, whenever \(1\le j<m\),
+\[
+r_{\omega_{j+1}} \equiv r_{\omega_j} \pmod{2^{D(\omega_j)+1}}.
+\]
+Thus each additional exact valuation constraint refines the exact
+realization class of its prefix.
 \end{theorem}
 
 \begin{proof}
-We proceed by induction on the length \(m\) of the division word.
-For \(m=1\), the word consists of a single valuation
+By the exact realization criterion, a natural number \(x\) realizes an
+admissible division word \(\eta\) if and only if
 \[
-\omega=(d_0).
+3^{|\eta|}x+c(\eta) \equiv 2^{D(\eta)} \pmod{2^{D(\eta)+1}}.
 \]
-By Lemma~\ref{lem:exact-valuation-congruence},
+Since \(3^{|\eta|}\) is odd, it is coprime to
 \[
-v_2(3x+1)=d_0
+2^{D(\eta)+1}
 \]
-if and only if
+and hence invertible modulo that modulus. Therefore the preceding linear
+congruence has a unique solution modulo
 \[
-3x+1
-\equiv
-2^{d_0}
-\pmod{2^{d_0+1}}.
+2^{D(\eta)+1}.
+\]
+Consequently, for every admissible \(\eta\), there is a unique canonical
+representative
+\[
+0\le r_\eta<2^{D(\eta)+1}
+\]
+such that
+\[
+x\text{ realizes }\eta
+\quad\Longleftrightarrow\quad
+x\equiv r_\eta \pmod{2^{D(\eta)+1}}.
+\]
+Now fix \(j\) with \(1\le j\le m\). Since \(\omega\) is admissible, its
+positive-length prefix \(\omega_j\) is also admissible. Hence the preceding
+argument yields the unique residue class
+\[
+r_{\omega_j} \pmod{2^{D(\omega_j)+1}}
+\]
+of all realizations of \(\omega_j\).
+
+It remains to prove the refinement relation. Suppose \(1\le j<m\).
+The canonical representative \(r_{\omega_{j+1}}\) realizes
+\(\omega_{j+1}\), since every natural number is congruent to itself modulo the
+corresponding realization modulus. Any natural number realizing
+\(\omega_{j+1}\) also realizes its prefix \(\omega_j\). Therefore
+\(r_{\omega_{j+1}}\) realizes \(\omega_j\). By the defining property of
+the unique realization class of \(\omega_j\),
+\[
+r_{\omega_{j+1}} \equiv r_{\omega_j} \pmod{2^{D(\omega_j)+1}}.
 \]
 
-Since \(3\) is invertible modulo every power of two, this congruence has
-a unique solution modulo \(2^{d_0+1}\). Thus the realization set of
-\(\omega\) is a single residue class.
-
-Assume now that the result holds for all admissible words of length \(m\),
-and let
-\[
-\omega'=(d_0,\dots,d_{m})
-\]
-be an admissible word of length \(m+1\).  Let
-\[
-\omega=(d_0,\dots,d_{m-1})
-\]
-be its length-\(m\) prefix. By the induction hypothesis, the integers
-realizing \(\omega\) form a unique residue class
-\[
-r_\omega
-\pmod{2^{D(\omega)}}.
-\]
-
-The additional valuation condition
-\[
-v_2(3f^{m}(x)+1)=d_m
-\]
-is equivalent, by
-Lemma~\ref{lem:exact-valuation-congruence}, to
-\[
-3f^{m}(x)+1
-\equiv
-2^{d_m}
-\pmod{2^{d_m+1}}.
-\]
-
-Using the affine representation of the prefix,
-\[
-f^{m}(x) = \frac{3^{m}x+c(\omega)}{2^{D(\omega)}},
-\]
-this becomes a linear congruence condition on \(x\) modulo
-\[
-2^{D(\omega)+d_m} = 2^{D(\omega')}.
-\]
-
-Since \(3^m\) is odd, it is invertible modulo every power of two.  This congruence
-determines a unique refinement of the residue class
-\[
-r_\omega
-\pmod{2^{D(\omega)}}
-\]
-to a residue class
-\[
-r_{\omega'}
-\pmod{2^{D(\omega')}}.
-\]
-
-Therefore every admissible extension uniquely refines the residue class
-of its prefix.  The result follows by induction.
+Thus the exact realization classes of successive prefixes are nested, and
+each additional valuation constraint refines the realization class of the
+preceding prefix.
 \end{proof}
 
-% ------------------------------------------------------------
-\subsection{Affine Realization}
-% ------------------------------------------------------------
-
-\begin{theorem}[Affine Realization Theorem]
-\label{thm:affine-realization}
-Let $\omega$ be a division word.
-
-An integer $x$ realizes $\omega$ if and only if
+\begin{corollary}[Admissible Division Words Are Realizable]
+\label{cor:admissible-words-realizable}
+Every admissible division word is realizable. More precisely, if
 \[
-x\equiv r_\omega\pmod{2^{D(\omega)}}.
+\omega
 \]
-
-\end{theorem}
+is admissible, then there exists \(x\in\mathbb N\) such that \(x\)
+realizes \(\omega\).
+\end{corollary}
 
 \begin{proof}
-Assume that
+Since \(\omega\) is admissible, \(m=|\omega|\ge1\). Taking \(j=m\) in
+the Residue Lifting Theorem, we have \(\omega_m=\omega\), and hence
+\(\omega\) has a canonical exact realization residue
 \[
-x\equiv r_\omega \pmod{2^{D(\omega)}}.
+r_\omega \pmod{2^{D(\omega)+1}}
 \]
+such that
+\[
+x\text{ realizes }\omega \quad\Longleftrightarrow\quad x\equiv r_\omega \pmod{2^{D(\omega)+1}}.
+\]
+Taking \(x=r_\omega\), reflexivity gives
+\[
+r_\omega\equiv r_\omega \pmod{2^{D(\omega)+1}}.
+\]
+Hence \(r_\omega\) realizes \(\omega\).
 
-By the Exact Valuation Congruence Lemma \ref{lem:exact-valuation-congruence},
-the residue class associated with the full word $\omega$ is contained in the residue
-class of every prefix
-\[
-\omega_j=(d_0,\dots,d_{j-1}).
-\]
-Therefore, for every prefix length $j$,
-\[
-x\equiv r_{\omega_j}\pmod{2^{D(\omega_j)}}.
-\]
-
-We prove inductively that the successive iterates generated from $x$ realize
-the prescribed valuations.  For $j=0$, the prefix condition gives
-\[
-x\equiv r_{(d_0)}\pmod{2^{d_0}},
-\]
-and therefore
-\[
-2^{d_0}\mid 3x+1.
-\]
-Because the residue class is defined using the exact division count $d_0$,
-the next higher power does not divide:
-\[
-2^{d_0+1}\nmid 3x+1.
-\]
-Hence
-\[
-v_2(3x+1)=d_0.
-\]
-Therefore the first accelerated iterate is
-\[
-x_1=\frac{3x_0+1}{2^{d_0}},
-\]
-and is an integer.  Now assume that the first $j$ steps have been realized, so that
-\[
-x_j=f^j(x)
-\]
-is the integer determined by the prefix
-\[
-(d_0,\dots,d_{j-1}).
-\]
-The prefix congruence condition for
-\[
-\omega_{j+1}=(d_0,\dots,d_j)
-\]
-implies that
-\[
-2^{d_j}\mid 3x_j+1.
-\]
-Again, exactness of the prefix residue condition excludes the higher power:
-\[
-2^{d_j+1}\nmid 3x_j+1.
-\]
-Consequently,
-\[
-v_2(3x_j+1)=d_j,
-\]
-and the next iterate
-\[
-x_{j+1}=\frac{3x_j+1}{2^{d_j}}
-\]
-is an integer.  By induction, every step satisfies the prescribed valuation
-constraint, and therefore
-\[
-v_2(3f^j(x)+1)=d_j, \qquad 0\le j<m.
-\]
-Hence $x$ realizes the division word $\omega$.
+Therefore every admissible division word is realized by at least one
+natural number.
 \end{proof}
-
-% ------------------------------------------------------------
-\subsection{Admissibility of Division Words}
-% ------------------------------------------------------------
-
-\begin{definition}[Admissible Division Word]
-\label{def:admissible-division-word}
-A division word is \emph{admissible} if it is realizable.
-\end{definition}
 
 \begin{remark}
-Equivalently, a division word \(\omega\) is admissible if its induced affine
-residue class contains an integer whose successive accelerated iterates satisfy
-\[
-v_2(3x_i+1)=d_i,
-\qquad 0\le i<m.
-\]
-Thus admissibility is precisely the condition that a formal symbolic word
-occurs as an actual finite valuation sequence of the accelerated Collatz map.
+Thus admissibility is not merely a formal positivity condition on a finite
+division word. Every finite nonempty sequence of positive division counts
+actually occurs as the initial valuation sequence of some fully accelerated
+Collatz trajectory.
 \end{remark}
 
+
 % ------------------------------------------------------------
-\subsection{Residue Class Representation of Division Words}
+\subsection{Nested Structure of Realization Classes}
 % ------------------------------------------------------------
 
-\begin{lemma}[Prefix Nesting of Realization Sets]
-\label{lem:prefix-uniqueness}
-Let $\omega,\omega'$ be admissible division words.
+Recall from the Division Word Valuation that
+\[
+R_\omega = \{x\in\mathbb{N} : x \text{ realizes } \omega\}.
+\]
 
-If the realization sets of $\omega$ and $\omega'$ intersect, then one word
-is a prefix of the other.
+For admissible words, the preceding results show that \(R_\omega\) is
+precisely one exact residue class:
+\[
+R_\omega = \left\{
+x\in\mathbb{N} :
+x\equiv r_\omega
+\pmod{2^{D(\omega)+1}}
+\right\},
+\]
+where
+\[
+0\le r_\omega<2^{D(\omega)+1}
+\]
+is uniquely determined.
+
+\begin{lemma}[Common Realizations Force Prefix Comparability]
+\label{lem:common-realization-prefix}
+
+Let \(\omega\) and \(\eta\) be division words. If there exists
+\(x\in\mathbb{N}\) realizing both \(\omega\) and \(\eta\), then one word
+is a prefix of the other.  More precisely, if
+\[
+|\omega|\le |\eta|,
+\]
+then
+\[
+\omega = \eta_{\le |\omega|},
+\]
+where \(\eta_{\le |\omega|}\) denotes the prefix of \(\eta\) of length
+\(|\omega|\).
 \end{lemma}
 
 \begin{proof}
-Every odd integer \(x\) determines a unique infinite valuation sequence
+A fixed starting value \(x\) determines a unique division word of each
+finite length. Hence two words of equal length realized by the same
+natural number must be equal.
+
+Suppose that \(x\) realizes both \(\omega\) and \(\eta\), and assume
+without loss of generality that
 \[
-(v_2(3x+1),\, v_2(3f(x)+1),\, v_2(3f^2(x)+1),\dots).
+|\omega|\le|\eta|.
+\]
+Since realization of a word implies realization of each of its prefixes,
+\(x\) realizes the prefix of \(\eta\) of length \(|\omega|\). This prefix
+has the same length as \(\omega\), and both are realized by \(x\).
+Therefore they are equal:
+\[
+\omega=\eta_{\le|\omega|}.
+\]
+Thus one of the two words is a prefix of the other.
+\end{proof}
+
+\begin{theorem}[Nested-or-Disjoint Realization Classes]
+\label{thm:realization-classes-nested-disjoint}
+
+Let \(\omega\) and \(\eta\) be division words. Then their realization sets
+satisfy at least one of the following structural alternatives:
+\[
+R_\eta\subseteq R_\omega,
+\qquad
+R_\omega\subseteq R_\eta,
+\qquad
+R_\omega\cap R_\eta=\varnothing.
+\]
+Equivalently, two realization sets are either nested or disjoint. In
+particular, they cannot partially overlap.
+\end{theorem}
+
+\begin{proof}
+If
+\[
+R_\omega\cap R_\eta=\varnothing,
+\]
+then the third alternative holds.  Otherwise choose
+\[
+x\in R_\omega\cap R_\eta.
+\]
+Then \(x\) realizes both \(\omega\) and \(\eta\). By
+Lemma~\ref{lem:common-realization-prefix}, one of the two words is a
+prefix of the other.
+
+Suppose first that \(\omega\) is a prefix of \(\eta\). Every natural
+number realizing \(\eta\) also realizes each prefix of \(\eta\), and
+therefore realizes \(\omega\). Hence
+\[
+R_\eta\subseteq R_\omega.
 \]
 
-If \(x\) lies in the realization sets of both \(\omega\) and \(\omega'\),
-then both words must agree with the initial segment of this valuation sequence.
+Similarly, if \(\eta\) is a prefix of \(\omega\), then
+\[
+R_\omega\subseteq R_\eta.
+\]
+Thus the realization sets are always nested or disjoint.
+\end{proof}
 
-Therefore the two words cannot diverge at any position before the shorter
-word terminates. Hence one word is a prefix of the other.
+\begin{corollary}[Nested-or-Disjoint Exact Residue Classes]
+\label{cor:exact-residue-classes-nested-disjoint}
+
+Let \(\omega\) and \(\eta\) be admissible division words, with their
+unique exact realization residues
+\[
+r_\omega \pmod{2^{D(\omega)+1}}
+\]
+and
+\[
+r_\eta \pmod{2^{D(\eta)+1}}.
+\]
+Then the corresponding exact residue classes are either disjoint or one
+is contained in the other.
+
+If one word extends the other, the residue of the longer word is
+congruent to the residue of the shorter word modulo the exact
+realization modulus of the shorter word.
+\end{corollary}
+
+\begin{proof}
+For each admissible word, its exact residue class is precisely its
+realization set. Thus
+\[
+x\equiv r_\omega \pmod{2^{D(\omega)+1}} \quad\Longleftrightarrow\quad x\in R_\omega,
+\]
+and similarly for \(\eta\).
+
+By Theorem~\ref{thm:realization-classes-nested-disjoint}, the realization
+sets \(R_\omega\) and \(R_\eta\) are nested or disjoint. Therefore the
+corresponding exact residue classes are likewise nested or disjoint.
+
+Now suppose, for example, that \(\eta\) extends \(\omega\). The canonical
+representative \(r_\eta\) belongs to its own exact residue class and
+therefore realizes \(\eta\). Hence it also realizes the prefix \(\omega\).
+By the residue characterization of \(R_\omega\),
+\[
+r_\eta\equiv r_\omega
+\pmod{2^{D(\omega)+1}}.
+\]
+The opposite extension relation is identical with the roles of
+\(\omega\) and \(\eta\) interchanged.
 \end{proof}
 
 
